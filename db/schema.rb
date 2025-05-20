@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_18_042224) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_18_053758) do
+  create_table "client_sessions", force: :cascade do |t|
+    t.integer "client_id"
+    t.integer "invoice_id"
+    t.datetime "start", null: false
+    t.integer "duration", null: false
+    t.integer "current_rate_pence", default: 0, null: false
+    t.string "current_rate_currency", default: "GBP", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_sessions_on_client_id"
+    t.index ["invoice_id"], name: "index_client_sessions_on_invoice_id"
+  end
+
   create_table "clients", force: :cascade do |t|
     t.string "name"
     t.string "address1"
@@ -22,5 +35,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_042224) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_clients_on_email", unique: true
+  end
+
+  create_table "fees", force: :cascade do |t|
+    t.integer "client_id"
+    t.date "from"
+    t.date "to"
+    t.integer "hourly_charge_rate_pence", default: 0, null: false
+    t.string "hourly_charge_rate_currency", default: "GBP", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_fees_on_client_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.date "date"
+    t.integer "client_id"
+    t.integer "amount_pence", default: 0, null: false
+    t.string "amount_currency", default: "GBP", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_invoices_on_client_id"
   end
 end

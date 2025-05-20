@@ -17,3 +17,4 @@ end
 
 Money.locale_backend = :i18n
 Monetize.assume_from_symbol = true
+Money.rounding_mode = BigDecimal::ROUND_HALF_UP # Fix the rounding mode warning

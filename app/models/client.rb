@@ -10,11 +10,11 @@ class Client < ApplicationRecord
 
   validates :fees, presence: true
   validate :fees_must_not_overlap
+
+  attribute :new_rate, :money, default: Money.new(6000, 'GBP')
+  attribute :new_rate_from, :date, default: -> { Time.zone.today }
   validates :new_rate, presence: { message: 'cannot be blank if New Rate From is set' }, if: :new_rate_from
   validates :new_rate_from, presence: { message: 'cannot be blank if New Rate is set' }, if: :new_rate
-
-  attribute :new_rate, :money, default: -> { Money.new(6000) }
-  attribute :new_rate_from, :date, default: -> { Time.zone.today }
 
   # Add a default fee record if none exists.
   after_initialize do |client|

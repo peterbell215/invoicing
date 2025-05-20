@@ -40,8 +40,11 @@ describe Client do
       specify { expect(build(:client, postcode: 'cb999 111')).not_to be_valid }
     end
 
-    it 'is not possible to leave #new_rate_from blank if #new_rate set' do
-      expect(build(:client, new_rate: nil, new_rate_from: Time.zone.today)).not_to be_valid
+    it 'is not possible to leave #new_rate blank if #new_rate_from is set' do
+      client = build(:client)
+      client.new_rate = nil
+      expect(client).not_to be_valid
+      expect(client.errors[:new_rate]).to include('cannot be blank if New Rate From is set')
     end
   end
 
