@@ -8,3 +8,183 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+@import url("https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure.css");
+@import url("https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive.css");
+
+@import url("rails-messages.css");
+@import url("div-tables.css");
+
+.banner {
+    background-color: #FF8200; /* Modaxo orange */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.banner-logo {
+    height: 10em;
+    margin-right: 20px;
+}
+
+.banner-title {
+    font-size: 6em;
+    font-weight: bold;
+}
+
+/* iPad-specific adjustments (typical iPad width range) */
+@media screen and (max-width: 1024px) {
+    .banner-title {
+        font-size: 3.5em;
+    }
+
+    .banner-logo {
+        height: 6em;
+    }
+}
+
+/* iPhone-specific adjustments */
+@media screen and (max-width: 480px) {
+    /* Banner adjustments */
+    .banner-title {
+        display: none;
+    }
+
+    .banner-logo {
+        height: 5em;
+        margin: 0 auto;
+    }
+
+    .banner {
+        justify-content: center;
+    }
+
+    /* Override Pure CSS grid for rankings to stack columns */
+    .rankings-container .pure-g > div[class*="pure-u-"] {
+        width: 100%;
+        display: block;
+        margin-bottom: 2em;
+    }
+
+    .ranking-column {
+        margin-bottom: 2em;
+    }
+
+    .ranking-list {
+        min-height: auto;
+    }
+}
+
+nav {
+    .pure-menu {
+        background-color: #FF8200; /* Dark background color */
+    }
+
+    .pure-menu .pure-menu-link {
+        color: #fff; /* White text color */
+    }
+
+    .pure-menu .pure-menu-link:hover {
+        color: #000; /* Light gray text color on hover */
+    }
+
+    .pure-menu-selected .pure-menu-link {
+        background-color: #000;
+    }
+}
+
+body div.container {
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+.form-buttons {
+    margin-top: 20px; /* Add space above the buttons */
+}
+
+.pure-g {
+    margin-top: 1em; /* Adjust the value as needed */
+    margin-bottom: 1em; /* Adjust the value as needed */
+}
+
+/* Custom button styles */
+.button-error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.button-small {
+    font-size: 85%;
+    padding: 0.3em 0.7em;
+}
+
+/* Devise form styles */
+.login-container {
+    padding: 2em;
+    margin: 1em 0;
+    background-color: #f7f7f7;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.content-head {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 1em 0;
+    color: #34495e;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5em;
+}
+
+.is-center {
+    text-align: center;
+}
+
+.pure-form label {
+    margin: 0.5em 0 0.2em;
+}
+
+.pure-button-primary {
+    background-color: #FF8200; /* Use Modaxo orange to match banner */
+    color: white;
+    margin-top: 0;
+}
+
+.devise-links {
+    margin-top: 1.5em;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.devise-links a {
+    color: #FF8200; /* Match Modaxo orange */
+    text-decoration: none;
+    margin: 0 0.5em;
+}
+
+.devise-links a:hover {
+    text-decoration: underline;
+}
+
+.password-hint, .field-hint {
+    font-size: 0.85em;
+    color: #666;
+    display: block;
+    margin-top: -0.5em;
+    margin-bottom: 0.5em;
+}
+
+.confirmation-notice {
+    padding: 0.5em;
+    margin: 1em 0;
+    background-color: #f8f9fa;
+    border-left: 4px solid #FF8200;
+    font-size: 0.9em;
+}
+
+.account-actions {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid #eee;
+}

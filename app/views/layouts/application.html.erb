@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Invoicing" %></title>
+    <title><%= content_for(:title) || "Competition Ranking" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,13 +16,60 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
+  <div class="banner">
+    <div class="banner-title">Katy's invoicing</div>
+  </div>
+
+  <nav>
+    <div class="pure-menu pure-menu-horizontal">
+      <ul class="pure-menu-list">
+        <!-- Left-aligned items -->
+        <li class="pure-menu-item"><%= link_to "Clients", clients_path, class: "pure-menu-link" %></li>
+        <!-- Add other nav items as needed -->
+      </ul>
+    </div>
+  </nav>
+
   <body>
-    <%= yield %>
+    <div class="container" data-controller="notice-dismissal">
+      <div data-notice-dismissal-target="notice">
+        <%= render "layouts/notice", notice: notice %>
+      </div>
+
+      <%= yield %>
+    </div>
   </body>
+  
+  <style>
+    /* Navigation styles */
+    .right-menu {
+      float: right;
+    }
+    
+    .logout-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .user-info {
+      margin-right: 10px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    
+    /* Notice styling */
+    [data-notice-dismissal-target="notice"] {
+      transition: opacity 0.3s ease-in-out;
+    }
+    
+    /* Add any other styles that were previously inline here */
+  </style>
 </html>
