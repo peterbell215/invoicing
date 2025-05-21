@@ -1,2 +1,153 @@
-<div id="<%= dom_id client %>">
+<div id="<%= dom_id client %>" class="client-details">
+  <div class="pure-g">
+    <div class="pure-u-1">
+      <h2><%= client.name %></h2>
+    </div>
+  </div>
+
+  <div class="pure-g">
+    <div class="pure-u-1 pure-u-md-1-2">
+      <div class="detail-section">
+        <h3>Contact Information</h3>
+        <div class="detail-item">
+          <div class="detail-label">Email:</div>
+          <div class="detail-value"><%= client.email %></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Address:</div>
+          <div class="detail-value">
+            <%= client.address1 %><br>
+            <% if client.address2.present? %>
+              <%= client.address2 %><br>
+            <% end %>
+            <%= client.town %><br>
+            <%= client.postcode %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pure-u-1 pure-u-md-1-2">
+      <div class="detail-section">
+        <h3>Billing Information</h3>
+        <div class="detail-item">
+          <div class="detail-label">Current Rate:</div>
+          <div class="detail-value"><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Rate Since:</div>
+          <div class="detail-value"><%= client.current_rate_since&.strftime("%d %B %Y") %></div>
+        </div>
+      </div>
+
+      <% if client.fees.count > 1 %>
+        <div class="detail-section">
+          <h3>Rate History</h3>
+          <table class="pure-table pure-table-bordered pure-table-striped" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% client.fees.order(from: :desc).each do |fee| %>
+                <tr>
+                  <td><%= fee.from.strftime("%d %b %Y") %></td>
+                  <td><%= fee.to ? fee.to.strftime("%d %b %Y") : "Current" %></td>
+                  <td><%= number_to_currency(fee.hourly_charge_rate&.amount.to_f / 100, unit: "£") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if client.client_sessions.any? %>
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <div class="detail-section">
+          <h3>Recent Sessions</h3>
+          <table class="pure-table pure-table-bordered pure-table-striped" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Rate</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% client.client_sessions.order(start: :desc).limit(5).each do |session| %>
+                <tr>
+                  <td><%= session.start.strftime("%d %b %Y %H:%M") %></td>
+                  <td><%= pluralize(session.duration, 'minute') %></td>
+                  <td><%= number_to_currency(session.hourly_charge_rate&.amount.to_f / 100, unit: "£") %></td>
+                  <td>
+                    <% if session.hourly_charge_rate %>
+                      <%= number_to_currency((session.hourly_charge_rate.amount * session.duration / 60.0) / 100, unit: "£") %>
+                    <% else %>
+                      N/A
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>
+
+<style>
+  .client-details {
+    margin-bottom: 2em;
+  }
+  
+  .detail-section {
+    margin-bottom: 1.5em;
+    background-color: #f8f9fa;
+    padding: 1em;
+    border-radius: 4px;
+    border-left: 4px solid #FF8200;
+  }
+  
+  .detail-section h3 {
+    margin-top: 0;
+    margin-bottom: 0.75em;
+    color: #333;
+    font-size: 1.2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5em;
+  }
+  
+  .detail-item {
+    margin-bottom: 0.75em;
+    display: flex;
+  }
+  
+  .detail-label {
+    font-weight: bold;
+    width: 120px;
+    flex-shrink: 0;
+  }
+  
+  .detail-value {
+    flex-grow: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .detail-item {
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      width: 100%;
+      margin-bottom: 0.25em;
+    }
+  }
+</style>
