@@ -4,39 +4,50 @@
 
 <div class="pure-g">
   <div class="pure-u-1">
-    <table class="pure-table pure-table-striped" style="width: 100%;">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Address</th>
-          <th>Current Rate</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if @clients.any? %>
-          <% @clients.each do |client| %>
-            <tr id="<%= dom_id client %>">
-              <td><%= client.name %></td>
-              <td><%= client.email %></td>
-              <td><%= full_address(client) %></td>
-              <td><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></td>
-              <td>
-                <%= link_to "Show", client, class: "pure-button pure-button-primary button-small" %>
-                <%= link_to "Edit", edit_client_path(client), class: "pure-button button-small" %>
-                <%= link_to "Delete", client_path(client), class: "pure-button button-error button-small", 
-                    data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this client?" } %>
-              </td>
+    <div class="filter-controls">
+      <div class="toggle-switch">
+        <%= check_box_tag :active_only, "true", @show_active_only, class: "toggle-input", data: { turbo_frame: "clients_list", turbo_action: "advance" } %>
+        <%= label_tag :active_only, "Show active clients only", class: "toggle-label" %>
+      </div>
+    </div>
+
+    <%= turbo_frame_tag "clients_list" do %>
+      <table class="pure-table pure-table-striped" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Current Rate</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @clients.any? %>
+            <% @clients.each do |client| %>
+              <tr id="<%= dom_id client %>">
+                <td><%= client.name %></td>
+                <td><%= client.email %></td>
+                <td><%= full_address(client) %></td>
+                <td><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></td>
+                <td><span class="status-badge <%= client.active ? 'active' : 'inactive' %>"><%= client.active ? 'Active' : 'Inactive' %></span></td>
+                <td>
+                  <%= link_to "Show", client, class: "pure-button pure-button-primary button-small" %>
+                  <%= link_to "Edit", edit_client_path(client), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
+                  <%= link_to "Delete", client_path(client), class: "pure-button button-error button-small",
+                      data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this client?" } %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="is-center">No clients found</td>
             </tr>
           <% end %>
-        <% else %>
-          <tr>
-            <td colspan="5" class="is-center">No clients found</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    <% end %>
   </div>
 </div>
 
@@ -47,3 +58,103 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Toggle switch styles */
+  .toggle-switch {
+    margin: 1em 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-input {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute;
+  }
+
+  .toggle-label {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 60px;
+    height: 25px;
+    line-height: 25px;
+  }
+
+  .toggle-label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 50px;
+    height: 25px;
+    background: #ccc;
+    border-radius: 25px;
+    transition: 0.3s;
+  }
+
+  .toggle-label:after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 19px;
+    height: 19px;
+    background: #fff;
+    border-radius: 19px;
+    transition: 0.3s;
+  }
+
+  .toggle-input:checked + .toggle-label:before {
+    background: #4CAF50;
+  }
+
+  .toggle-input:checked + .toggle-label:after {
+    left: calc(50px - 22px);
+  }
+
+  /* Status badge styles */
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+  }
+
+  .status-badge.active {
+    background-color: #e6f7e6;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+  }
+
+  .status-badge.inactive {
+    background-color: #f7e6e6;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+  }
+
+  .filter-controls {
+    margin-bottom: 1em;
+  }
+
+  .button-small {
+    font-size: 0.8em;
+    padding: 5px 10px;
+  }
+</style>
+
+<script>
+document.addEventListener('turbo:load', function() {
+  const activeToggle = document.getElementById('active_only');
+  if (activeToggle) {
+    activeToggle.addEventListener('change', function() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('active_only', this.checked);
+      Turbo.visit(url.toString());
+    });
+  }
+});
+</script>
+

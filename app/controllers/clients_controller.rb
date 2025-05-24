@@ -3,7 +3,8 @@ class ClientsController < ApplicationController
 
   # GET /clients or /clients.json
   def index
-    @clients = Client.all
+    @show_active_only = params[:active_only] == "true"
+    @clients = @show_active_only ? Client.active : Client.all
   end
 
   # GET /clients/1 or /clients/1.json
@@ -73,7 +74,8 @@ class ClientsController < ApplicationController
         :town, 
         :postcode, 
         :new_rate, 
-        :new_rate_from
+        :new_rate_from,
+        :active
       )
     end
 end

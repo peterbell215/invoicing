@@ -11,6 +11,12 @@ class Client < ApplicationRecord
   validates :fees, presence: true
   validate :fees_must_not_overlap
 
+  # Default scope to only show active clients
+  scope :active, -> { where(active: true) }
+
+  # Set clients to active by default
+  attribute :active, :boolean, default: true
+
   attribute :new_rate, :money, default: Money.new(6000, 'GBP')
   attribute :new_rate_from, :date, default: -> { Time.zone.today }
   validates :new_rate, presence: { message: 'cannot be blank if New Rate From is set' }, if: :new_rate_from

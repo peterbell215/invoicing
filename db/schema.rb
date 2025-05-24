@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_18_053758) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_24_050357) do
   create_table "client_sessions", force: :cascade do |t|
     t.integer "client_id"
     t.integer "invoice_id"
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_053758) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active"
     t.index ["email"], name: "index_clients_on_email", unique: true
   end
 
