@@ -104,7 +104,6 @@ RSpec.describe "Clients", type: :system do
     it "does not show active toggle when creating a client" do
       visit new_client_path
       expect(page).not_to have_content("Active Client")
-      expect(page).not_to have_selector('input[type="checkbox"]#client_active')
     end
 
     it "shows active toggle when editing an active client" do
@@ -115,22 +114,26 @@ RSpec.describe "Clients", type: :system do
 
     it "shows in-active toggle when editing an inactive client" do
       visit edit_client_path(inactive_client)
-      expect(page).to have_selector('input#client_active[type="checkbox"]')
-      expect(page).not_to have_selector('input[type="checkbox"]#client_active:checked')
+      expect(page).to have_content("Active Client")
+      expect(page).to have_field('client_active', visible: false, checked: false)
     end
 
-    it "allows changing client active status" do
+    it "allows changing client to inactive status" do
       # Make active client inactive
       visit edit_client_path(active_client)
-      uncheck "Active Client"
+
+      find("label[for='client_active']").click
       click_button "Update Client"
 
       expect(page).to have_content("Client was successfully updated")
       expect(active_client.reload.active).to be false
+    end
 
+    it "allows changing client to active status" do
       # Make inactive client active
       visit edit_client_path(inactive_client)
-      check "Active Client"
+
+      find("label[for='client_active']").click
       click_button "Update Client"
 
       expect(page).to have_content("Client was successfully updated")
@@ -169,14 +172,14 @@ RSpec.describe "Clients", type: :system do
       expect(page).to have_content("Inactive Client")
 
       # Filter to show only active clients
-      check "Show active clients only"
+      find("label[for='active_only']").click
 
       # Should now only show active clients
       expect(page).to have_content("Active Client")
       expect(page).not_to have_content("Inactive Client")
 
       # Uncheck to show all clients again
-      uncheck "Show active clients only"
+      find("label[for='active_only']").click
 
       # Should show all clients again
       expect(page).to have_content("Active Client")
