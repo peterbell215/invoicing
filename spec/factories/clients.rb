@@ -1,10 +1,11 @@
 FactoryBot.define do
   factory :client do
     name      { 'Test Client' }
-    email     { 'test.client@test.com' }
+    email     { "#{name&.parameterize(separator: ".") || 'test.client'}@example.com" }
     address1  { 'The Test Avenue' }
     town      { 'Cambridge' }
     postcode  { 'CB99 1TA' }
+    active    { true }
 
     factory :client_with_random_name do
       name    { Faker::Name.name }

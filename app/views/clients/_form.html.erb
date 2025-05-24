@@ -1,14 +1,14 @@
 <%= form_with(model: client, class: "pure-form pure-form-stacked", data: { controller: "validation" }) do |form| %>
   <div class="error-explanation" <%= client.errors.empty? && 'hidden' %> data-validation-target="errorExplanation">
-    <% if client.errors.any? %>
-      <h2><%= pluralize(client.errors.count, "error") %> prohibited this client from being saved:</h2>
+    <h2>
+      <%= client.errors.any? && "#{pluralize(client.errors.count, "error")} prohibited this client from being saved:" %>
+    </h2>
 
-      <ul>
-        <% client.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    <% end %>
+    <ul>
+      <% client.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
   </div>
 
   <fieldset>
@@ -85,7 +85,7 @@
   </fieldset>
 
   <div class="form-buttons">
-    <%= form.submit class: "pure-button pure-button-primary" %>
+    <%= form.submit class: "pure-button pure-button-primary", data: { action: "click->validation#resetValidationErrorText" } %>
     <%= link_to "Cancel", clients_path, class: "pure-button" %>
   </div>
 <% end %>

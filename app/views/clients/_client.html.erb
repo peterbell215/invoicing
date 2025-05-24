@@ -29,40 +29,38 @@
 
     <div class="pure-u-1 pure-u-md-1-2">
       <div class="detail-section">
-        <h3>Billing Information</h3>
+        <h3>Status</h3>
         <div class="detail-item">
-          <div class="detail-label">Current Rate:</div>
-          <div class="detail-value"><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Rate Since:</div>
-          <div class="detail-value"><%= client.current_rate_since&.strftime("%d %B %Y") %></div>
+          <div class="detail-label">Active:</div>
+          <div class="detail-value">
+            <span class="status-badge <%= client.active ? 'active' : 'inactive' %>">
+              <%= client.active ? 'Yes' : 'No' %>
+            </span>
+          </div>
         </div>
       </div>
 
-      <% if client.fees.count > 1 %>
-        <div class="detail-section">
-          <h3>Rate History</h3>
-          <table class="pure-table pure-table-bordered pure-table-striped" style="width: 100%;">
-            <thead>
+      <div class="detail-section">
+        <h3>Rate History</h3>
+        <table class="pure-table pure-table-bordered pure-table-striped" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% client.fees.order(from: :desc).each do |fee| %>
               <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Rate</th>
+                <td><%= fee.from.strftime("%d %b %Y") %></td>
+                <td><%= fee.to ? fee.to.strftime("%d %b %Y") : "Current" %></td>
+                <td><%= number_to_currency(fee.hourly_charge_rate&.amount.to_f / 100, unit: "£") %></td>
               </tr>
-            </thead>
-            <tbody>
-              <% client.fees.order(from: :desc).each do |fee| %>
-                <tr>
-                  <td><%= fee.from.strftime("%d %b %Y") %></td>
-                  <td><%= fee.to ? fee.to.strftime("%d %b %Y") : "Current" %></td>
-                  <td><%= number_to_currency(fee.hourly_charge_rate&.amount.to_f / 100, unit: "£") %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -151,3 +149,4 @@
     }
   }
 </style>
+
