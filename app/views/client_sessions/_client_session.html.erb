@@ -1,0 +1,154 @@
+<div id="<%= dom_id client_session %>" class="session-details">
+  <div class="pure-g">
+    <div class="pure-u-1">
+      <h2>Session Details</h2>
+    </div>
+  </div>
+
+  <div class="pure-g">
+    <div class="pure-u-1 pure-u-md-1-2">
+      <div class="detail-section">
+        <h3>Client Information</h3>
+        <div class="detail-item">
+          <div class="detail-label">Client:</div>
+          <div class="detail-value">
+            <%= link_to client_session.client.name, client_session.client %>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Email:</div>
+          <div class="detail-value"><%= client_session.client.email %></div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Session Information</h3>
+        <div class="detail-item">
+          <div class="detail-label">Date:</div>
+          <div class="detail-value"><%= client_session.start.to_date.to_fs(:long) %></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Time:</div>
+          <div class="detail-value"><%= client_session.start.strftime("%H:%M") %></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Duration:</div>
+          <div class="detail-value"><%= pluralize(client_session.duration, "minute") %></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pure-u-1 pure-u-md-1-2">
+      <div class="detail-section">
+        <h3>Billing Information</h3>
+        <div class="detail-item">
+          <div class="detail-label">Rate:</div>
+          <div class="detail-value"><%= number_to_currency(client_session.current_rate.amount, unit: "£") %></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Total Amount:</div>
+          <div class="detail-value">
+            <%= number_to_currency((client_session.current_rate.amount * client_session.duration / 60.0), unit: "£") %>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Invoice Status:</div>
+          <div class="detail-value">
+            <% if client_session.invoice %>
+              <span class="status-badge <%= client_session.invoice.status == 'created' ? 'pending' : 'invoiced' %>">
+                <%= client_session.invoice.status.titleize %>
+              </span>
+              <div class="invoice-number">
+                Invoice #<%= client_session.invoice.id %>
+              </div>
+            <% else %>
+              <span class="status-badge unbilled">Unbilled</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .session-details {
+    margin-bottom: 2em;
+  }
+  
+  .detail-section {
+    margin-bottom: 1.5em;
+    background-color: #f8f9fa;
+    padding: 1em;
+    border-radius: 4px;
+    border-left: 4px solid #0078e7;
+  }
+  
+  .detail-section h3 {
+    margin-top: 0;
+    margin-bottom: 0.75em;
+    color: #333;
+    font-size: 1.2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5em;
+  }
+  
+  .detail-item {
+    margin-bottom: 0.75em;
+    display: flex;
+  }
+  
+  .detail-label {
+    font-weight: bold;
+    width: 120px;
+    flex-shrink: 0;
+  }
+  
+  .detail-value {
+    flex-grow: 1;
+  }
+  
+  .invoice-number {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  /* Status badge styles */
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .status-badge.pending {
+    background-color: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #f57f17;
+  }
+
+  .status-badge.invoiced {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+  }
+
+  .status-badge.unbilled {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #1565c0;
+  }
+  
+  @media (max-width: 768px) {
+    .detail-item {
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      width: 100%;
+      margin-bottom: 0.25em;
+    }
+  }
+</style>

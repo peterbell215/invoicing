@@ -1,0 +1,93 @@
+<% content_for :title, "Session Details" %>
+
+<div class="pure-g">
+  <div class="pure-u-1">
+    <div class="page-header">
+      <h1>Session Details</h1>
+      <div class="action-buttons">
+        <%= link_to client_sessions_path, class: "pure-button" do %>
+          <span class="material-symbols-outlined">arrow_back</span> Back
+        <% end %>
+        <%= link_to edit_client_session_path(@client_session), class: "pure-button pure-button-primary" do %>
+          <span class="material-symbols-outlined">edit</span> Edit
+        <% end %>
+        <%= button_to @client_session, method: :delete, class: "pure-button button-error", 
+            data: { turbo_confirm: "Are you sure you want to delete this session?" } do %>
+          <span class="material-symbols-outlined">delete</span> Delete
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render @client_session %>
+
+<div class="pure-g">
+  <div class="pure-u-1">
+    <div class="action-buttons bottom-buttons">
+      <%= link_to new_client_session_path, class: "pure-button" do %>
+        <span class="material-symbols-outlined">add</span> New Session
+      <% end %>
+      <%= link_to client_path(@client_session.client), class: "pure-button" do %>
+        <span class="material-symbols-outlined">person</span> View Client
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .page-header h1 {
+    margin: 0;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.5em;
+  }
+  
+  .action-buttons form {
+    margin: 0;
+  }
+  
+  .bottom-buttons {
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: 1px solid #ddd;
+  }
+  
+  .material-symbols-outlined {
+    font-size: 1.2em;
+    vertical-align: middle;
+    margin-right: 0.2em;
+  }
+  
+  .button-error {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+  }
+
+  .button-error:hover {
+    background-color: #fdeeee;
+  }
+  
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .page-header h1 {
+      margin-bottom: 0.5em;
+    }
+  }
+</style>

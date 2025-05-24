@@ -5,6 +5,12 @@ class ClientSession < ApplicationRecord
 
   monetize :current_rate_pence
 
+  validates :start, presence: true
+  validates :duration, presence: true, numericality: { greater_than: 0 }
+
+  before_validation :set_current_rate, on: :create
+  before_validation :set_default_duration, on: :create
+
   before_destroy :dont_if_invoice_sent
 
   def destroyable?
@@ -12,6 +18,15 @@ class ClientSession < ApplicationRecord
   end
 
   private
+
+  def set_current_rate
+    return unless client && client.current_rate
+    self.current_rate = client.current_rate
+  end
+
+  def set_default_duration
+    self.duration ||= 50
+  end
 
   def dont_if_invoice_sent
     return if self.destroyable?
