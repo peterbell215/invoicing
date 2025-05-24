@@ -22,7 +22,7 @@ export default class extends Controller {
     const errorContainer = this.errorExplanationTarget;
 
     // Update error heading
-    var heading = errorContainer.querySelector("h2");
+    let heading = errorContainer.querySelector("h2");
 
     if (heading == null) {
       errorContainer.innerHTML = `<h2></h2> <ul></ul>`
