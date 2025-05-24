@@ -107,13 +107,15 @@ RSpec.describe "Clients", type: :system do
       expect(page).not_to have_selector('input[type="checkbox"]#client_active')
     end
 
-    it "shows active toggle when editing a client" do
+    it "shows active toggle when editing an active client" do
       visit edit_client_path(active_client)
       expect(page).to have_content("Active Client")
-      expect(page).to have_selector('input[type="checkbox"]#client_active:checked')
+      expect(page).to have_field('client_active', visible: false, checked: true)
+    end
 
+    it "shows in-active toggle when editing an inactive client" do
       visit edit_client_path(inactive_client)
-      expect(page).to have_selector('input[type="checkbox"]#client_active')
+      expect(page).to have_selector('input#client_active[type="checkbox"]')
       expect(page).not_to have_selector('input[type="checkbox"]#client_active:checked')
     end
 
