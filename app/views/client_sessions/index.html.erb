@@ -25,7 +25,7 @@
                 <td><%= client_session.start.to_date.to_fs(:long) %></td>
                 <td><%= client_session.start.strftime("%H:%M") %></td>
                 <td><%= pluralize(client_session.duration, "minute") %></td>
-                <td><%= number_to_currency(client_session.current_rate.amount, unit: "£") %></td>
+                <td><%= number_to_currency(client_session.hourly_session_rate, unit: "£") %></td>
                 <td>
                   <% if client_session.invoice %>
                     <span class="status-badge <%= client_session.invoice.status == 'created' ? 'pending' : 'invoiced' %>">

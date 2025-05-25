@@ -43,12 +43,12 @@
         <h3>Billing Information</h3>
         <div class="detail-item">
           <div class="detail-label">Rate:</div>
-          <div class="detail-value"><%= number_to_currency(client_session.current_rate.amount, unit: "£") %></div>
+          <div class="detail-value"><%= number_to_currency(client_session.hourly_session_rate.amount, unit: "£") %></div>
         </div>
         <div class="detail-item">
           <div class="detail-label">Total Amount:</div>
           <div class="detail-value">
-            <%= number_to_currency((client_session.current_rate.amount * client_session.duration / 60.0), unit: "£") %>
+            <%= number_to_currency((client_session.hourly_session_rate.amount * client_session.duration / 60.0), unit: "£") %>
           </div>
         </div>
         <div class="detail-item">
@@ -152,3 +152,4 @@
     }
   }
 </style>
+
