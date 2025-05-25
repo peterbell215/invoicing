@@ -1,16 +1,22 @@
-/* Style for the error explanation container */
-#error_explanation, #notice_explanation {
+/*
+  Rails Message Styling - Consolidated
+  This file contains all error and notice message styles for the application
+*/
+
+/* Error Explanation - Both Rails default and custom styles */
+#error_explanation, #notice_explanation, .error-explanation {
     box-sizing: border-box;
-    padding: 0.25em;
+    padding: 0.5em 1em;
     border-radius: 4px;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     margin-top: 1em;
 }
 
-#error_explanation {
-    border: 1px solid #e00;
-    background-color: #fdd;
-    color: #900;
+#error_explanation, .error-explanation {
+    border: 1px solid #e74c3c;
+    background-color: #fdf7f7;
+    color: #e74c3c;
+    border-left: 4px solid #e74c3c;
 }
 
 #notice_explanation {
@@ -20,23 +26,24 @@
 }
 
 /* Style for the error explanation heading */
-#error_explanation h2 {
+#error_explanation h2, .error-explanation h2 {
     font-size: 1.2em;
     font-weight: bold;
+    margin-top: 0.5em;
 }
 
 /* Style for the error explanation list */
-#error_explanation ul {
+#error_explanation ul, .error-explanation ul {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-#error_explanation ul li {
+#error_explanation ul li, .error-explanation ul li {
     margin: 0.2em 0;
 }
 
-/* Highlight invalid form fields */
+/* Highlight invalid form fields - Rails default */
 div.field_with_errors {
     display: inline; /* Prevent block-level wrapping */
     width: 100%;
@@ -46,8 +53,20 @@ div.field_with_errors {
 .pure-form .field_with_errors select,
 .pure-form .field_with_errors textarea {
     box-sizing: border-box;
-    border: 1px solid #e00;
-    background-color: #fdd;
+    border: 1px solid #e74c3c;
+    background-color: #fff0f0;
     color: #900;
     border-radius: 4px;
 }
+
+/* Custom validation styles - for Stimulus validation */
+.field-with-error {
+    border-color: #e74c3c !important;
+    background-color: #fff0f0 !important;
+}
+
+.custom-validation-error {
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+}
+

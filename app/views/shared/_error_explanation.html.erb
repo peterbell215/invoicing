@@ -1,0 +1,11 @@
+<div class="error-explanation" <%= model.errors.empty? && 'hidden' %> data-validation-target="errorExplanation">
+  <h2>
+    <%= model.errors.any? && "#{pluralize(model.errors.count, "error")} prohibited this #{model.class.name.underscore.humanize.downcase} from being saved:" %>
+  </h2>
+
+  <ul>
+    <% model.errors.each do |error| %>
+      <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>

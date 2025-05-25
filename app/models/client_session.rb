@@ -9,7 +9,7 @@ class ClientSession < ApplicationRecord
   validates :duration, presence: true, numericality: { greater_than: 0 }
 
   before_validation :set_current_rate, on: :create
-  before_validation :set_default_duration, on: :create
+  after_initialize :set_default_duration
 
   before_destroy :dont_if_invoice_sent
 

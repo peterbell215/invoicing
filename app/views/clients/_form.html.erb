@@ -1,15 +1,5 @@
 <%= form_with(model: client, class: "pure-form pure-form-stacked", data: { controller: "validation" }) do |form| %>
-  <div class="error-explanation" <%= client.errors.empty? && 'hidden' %> data-validation-target="errorExplanation">
-    <h2>
-      <%= client.errors.any? && "#{pluralize(client.errors.count, "error")} prohibited this client from being saved:" %>
-    </h2>
-
-    <ul>
-      <% client.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
-  </div>
+  <%= render 'shared/error_explanation', model: client %>
 
   <fieldset>
     <legend>Client Information</legend>
@@ -91,19 +81,6 @@
 <% end %>
 
 <style>
-  .error-explanation {
-    color: #e74c3c;
-    background-color: #fdf7f7;
-    border-left: 4px solid #e74c3c;
-    padding: 0.5em 1em;
-    margin-bottom: 1em;
-  }
-  
-  .error-explanation h2 {
-    font-size: 1.2em;
-    margin-top: 0.5em;
-  }
-  
   fieldset {
     margin-bottom: 1.5em;
     border: 1px solid #ddd;
@@ -152,17 +129,6 @@
   
   .pure-button {
     margin-right: 0.5em;
-  }
-
-  /* Custom validation styles */
-  .field-with-error {
-    border-color: #e74c3c !important;
-    background-color: #fff0f0 !important;
-  }
-
-  .custom-validation-error {
-    margin-top: 0.5em;
-    margin-bottom: 1em;
   }
 
   /* Toggle switch styles */

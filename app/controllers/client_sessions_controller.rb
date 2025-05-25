@@ -19,6 +19,18 @@ class ClientSessionsController < ApplicationController
   def edit
   end
 
+  # GET /client_sessions/get_client_rate/:id
+  def get_client_rate
+    client = Client.find(params[:id])
+    respond_to do |format|
+      format.json { render json: { rate: client.current_rate.to_f } }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.json { render json: { error: "Client not found" }, status: :not_found }
+    end
+  end
+
   # POST /client_sessions or /client_sessions.json
   def create
     @client_session = ClientSession.new(client_session_params)

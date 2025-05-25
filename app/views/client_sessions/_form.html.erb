@@ -1,15 +1,5 @@
-<%= form_with(model: client_session, class: "pure-form pure-form-stacked", data: { controller: "validation" }) do |form| %>
-  <div class="error-explanation" <%= client_session.errors.empty? && 'hidden' %> data-validation-target="errorExplanation">
-    <h2>
-      <%= client_session.errors.any? && "#{pluralize(client_session.errors.count, "error")} prohibited this session from being saved:" %>
-    </h2>
-
-    <ul>
-      <% client_session.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
-  </div>
+<%= form_with(model: client_session, class: "pure-form pure-form-stacked", data: { controller: "validation client-rate" }) do |form| %>
+  <%= render 'shared/error_explanation', model: client_session %>
 
   <fieldset>
     <legend>Session Information</legend>
@@ -17,85 +7,42 @@
     <div class="pure-g">
       <div class="pure-u-1">
         <%= form.label :client_id, "Client" %>
-        <%= form.collection_select :client_id, Client.where(active: true), :id, :name, { prompt: "Select a client" }, { required: true, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } } %>
+        <%= form.collection_select :client_id, Client.where(active: true), :id, :name,
+            { prompt: "Select a client" },
+            { required: true, class: "pure-input-1",
+              data: {
+                action: "invalid->validation#markFieldAsInvalid change->client-rate#fetchClientRate",
+                client_rate_target: "clientSelect"
+              }
+            }
+        %>
       </div>
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2">
+      <div class="pure-u-1 pure-u-md-1-3">
+        <%= form.label :current_rate_pence, "Rate (£ per hour)" %>
+        <%= form.text_field :current_rate_pence,
+            readonly: true,
+            class: "pure-input-1",
+            data: { client_rate_target: "rateField" },
+            value: number_to_currency(client_session.current_rate&.to_f || 0, unit: "£")
+        %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-3">
         <%= form.label :start, "Session Start Time" %>
         <%= form.datetime_local_field :start, required: true, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } %>
       </div>
-      
-      <div class="pure-u-1 pure-u-md-1-2">
+
+      <div class="pure-u-1 pure-u-md-1-3">
         <%= form.label :duration, "Duration (minutes)" %>
         <%= form.number_field :duration, required: true, min: 1, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } %>
       </div>
     </div>
   </fieldset>
 
-  <div class="form-buttons">
-    <%= form.submit class: "pure-button pure-button-primary", data: { action: "click->validation#resetValidationErrorText" } %>
-    <%= link_to "Cancel", client_sessions_path, class: "pure-button" %>
+  <div class="actions">
+    <%= form.submit class: "pure-button pure-button-primary", data: { action: "click->validation#resetValidationErrorText" }  %>
   </div>
 <% end %>
-
-<style>
-  .error-explanation {
-    color: #e74c3c;
-    background-color: #fdf7f7;
-    border-left: 4px solid #e74c3c;
-    padding: 0.5em 1em;
-    margin-bottom: 1em;
-  }
-  
-  .error-explanation h2 {
-    font-size: 1.2em;
-    margin-top: 0.5em;
-  }
-  
-  fieldset {
-    margin-bottom: 1.5em;
-    border: 1px solid #ddd;
-    padding: 1em;
-    border-radius: 4px;
-  }
-  
-  legend {
-    font-weight: bold;
-    padding: 0 0.5em;
-  }
-  
-  .pure-g {
-    margin-bottom: 1em;
-  }
-  
-  .pure-g [class*="pure-u"] {
-    padding-right: 1em;
-    box-sizing: border-box;
-  }
-  
-  .pure-form label {
-    margin: 0.5em 0 0.2em;
-    font-weight: bold;
-  }
-  
-  .form-buttons {
-    margin-top: 2em;
-  }
-  
-  .pure-button {
-    margin-right: 0.5em;
-  }
-
-  /* Custom validation styles */
-  .field-with-error {
-    border-color: #e74c3c !important;
-    background-color: #fff0f0 !important;
-  }
-
-  .custom-validation-error {
-    margin-top: 0.5em;
-    margin-bottom: 1em;
-  }
-</style>

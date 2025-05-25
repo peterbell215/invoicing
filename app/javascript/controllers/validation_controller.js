@@ -28,7 +28,7 @@ export default class extends Controller {
     errorItem.textContent = `${field.labels[0].innerText} can't be blank`;
     errorList.appendChild(errorItem);
 
-    errorContainer.hidden = false;
+    this.errorExplanationTarget.hidden = false;
   }
 
   resetValidationErrorText() {

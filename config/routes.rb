@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  resources :client_sessions
+  resources :client_sessions do
+    collection do
+      get 'get_client_rate/:id', to: 'client_sessions#get_client_rate'
+    end
+  end
   resources :clients
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
