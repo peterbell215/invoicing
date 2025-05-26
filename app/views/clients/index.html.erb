@@ -20,6 +20,8 @@
             <th>Address</th>
             <th>Current Rate</th>
             <th>Status</th>
+            <th>Uninvoiced Sessions</th>
+            <th>Outstanding Amount</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -32,9 +34,12 @@
                 <td><%= full_address(client) %></td>
                 <td><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></td>
                 <td><span class="status-badge <%= client.active ? 'active' : 'inactive' %>"><%= client.active ? 'Active' : 'Inactive' %></span></td>
+                <td><%= client.client_sessions.where(invoice_id: nil).count %></td>
+                <td><%= client.uninvoiced.format %></td>
                 <td>
                   <%= link_to "Show", client, class: "pure-button pure-button-primary button-small" %>
                   <%= link_to "Edit", edit_client_path(client), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
+                  <%= link_to "Invoice", new_client_invoice_path(client), class: "pure-button button-warning button-small" %>
                   <%= link_to "Delete", client_path(client), class: "pure-button button-error button-small",
                       data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this client?" } %>
                 </td>
@@ -42,7 +47,7 @@
             <% end %>
           <% else %>
             <tr>
-              <td colspan="6" class="is-center">No clients found</td>
+              <td colspan="8" class="is-center">No clients found</td>
             </tr>
           <% end %>
         </tbody>
@@ -143,6 +148,11 @@
     font-size: 0.8em;
     padding: 5px 10px;
   }
+
+  .button-warning {
+    background-color: #f0ad4e;
+    color: white;
+  }
 </style>
 
 <script>
@@ -157,4 +167,3 @@ document.addEventListener('turbo:load', function() {
   }
 });
 </script>
-

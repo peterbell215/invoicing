@@ -1,8 +1,15 @@
 Rails.application.routes.draw do
-    resources :clients do
-      get "current_rate", on: :member
+  resources :clients do
+    get "current_rate", on: :member
+    resources :invoices, only: [:new, :create]
+  end
+  resources :client_sessions
+
+  resources :invoices, only: [:index, :show] do
+    member do
+      patch :mark_paid
     end
-    resources :client_sessions
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

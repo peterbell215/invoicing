@@ -88,7 +88,7 @@ class Client < ApplicationRecord
   #
   # @return Money
   def uninvoiced
-    client_sessions.where(invoice_id: nil).sum(&:fee)
+    Money.new(client_sessions.where(invoice_id: nil).sum(&:fee))
   end
 
   def fees_must_not_overlap

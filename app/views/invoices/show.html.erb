@@ -1,0 +1,290 @@
+<% content_for :title, "Invoice #{@invoice.id}" %>
+
+<div class="invoice-actions">
+  <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
+  <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
+  <% unless @invoice.paid? %>
+    <%= button_to "Mark as Paid", mark_paid_invoice_path(@invoice), method: :patch, class: "pure-button button-success" %>
+  <% end %>
+</div>
+
+<div class="invoice-container">
+  <div class="invoice-content">
+    <!-- Header Section -->
+    <div class="invoice-header">
+      <div class="business-info">
+        <h2>Katy's Services</h2>
+        <address>
+          123 Business Street<br>
+          London, SW1 2AB<br>
+          United Kingdom<br>
+          Phone: 020 1234 5678<br>
+          Email: katy@example.com
+        </address>
+      </div>
+      
+      <div class="invoice-title">
+        <h1>INVOICE</h1>
+        <div class="invoice-status <%= @invoice.paid? ? 'paid' : 'unpaid' %>">
+          <%= @invoice.paid? ? 'PAID' : 'UNPAID' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Details Section -->
+    <div class="invoice-details">
+      <div class="client-info">
+        <h3>Bill To:</h3>
+        <div class="client-name"><%= @invoice.client.name %></div>
+        <address>
+          <%= @invoice.client.address.to_s.gsub("\n", "<br>").html_safe if @invoice.client.respond_to?(:address) %>
+        </address>
+      </div>
+      
+      <div class="invoice-info">
+        <table>
+          <tr>
+            <th>Invoice Number:</th>
+            <td><%= @invoice.id %></td>
+          </tr>
+          <tr>
+            <th> Date:</th>
+            <td><%= @invoice.created_at.strftime('%d %b %Y') %></td>
+          </tr>
+
+        </table>
+      </div>
+    </div>
+
+    <!-- Sessions Table -->
+    <div class="invoice-items">
+      <table class="pure-table pure-table-bordered">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Duration</th>
+            <th>Rate</th>
+            <th class="text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @invoice.client_sessions.order(start: :asc).each do |session| %>
+            <tr>
+              <td><%= session.start.strftime('%d %b %Y') %></td>
+              <td>session.description</td>
+              <td><%= session.duration %> hours</td>
+              <td><%= session.hourly_session_rate.format %></td>
+              <td class="text-right"><%= session.fee.format %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="total-label">Total Amount:</td>
+            <td class="total-amount"><%= @invoice.amount.format %></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Payment Details -->
+    <div class="payment-details">
+      <h3>Payment Details</h3>
+      <p>
+        Please make payment to:<br>
+        Bank: Example Bank<br>
+        Account Name: Katy Smith<br>
+        Account Number: 12345678<br>
+        Sort Code: 01-02-03<br>
+        Reference: INV-<%= @invoice.id %>
+      </p>
+      
+      <p class="payment-terms">
+        Payment Terms: Due within 30 days of issue.<br>
+        Please ensure all payments include the invoice reference.
+      </p>
+    </div>
+
+    <!-- Thank You Note -->
+    <div class="thank-you">
+      <p>Thank you for your business!</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Print styles to hide navigation and make invoice printable */
+  @media print {
+    nav, .banner, .invoice-actions, footer {
+      display: none !important;
+    }
+    
+    .invoice-container {
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+    
+    .container {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+    
+    body {
+      background: white;
+    }
+    
+    .invoice-content {
+      padding: 0;
+    }
+    
+    @page {
+      margin: 0.5cm;
+    }
+  }
+  
+  /* Regular styles */
+  .invoice-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .invoice-actions {
+    margin-bottom: 20px;
+    text-align: right;
+  }
+  
+  .invoice-content {
+    padding: 20px;
+  }
+  
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+  }
+  
+  .business-info {
+    flex: 1;
+  }
+  
+  .business-info h2 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .invoice-title {
+    text-align: right;
+  }
+  
+  .invoice-title h1 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .invoice-status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  
+  .invoice-status.paid {
+    background-color: #5cb85c;
+    color: white;
+  }
+  
+  .invoice-status.unpaid {
+    background-color: #f0ad4e;
+    color: white;
+  }
+  
+  .invoice-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .client-info, .invoice-info {
+    flex: 1;
+  }
+  
+  .client-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .invoice-info table {
+    width: 100%;
+  }
+  
+  .invoice-info th {
+    text-align: left;
+    padding-right: 15px;
+    font-weight: normal;
+    color: #666;
+  }
+  
+  .invoice-items {
+    margin-bottom: 30px;
+  }
+  
+  .invoice-items table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+  
+  .total-label {
+    text-align: right;
+    font-weight: bold;
+  }
+  
+  .total-amount {
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  
+  .payment-details {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+  
+  .payment-terms {
+    margin-top: 15px;
+    font-style: italic;
+    color: #666;
+  }
+  
+  .thank-you {
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    padding: 20px 0;
+    font-size: 1.2em;
+  }
+  
+  address {
+    font-style: normal;
+    line-height: 1.5;
+    color: #555;
+  }
+  
+  .button-success {
+    background-color: #5cb85c;
+    color: white;
+  }
+</style>

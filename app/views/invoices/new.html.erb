@@ -1,0 +1,127 @@
+<% content_for :title, "Generate Invoice for #{@client.name}" %>
+
+<h1>Generate Invoice for <%= @client.name %></h1>
+
+<div class="pure-g">
+  <div class="pure-u-1">
+    <%= form_with(model: [@client, Invoice.new], class: "pure-form pure-form-stacked") do |form| %>
+      <fieldset>
+        <legend>Invoice Details</legend>
+        
+        <div class="pure-g">
+          <div class="pure-u-1 pure-u-md-1-2">
+            <div class="field">
+              <%= form.label :reference %>
+              <%= form.text_field :id, class: "pure-input-1", readonly: true %>
+            </div>
+          </div>
+          
+          <div class="pure-u-1 pure-u-md-1-2">
+            <div class="field">
+              <%= form.label :date %>
+              <%= form.date_field :date, value: 30.days.from_now.to_date, class: "pure-input-1" %>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      
+      <h2>Uninvoiced Sessions</h2>
+      
+      <% if @uninvoiced_sessions.any? %>
+        <table class="pure-table pure-table-striped" style="width: 100%;">
+          <thead>
+            <tr>
+              <th width="5%">
+                <input type="checkbox" id="select-all" title="Select/deselect all">
+              </th>
+              <th>Date</th>
+              <th>Duration</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @uninvoiced_sessions.each do |session| %>
+              <tr>
+                <td>
+                  <%= check_box_tag "session_ids[]", session.id, true, id: "session_#{session.id}" %>
+                </td>
+                <td><%= session.start.strftime('%d %b %Y') %></td>
+                <td><%= session.duration %> minutes</td>
+                <td>session.description</td>
+                <td><%= session.fee.format %></td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="align-right"><strong>Total:</strong></td>
+              <td id="selected-total"><%= @client.uninvoiced.format %></td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <div class="form-buttons">
+          <%= form.submit "Generate Invoice", class: "pure-button pure-button-primary" %>
+          <%= link_to "Cancel", clients_path, class: "pure-button" %>
+        </div>
+      <% else %>
+        <p>No uninvoiced sessions found for this client.</p>
+        <div class="form-buttons">
+          <%= link_to "Back to Clients", clients_path, class: "pure-button" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .field {
+    margin-bottom: 1em;
+    padding-right: 1em;
+  }
+  
+  .form-buttons {
+    margin-top: 2em;
+  }
+  
+  .align-right {
+    text-align: right;
+  }
+</style>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    if (selectAllCheckbox) {
+      // Set initial state to checked since all checkboxes start checked
+      selectAllCheckbox.checked = true;
+      
+      selectAllCheckbox.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('input[name="session_ids[]"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = selectAllCheckbox.checked;
+        });
+        updateTotal();
+      });
+      
+      // Add event listeners to individual checkboxes
+      const checkboxes = document.querySelectorAll('input[name="session_ids[]"]');
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          updateTotal();
+          // Update select-all checkbox based on individual selections
+          selectAllCheckbox.checked = Array.from(checkboxes).every(cb => cb.checked);
+        });
+      });
+      
+      // Function to update the total based on selected sessions
+      function updateTotal() {
+        // This would require a more complex implementation to calculate totals client-side
+        // For simplicity, we could use a fetch request to get updated totals
+        // or implement with Stimulus/JavaScript
+        console.log('Total would update based on selections');
+      }
+    }
+  });
+</script>

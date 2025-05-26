@@ -1,0 +1,112 @@
+<% content_for :title, "Invoices" %>
+
+<div class="header">
+  <h1>Invoices</h1>
+</div>
+
+<div class="content">
+  <div class="pure-g">
+    <div class="pure-u-1">
+      <% if @invoices.any? %>
+        <table class="pure-table pure-table-striped" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Client</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @invoices.each do |invoice| %>
+              <tr>
+                <td><%= invoice.id %></td>
+                <td><%= invoice.client.name %></td>
+                <td><%= invoice.created_at.strftime('%d %b %Y') %></td>
+                <td><%= invoice.date.strftime('%d %b %Y') %></td>
+                <td><%= invoice.amount.format %></td>
+                <td>
+                  <% if invoice.paid? %>
+                    <span class="status paid">Paid</span>
+                    <% if invoice.paid_date.present? %>
+                      <small>(<%= invoice.paid_date.strftime('%d %b %Y') %>)</small>
+                    <% end %>
+                  <% else %>
+                    <% if invoice.date < Date.today %>
+                      <span class="status overdue">Overdue</span>
+                    <% else %>
+                      <span class="status unpaid">Unpaid</span>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+                  <% unless invoice.paid? %>
+                    <%= button_to "Mark Paid", mark_paid_invoice_path(invoice), method: :patch, class: "pure-button button-success button-small" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="pure-u-1 empty-state">
+          <p>No invoices found.</p>
+          <%= link_to "Create your first invoice", clients_path, class: "pure-button pure-button-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .status {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+  }
+  
+  .status.paid {
+    background-color: #5cb85c;
+    color: white;
+  }
+  
+  .status.unpaid {
+    background-color: #f0ad4e;
+    color: white;
+  }
+  
+  .status.overdue {
+    background-color: #d9534f;
+    color: white;
+  }
+  
+  .button-small {
+    font-size: 0.8em;
+    padding: 0.4em 0.8em;
+    margin: 0.2em;
+  }
+  
+  .button-success {
+    background-color: #5cb85c;
+    color: white;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3em;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    margin: 2em 0;
+  }
+  
+  .empty-state p {
+    margin-bottom: 1.5em;
+    color: #777;
+  }
+</style>
