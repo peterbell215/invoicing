@@ -1,10 +1,9 @@
 Rails.application.routes.draw do
-  resources :client_sessions do
-    collection do
-      get 'get_client_rate/:id', to: 'client_sessions#get_client_rate'
+    resources :clients do
+      get "current_rate", on: :member
     end
-  end
-  resources :clients
+    resources :client_sessions
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

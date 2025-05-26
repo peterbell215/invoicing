@@ -1,5 +1,5 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: %i[ show edit update destroy ]
+  before_action :set_client, only: %i[show edit update destroy current_rate]
 
   # GET /clients or /clients.json
   def index
@@ -18,6 +18,11 @@ class ClientsController < ApplicationController
 
   # GET /clients/1/edit
   def edit
+  end
+
+  # GET /clients/:id/client_rate.json
+  def current_rate
+    respond_to :json
   end
 
   # POST /clients or /clients.json
@@ -59,23 +64,24 @@ class ClientsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_client
-      @client = Client.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def client_params
-      params.require(:client).permit(
-        :name, 
-        :email, 
-        :address1, 
-        :address2, 
-        :town, 
-        :postcode, 
-        :new_rate, 
-        :new_rate_from,
-        :active
-      )
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_client
+    @client = Client.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def client_params
+    params.require(:client).permit(
+      :name,
+      :email,
+      :address1,
+      :address2,
+      :town,
+      :postcode,
+      :new_rate,
+      :new_rate_from,
+      :active
+    )
+  end
 end
