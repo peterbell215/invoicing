@@ -14,13 +14,17 @@ class ClientSession < ApplicationRecord
   before_destroy :dont_if_invoice_sent
 
   def destroyable?
-    self.invoice.nil? || self.invoice.status == 'created'
+    self.invoice.nil? || self.invoice.status == "created"
+  end
+
+  def fee
+    self.hourly_session_rate * (self.duration/60.0)
   end
 
   private
 
   def set_hourly_session_rate
-    return unless client && client.current_rate
+    return unless client&.current_rate
     self.hourly_session_rate = client.current_rate
   end
 
@@ -31,6 +35,6 @@ class ClientSession < ApplicationRecord
   def dont_if_invoice_sent
     return if self.destroyable?
 
-    raise ActiveRecord::RecordNotDestroyed, 'Cannot delete once invoice sent or paid'
+    raise ActiveRecord::RecordNotDestroyed, "Cannot delete once invoice sent or paid"
   end
 end
