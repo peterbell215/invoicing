@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Invoice do
   describe 'FactoryBot' do
-    subject(:invoice) { create(:invoice, :client_with_sessions) }
+    subject(:invoice) { create(:invoice) }
 
     specify { expect(invoice.date).to eq Date.new(2024, 3, 16) }
-    specify { expect(invoice.client_sessions.length).to eq 4 }
+    specify { expect(invoice.client_sessions.length).to eq 3 }
   end
 
   describe '::create' do
@@ -17,8 +17,6 @@ RSpec.describe Invoice do
       let(:client) { create(:client, :with_client_sessions) }
 
       it 'creates the invoice and associates all the client sessions' do
-        pending
-
         client_session_ids = client.client_session_ids
         amount = Money.new(ClientSession.where(id: client_session_ids).sum(:current_rate_pence), 'GBP')
 

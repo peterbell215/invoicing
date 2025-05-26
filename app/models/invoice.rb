@@ -9,7 +9,7 @@ class Invoice < ApplicationRecord
 
   enum :status, { created: 0, sent: 1, paid: 2 }
 
-  # Deals with changing changing client sessions in invoice.
+  # Deals with changing client sessions in invoice.
   # @param [HashWithIndifferentAccess] attrs
   def self.create(attrs)
     client_session_ids = attrs.delete(:client_session_ids)
