@@ -16,7 +16,7 @@ export default class extends Controller {
       return
     }
 
-    fetch(`/client_sessions/get_client_rate/${clientId}`, {
+    fetch(`/clients/${clientId}/current_rate.json`, {
       headers: {
         "Accept": "application/json"
       }
@@ -32,7 +32,7 @@ export default class extends Controller {
       const formattedRate = new Intl.NumberFormat('en-GB', {
         style: 'currency',
         currency: 'GBP'
-      }).format(data.rate)
+      }).format(data.current_rate)
 
       this.rateFieldTarget.value = formattedRate
     })
