@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :invoice do
-    date { Date.new(2024, 3, 16) }
+    date { Date.new(2025, 2, 1) }
 
     client          { Client.find_by_name("Test Client") || FactoryBot.create(:client) }
 

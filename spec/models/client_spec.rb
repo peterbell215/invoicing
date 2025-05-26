@@ -3,13 +3,13 @@ require 'rails_helper'
 describe Client do
   describe 'FactoryBot' do
     context 'when FactoryBot builds a client' do
-      subject(:test_client) { build(:client) }
+      subject(:test_client) { create(:client) }
 
       specify { expect(test_client.name).to eq('Test Client') }
     end
 
     context 'when Factorybot builds a client with fees' do
-      subject(:test_client) { build(:client, :with_fees) }
+      subject(:test_client) { create(:client, :with_fees) }
 
       specify { expect(test_client.fees.length).to eq 3 }
       specify { expect(test_client.fees[0].from).to eq Date.new(2022, 12, 1) }
@@ -17,10 +17,10 @@ describe Client do
     end
 
     context 'when FactoryBot builds a client with client sessions' do
-      subject(:test_client) { build(:client, :with_client_sessions) }
+      subject(:test_client) { create(:client, :with_client_sessions) }
 
       specify { expect(test_client.client_sessions.length).to eq 4 }
-      specify { expect(test_client.client_sessions[0].start).to eq DateTime.new(2024, 2, 1, 9, 0) }
+      specify { expect(test_client.client_sessions[0].start).to eq DateTime.new(2025, 1, 10, 9, 0) }
       specify { expect(test_client.client_sessions[0].duration).to eq 60 }
       specify { expect(test_client.client_sessions[0].start + 1.week).to eq test_client.client_sessions[1].start }
     end

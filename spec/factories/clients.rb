@@ -30,17 +30,12 @@ FactoryBot.define do
 
     trait :with_client_sessions do
       transient do
-        repeats                  { 4 }
-        client_session_interval  { 1.week }
+        repeats { 4 }
       end
 
-      client_sessions {
-        start = DateTime.new(2024, 2, 1, 9, 0)
-        build_list(:client_session, repeats) do |client_session, _|
-          client_session.start = start
-          start += client_session_interval
-        end
-      }
+      after(:create) do |client, context|
+        create_list(:client_session, context.repeats, client: client)
+      end
     end
   end
 end

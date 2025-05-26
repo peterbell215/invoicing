@@ -6,13 +6,12 @@ RSpec.describe Invoice do
   describe 'FactoryBot' do
     subject(:invoice) { create(:invoice) }
 
-    specify { expect(invoice.date).to eq Date.new(2024, 3, 16) }
+    specify { expect(invoice.date).to eq Date.new(2025, 2, 1) }
     specify { expect(invoice.client_sessions.length).to eq 3 }
   end
 
   describe '::create' do
     context 'when it is a new invoice' do
-
       let(:invoice_params) { attributes_for(:invoice, client_id: client.id) }
       let(:client) { create(:client, :with_client_sessions) }
 
