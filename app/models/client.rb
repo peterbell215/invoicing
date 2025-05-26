@@ -84,6 +84,13 @@ class Client < ApplicationRecord
     end
   end
 
+  # Returns the total amount of uninvoiced sessions for this client
+  #
+  # @return Money
+  def uninvoiced
+    client_sessions.where(invoice_id: nil).sum(&:fee)
+  end
+
   def fees_must_not_overlap
     overlap_error = Fee.overlap?(self.fees)
 
@@ -92,4 +99,3 @@ class Client < ApplicationRecord
     self.errors.add(:fees, "fee to #{overlap_error.to} overlaps with its successor")
   end
 end
-

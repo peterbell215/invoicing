@@ -20,7 +20,6 @@ RSpec.describe Invoice do
         amount = Money.new(ClientSession.where(id: client_session_ids).sum(:current_rate_pence), 'GBP')
 
         invoice_params[:client_session_ids] = client_session_ids
-        invoice_params[:amount] = amount
 
         invoice = Invoice.create(invoice_params)
 
