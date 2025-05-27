@@ -84,11 +84,15 @@ class Client < ApplicationRecord
     end
   end
 
+  def uninvoiced_sessions
+    self.client_sessions.where(invoice_id: nil)
+  end
+
   # Returns the total amount of uninvoiced sessions for this client
   #
   # @return Money
   def uninvoiced_amount
-    Money.new(client_sessions.where(invoice_id: nil).sum(&:fee))
+    Money.new(uninvoiced_sessions.sum(&:fee))
   end
 
   def fees_must_not_overlap

@@ -34,12 +34,16 @@
                 <td><%= full_address(client) %></td>
                 <td><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></td>
                 <td><span class="status-badge <%= client.active ? 'active' : 'inactive' %>"><%= client.active ? 'Active' : 'Inactive' %></span></td>
-                <td><%= client.client_sessions.where(invoice_id: nil).count %></td>
+                <td><%= client.uninvoiced_sessions.count %></td>
                 <td><%= client.uninvoiced_amount.format %></td>
                 <td>
                   <%= link_to "Show", client, class: "pure-button pure-button-primary button-small" %>
                   <%= link_to "Edit", edit_client_path(client), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
-                  <%= link_to "Invoice", new_client_invoice_path(client), class: "pure-button button-warning button-small" %>
+                  <% if client.uninvoiced_sessions.any? %>
+                    <%= link_to "Invoice", new_client_invoice_path(client), class: "pure-button button-warning button-small" %>
+                  <% else %>
+                    <button class="pure-button button-warning button-small disabled" disabled>Invoice</button>
+                  <% end %>
                   <%= link_to "Delete", client_path(client), class: "pure-button button-error button-small",
                       data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this client?" } %>
                 </td>
@@ -152,6 +156,11 @@
   .button-warning {
     background-color: #f0ad4e;
     color: white;
+  }
+  
+  .button-small.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>
 

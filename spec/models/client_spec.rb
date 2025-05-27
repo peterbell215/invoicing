@@ -128,6 +128,36 @@ describe Client do
     end
   end
 
+  describe '#uninvoiced_sessions' do
+    context 'when client has uninvoiced sessions' do
+      let(:client) { create(:client, :with_client_sessions) }
+
+      it 'returns all client sessions that have not been invoiced' do
+        expect(client.uninvoiced_sessions.count).to eq(client.client_sessions.count)
+      end
+    end
+
+    context 'when client has some invoiced sessions' do
+      let(:client) { create(:client) }
+      let!(:invoice) { create(:invoice, client: client) }
+      let!(:invoiced_session) { create(:client_session, client: client, invoice: invoice) }
+      let!(:uninvoiced_sessions) { create_list(:client_session, 2, client: client) }
+
+      it 'returns only uninvoiced sessions' do
+        expect(client.uninvoiced_sessions.count).to eq(2)
+        expect(client.uninvoiced_sessions).to match_array(uninvoiced_sessions)
+      end
+    end
+
+    context 'when client has no sessions' do
+      let(:client) { create(:client) }
+
+      it 'returns an empty collection' do
+        expect(client.uninvoiced_sessions).to be_empty
+      end
+    end
+  end
+
   describe '#uninvoiced_amount' do
     context 'when client has uninvoiced sessions' do
       let(:client) { create(:client, :with_client_sessions) }
