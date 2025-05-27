@@ -3,9 +3,6 @@
 <div class="invoice-actions">
   <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
   <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
-  <% unless @invoice.paid? %>
-    <%= button_to "Mark as Paid", mark_paid_invoice_path(@invoice), method: :patch, class: "pure-button button-success" %>
-  <% end %>
 </div>
 
 <div class="invoice-container">
@@ -25,9 +22,11 @@
       
       <div class="invoice-title">
         <h1>INVOICE</h1>
-        <div class="invoice-status <%= @invoice.paid? ? 'paid' : 'unpaid' %>">
-          <%= @invoice.paid? ? 'PAID' : 'UNPAID' %>
-        </div>
+        <% if @invoice.paid? %>
+          <div class="invoice-status paid">
+            PAID
+          </div>
+        <% end %>
       </div>
     </div>
 
@@ -37,7 +36,12 @@
         <h3>Bill To:</h3>
         <div class="client-name"><%= @invoice.client.name %></div>
         <address>
-          <%= @invoice.client.address.to_s.gsub("\n", "<br>").html_safe if @invoice.client.respond_to?(:address) %>
+          <%= @invoice.client.address1 %><br>
+          <% if @invoice.client.address2.present? %>
+            <%= @invoice.client.address2 %><br>
+          <% end %>
+          <%= @invoice.client.town %><br>
+          <%= @invoice.client.postcode %>
         </address>
       </div>
       
@@ -72,8 +76,8 @@
           <% @invoice.client_sessions.order(start: :asc).each do |session| %>
             <tr>
               <td><%= session.start.strftime('%d %b %Y') %></td>
-              <td>session.description</td>
-              <td><%= session.duration %> hours</td>
+              <td><%= session.description %></td>
+              <td><%= session.duration %> minutes</td>
               <td><%= session.hourly_session_rate.format %></td>
               <td class="text-right"><%= session.fee.format %></td>
             </tr>
@@ -155,8 +159,9 @@
   }
   
   .invoice-actions {
+    margin-top: 20px;
     margin-bottom: 20px;
-    text-align: right;
+    text-align: center;
   }
   
   .invoice-content {
