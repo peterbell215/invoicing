@@ -29,18 +29,9 @@
                 <td><%= invoice.date.strftime('%d %b %Y') %></td>
                 <td><%= invoice.amount.format %></td>
                 <td>
-                  <% if invoice.paid? %>
-                    <span class="status paid">Paid</span>
-                    <% if invoice.paid_date.present? %>
-                      <small>(<%= invoice.paid_date.strftime('%d %b %Y') %>)</small>
-                    <% end %>
-                  <% else %>
-                    <% if invoice.date < Date.today %>
-                      <span class="status overdue">Overdue</span>
-                    <% else %>
-                      <span class="status unpaid">Unpaid</span>
-                    <% end %>
-                  <% end %>
+                  <span class="status <%= invoice.status %>">
+                    <%= invoice.status.titleize %>
+                  </span>
                 </td>
                 <td>
                   <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
@@ -83,6 +74,16 @@
   
   .status.overdue {
     background-color: #d9534f;
+    color: white;
+  }
+  
+  .status.sent {
+    background-color: #2196F3;
+    color: white;
+  }
+  
+  .status.created {
+    background-color: #9E9E9E;
     color: white;
   }
   
