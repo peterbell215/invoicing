@@ -40,6 +40,13 @@
         <%= form.number_field :duration, required: true, min: 1, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } %>
       </div>
     </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :description, "Session Description" %>
+        <%= form.text_area :description, class: "pure-input-1", rows: 3, placeholder: "Enter session details or notes here" %>
+      </div>
+    </div>
   </fieldset>
 
   <div class="actions">

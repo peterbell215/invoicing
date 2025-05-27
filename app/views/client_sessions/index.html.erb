@@ -12,6 +12,7 @@
             <th>Date</th>
             <th>Time</th>
             <th>Duration</th>
+            <th>Description</th>
             <th>Hourly Rate</th>
             <th>Session Fee</th>
             <th>Invoice Status</th>
@@ -26,6 +27,7 @@
                 <td><%= client_session.start.to_date.to_fs(:long) %></td>
                 <td><%= client_session.start.strftime("%H:%M") %></td>
                 <td><%= pluralize(client_session.duration, "minute") %></td>
+                <td class="description-cell"><%= truncate(client_session.description, length: 50) if client_session.description.present? %></td>
                 <td><%= number_to_currency(client_session.hourly_session_rate, unit: "£") %></td>
                 <td><%= number_to_currency(client_session.fee, unit: "£") %></td>
                 <td>
@@ -47,7 +49,7 @@
             <% end %>
           <% else %>
             <tr>
-              <td colspan="7" class="is-center">No client sessions found</td>
+              <td colspan="9" class="is-center">No client sessions found</td>
             </tr>
           <% end %>
         </tbody>
@@ -89,6 +91,13 @@
     background-color: #e3f2fd;
     color: #1565c0;
     border: 1px solid #1565c0;
+  }
+
+  .description-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .button-small {

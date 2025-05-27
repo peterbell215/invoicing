@@ -8,3 +8,7 @@
 - Change the start field in Session to session_date
 - Replace the call to the backend API for session rate with a data field on the option state that the controller looks at.
 - When editing a Client, only create a new field, if the fees have actually changed.
+- Once a session has been invoiced, it cannot be amended unless a credit note for the invoice
+  has also been issued.
+- Generate and store a PDF with the invoice.
+- Status field on invoice index should use the status enum in model.

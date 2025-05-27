@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_25_000001) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_27_041457) do
   create_table "client_sessions", force: :cascade do |t|
     t.integer "client_id"
     t.integer "invoice_id"
@@ -20,6 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_000001) do
     t.string "hourly_session_rate_currency", default: "GBP", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description"
     t.index ["client_id"], name: "index_client_sessions_on_client_id"
     t.index ["invoice_id"], name: "index_client_sessions_on_invoice_id"
   end

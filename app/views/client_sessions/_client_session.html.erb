@@ -35,6 +35,12 @@
           <div class="detail-label">Duration:</div>
           <div class="detail-value"><%= pluralize(client_session.duration, "minute") %></div>
         </div>
+        <% if client_session.description.present? %>
+          <div class="detail-item">
+            <div class="detail-label">Description:</div>
+            <div class="detail-value"><%= simple_format(client_session.description) %></div>
+          </div>
+        <% end %>
       </div>
     </div>
 
