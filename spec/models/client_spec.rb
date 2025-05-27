@@ -128,12 +128,12 @@ describe Client do
     end
   end
 
-  describe '#uninvoiced' do
+  describe '#uninvoiced_amount' do
     context 'when client has uninvoiced sessions' do
       let(:client) { create(:client, :with_client_sessions) }
 
       it 'returns the sum of all uninvoiced session fees' do
-        expect(client.uninvoiced).to eq(Money.new(6000 * client.client_sessions.count))
+        expect(client.uninvoiced_amount).to eq(Money.new(6000 * client.client_sessions.count))
       end
     end
 
@@ -144,7 +144,7 @@ describe Client do
         create(:invoice, client: client)
         create_list(:client_session, 2, client: client)
 
-        expect(client.uninvoiced).to eq(Money.new(6000 * 2))
+        expect(client.uninvoiced_amount).to eq(Money.new(6000 * 2))
       end
     end
   end

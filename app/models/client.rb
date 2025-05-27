@@ -87,7 +87,7 @@ class Client < ApplicationRecord
   # Returns the total amount of uninvoiced sessions for this client
   #
   # @return Money
-  def uninvoiced
+  def uninvoiced_amount
     Money.new(client_sessions.where(invoice_id: nil).sum(&:fee))
   end
 
