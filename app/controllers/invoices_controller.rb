@@ -1,6 +1,6 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [:new, :create]
-  before_action :set_invoice, only: [:show, :mark_paid]
+  before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update]
   
   def index
     @invoices = Invoice.all.order(created_at: :desc)
@@ -11,7 +11,7 @@ class InvoicesController < ApplicationController
   end
   
   def new
-    @uninvoiced_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
+    @available_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
   end
   
   def create
@@ -30,6 +30,39 @@ class InvoicesController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+
+  def edit
+    # Redirect if invoice is not editable
+    unless @invoice.created?
+      redirect_to invoice_path(@invoice), alert: "Cannot edit invoice that has been sent or paid."
+      return
+    end
+    
+    # Get available sessions (uninvoiced or belonging to this invoice)
+    @available_sessions = @client.client_sessions.where("invoice_id IS NULL OR invoice_id = ?", @invoice.id).order(start: :desc)
+  end
+
+  def update
+    @invoice = Invoice.find(params[:id])
+    @client = @invoice.client
+    
+    unless @invoice.created?
+      redirect_to invoice_path(@invoice), alert: "Cannot edit invoice that has been sent or paid."
+      return
+    end
+    
+    client_session_ids = params[:invoice][:client_session_ids].reject(&:blank?).map(&:to_i)
+    
+    if @invoice.update(invoice_params.except(:client_session_ids))
+      @invoice.update_client_sessions(client_session_ids)
+      redirect_to invoice_path(@invoice), notice: "Invoice was successfully updated."
+    else
+      @available_sessions = @client.client_sessions
+                                  .where("invoice_id IS NULL OR invoice_id = ?", @invoice.id)
+                                  .order(date: :desc)
+      render :edit, status: :unprocessable_entity
+    end
+  end
   
   def mark_paid
     @invoice.update(paid: true, paid_date: Date.today)
@@ -42,11 +75,12 @@ class InvoicesController < ApplicationController
     @client = Client.find(params[:client_id])
   end
   
-  def set_invoice
+  def set_invoice_and_client
     @invoice = Invoice.find(params[:id])
+    @client = @invoice.client
   end
   
   def invoice_params
-    params.require(:invoice).permit(:date, :reference)
+    params.require(:invoice).permit(:date, :reference, client_session_ids: [])
   end
 end

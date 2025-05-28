@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   end
   resources :client_sessions
 
-  resources :invoices, only: [:index, :show] do
+  resources :invoices, only: [:index, :show, :edit, :update] do
     member do
       patch :mark_paid
     end

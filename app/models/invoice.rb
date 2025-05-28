@@ -8,6 +8,8 @@ class Invoice < ApplicationRecord
   validates :date, presence: true
 
   enum :status, { created: 0, sent: 1, paid: 2 }
+  
+  before_save :update_amount
 
   # Deals with changing client sessions in invoice.
   # @param [HashWithIndifferentAccess] attrs
@@ -28,6 +30,13 @@ class Invoice < ApplicationRecord
     end
 
     ClientSession.where(id: add_to_invoice).update(invoice_id: self.id) unless add_to_invoice.empty?
+    update_amount
     self
+  end
+  
+  private
+  
+  def update_amount
+    self.amount_pence = client_sessions.sum(&:fee)
   end
 end

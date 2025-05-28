@@ -17,7 +17,7 @@ RSpec.describe Invoice do
 
       it 'creates the invoice and associates all the client sessions' do
         client_session_ids = client.client_session_ids
-        amount = Money.new(ClientSession.where(id: client_session_ids).sum(:current_rate_pence), 'GBP')
+        amount = Money.new(ClientSession.where(id: client_session_ids).sum(&:fee), 'GBP')
 
         invoice_params[:client_session_ids] = client_session_ids
 

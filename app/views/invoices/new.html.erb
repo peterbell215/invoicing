@@ -7,15 +7,6 @@
     <%= form_with(model: [@client, Invoice.new], class: "pure-form pure-form-stacked") do |form| %>
       <fieldset>
         <legend>Invoice Details</legend>
-        
-        <div class="pure-g">
-          <div class="pure-u-1 pure-u-md-1-2">
-            <div class="field">
-              <%= form.label :reference %>
-              <%= form.text_field :id, class: "pure-input-1", readonly: true %>
-            </div>
-          </div>
-          
           <div class="pure-u-1 pure-u-md-1-2">
             <div class="field">
               <%= form.label :date %>
@@ -26,49 +17,11 @@
       </fieldset>
       
       <h2>Uninvoiced Sessions</h2>
-      
-      <% if @uninvoiced_sessions.any? %>
-        <table class="pure-table pure-table-striped" style="width: 100%;">
-          <thead>
-            <tr>
-              <th width="5%">
-                <input type="checkbox" id="select-all" title="Select/deselect all">
-              </th>
-              <th>Date</th>
-              <th>Duration</th>
-              <th>Description</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @uninvoiced_sessions.each do |session| %>
-              <tr>
-                <td>
-                  <%= check_box_tag "session_ids[]", session.id, true, id: "session_#{session.id}" %>
-                </td>
-                <td><%= session.start.strftime('%d %b %Y') %></td>
-                <td><%= session.duration %> minutes</td>
-                <td>session.description</td>
-                <td><%= session.fee.format %></td>
-              </tr>
-            <% end %>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="4" class="align-right"><strong>Total:</strong></td>
-              <td id="selected-total"><%= @client.uninvoiced.format %></td>
-            </tr>
-          </tfoot>
-        </table>
-        
+
+      <%= render "sessions_table"  do %>
         <div class="form-buttons">
           <%= form.submit "Generate Invoice", class: "pure-button pure-button-primary" %>
           <%= link_to "Cancel", clients_path, class: "pure-button" %>
-        </div>
-      <% else %>
-        <p>No uninvoiced sessions found for this client.</p>
-        <div class="form-buttons">
-          <%= link_to "Back to Clients", clients_path, class: "pure-button" %>
         </div>
       <% end %>
     <% end %>

@@ -35,6 +35,9 @@
                 </td>
                 <td>
                   <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+                  <% if invoice.created? %>
+                    <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
+                  <% end %>
                   <% unless invoice.paid? %>
                     <%= button_to "Mark Paid", mark_paid_invoice_path(invoice), method: :patch, class: "pure-button button-success button-small" %>
                   <% end %>
