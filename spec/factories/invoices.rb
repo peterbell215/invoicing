@@ -6,6 +6,7 @@ FactoryBot.define do
 
     after(:create) do |invoice|
       create_list(:client_session, 3, client: invoice.client, invoice: invoice)
+      invoice.reload
     end
   end
 end

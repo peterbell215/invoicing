@@ -35,6 +35,7 @@ FactoryBot.define do
 
       after(:create) do |client, context|
         create_list(:client_session, context.repeats, client: client)
+        client.reload
       end
     end
   end
