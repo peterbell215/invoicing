@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-require 'rails_helper'
-
 RSpec.describe Invoice do
   describe 'FactoryBot' do
     subject(:invoice) { create(:invoice) }

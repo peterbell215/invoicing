@@ -7,16 +7,15 @@
     <%= form_with(model: [@client, Invoice.new], class: "pure-form pure-form-stacked") do |form| %>
       <fieldset>
         <legend>Invoice Details</legend>
-          <div class="pure-u-1 pure-u-md-1-2">
-            <div class="field">
-              <%= form.label :date %>
-              <%= form.date_field :date, value: 30.days.from_now.to_date, class: "pure-input-1" %>
-            </div>
+        <div class="pure-u-1 pure-u-md-1-2">
+          <div class="field">
+            <%= form.label :date %>
+            <%= form.date_field :date, value: Date.today, class: "pure-input-1" %>
           </div>
         </div>
       </fieldset>
       
-      <h2>Uninvoiced Sessions</h2>
+      <legend>Uninvoiced Sessions</legend>
 
       <%= render "sessions_table"  do %>
         <div class="form-buttons">

@@ -16,7 +16,7 @@
       <% @available_sessions.each do |session| %>
         <tr>
           <td>
-            <%= check_box_tag "session_ids[]", session.id, true, 
+            <%= check_box_tag "client_session_ids[]", session.id, true, 
                               id: "session_#{session.id}", 
                               data: { 
                                 sessions_table_target: "checkbox",
@@ -37,6 +37,9 @@
       </tr>
       </tfoot>
     </table>
+
+    <!-- Hidden field to send the calculated amount to the backend -->
+    <%= hidden_field_tag "invoice[amount]", "", data: { sessions_table_target: "amountField" } %>
 
     <%= yield %>
   </div>

@@ -46,12 +46,7 @@ class InvoicesController < ApplicationController
     @invoice = Invoice.find(params[:id])
     @client = @invoice.client
     
-    unless @invoice.created?
-      redirect_to invoice_path(@invoice), alert: "Cannot edit invoice that has been sent or paid."
-      return
-    end
-    
-    client_session_ids = params[:invoice][:client_session_ids].reject(&:blank?).map(&:to_i)
+    client_session_ids = params[:client_session_ids].reject(&:blank?).map(&:to_i)
     
     if @invoice.update(invoice_params.except(:client_session_ids))
       @invoice.update_client_sessions(client_session_ids)
@@ -81,6 +76,6 @@ class InvoicesController < ApplicationController
   end
   
   def invoice_params
-    params.require(:invoice).permit(:date, :reference, client_session_ids: [])
+    params.require(:invoice).permit(:date, :amount, client_session_ids: [])
   end
 end

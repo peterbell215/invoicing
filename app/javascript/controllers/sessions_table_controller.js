@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["checkbox", "total", "selectAll"]
+  static targets = ["checkbox", "total", "selectAll", "amountField"]
 
   connect() {
     this.updateTotal()
@@ -37,12 +37,17 @@ export default class extends Controller {
       }
     })
     
-    // Format total as currency
+    // Format total as currency for display
     const formatter = new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP'
     })
     
     this.totalTarget.textContent = formatter.format(total)
+    
+    // Update the hidden field with the raw numeric value
+    if (this.hasAmountFieldTarget) {
+      this.amountFieldTarget.value = total.toFixed(2)
+    }
   }
 }

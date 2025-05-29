@@ -6,6 +6,7 @@ class Invoice < ApplicationRecord
   monetize :amount_pence
 
   validates :date, presence: true
+  validate :validate_editable_status, on: :update
 
   enum :status, { created: 0, sent: 1, paid: 2 }
   
@@ -21,7 +22,7 @@ class Invoice < ApplicationRecord
 
   def update_client_sessions(client_session_ids, existing_invoice: true)
     if existing_invoice
-      existing_client_session_ids = ClientSession.where(invoice_id: self.id).pick(:id)
+      existing_client_session_ids = ClientSession.where(invoice_id: self.id).pluck(:id)
       remove_from_invoice = existing_client_session_ids - client_session_ids
       add_to_invoice = client_session_ids - existing_client_session_ids
       ClientSession.where(id: remove_from_invoice).update(invoice_id: nil)
@@ -38,5 +39,11 @@ class Invoice < ApplicationRecord
   
   def update_amount
     self.amount_pence = client_sessions.sum(&:fee)
+  end
+  
+  def validate_editable_status
+    if status_changed? && status_was != 'created'
+      errors.add(:base, "Cannot modify an invoice that has been sent or paid")
+    end
   end
 end
