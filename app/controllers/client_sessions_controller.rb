@@ -3,7 +3,7 @@ class ClientSessionsController < ApplicationController
 
   # GET /client_sessions or /client_sessions.json
   def index
-    @client_sessions = ClientSession.all
+    @client_sessions = ClientSession.order(start: :asc)
   end
 
   # GET /client_sessions/1 or /client_sessions/1.json
