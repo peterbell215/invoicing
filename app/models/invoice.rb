@@ -38,7 +38,7 @@ class Invoice < ApplicationRecord
   private
   
   def update_amount
-    self.amount_pence = client_sessions.sum(&:fee)
+    self.amount = client_sessions.sum(&:fee)
   end
   
   def validate_editable_status

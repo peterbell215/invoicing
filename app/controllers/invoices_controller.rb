@@ -21,7 +21,7 @@ class InvoicesController < ApplicationController
     if @invoice.save
       # Associate selected sessions with the new invoice
       if params[:session_ids].present?
-        @client.client_sessions.where(id: params[:session_ids]).update_all(invoice_id: @invoice.id)
+        @client.client_sessions.where(id: params[:client_session_ids]).update_all(invoice_id: @invoice.id)
       end
       
       redirect_to @invoice, notice: 'Invoice was successfully generated.'
@@ -46,7 +46,7 @@ class InvoicesController < ApplicationController
     @invoice = Invoice.find(params[:id])
     @client = @invoice.client
     
-    client_session_ids = params[:client_session_ids].reject(&:blank?).map(&:to_i)
+    client_session_ids = invoice_params[:client_session_ids].reject(&:blank?).map(&:to_i)
     
     if @invoice.update(invoice_params.except(:client_session_ids))
       @invoice.update_client_sessions(client_session_ids)

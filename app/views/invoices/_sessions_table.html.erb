@@ -13,22 +13,21 @@
       </tr>
       </thead>
       <tbody>
-      <% @available_sessions.each do |session| %>
-        <tr>
-          <td>
-            <%= check_box_tag "client_session_ids[]", session.id, true, 
-                              id: "session_#{session.id}", 
-                              data: { 
-                                sessions_table_target: "checkbox",
-                                action: "change->sessions-table#toggleCheckbox"
-                              } %>
-          </td>
-          <td><%= session.start.strftime('%d %b %Y') %></td>
-          <td><%= session.duration %> minutes</td>
-          <td><%= session.description %></td>
-          <td><%= session.fee.format %></td>
-        </tr>
-      <% end %>
+        <%= collection_checkboxes(:invoice, :client_session_ids, @available_sessions, :id, :start, {}, {
+          checked: true,
+          data: {
+            sessions_table_target: "checkbox",
+            action: "change->sessions-table#toggleCheckbox"
+          }
+        }) do |client_session| %>
+          <tr>
+            <td><%= client_session.check_box checked: client_session.object.invoice_id %></td>
+            <td><%= client_session.object.start.strftime('%d %b %Y') %></td>
+            <td><%= client_session.object.duration %> minutes</td>
+            <td><%= client_session.object.description %></td>
+            <td><%= client_session.object.fee.format %></td>
+          </tr>
+        <% end %>
       </tbody>
       <tfoot>
       <tr>
