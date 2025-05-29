@@ -33,14 +33,16 @@
                     <%= invoice.status.titleize %>
                   </span>
                 </td>
-                <td>
-                  <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
-                  <% if invoice.created? %>
-                    <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
-                  <% end %>
-                  <% unless invoice.paid? %>
-                    <%= button_to "Mark Paid", mark_paid_invoice_path(invoice), method: :patch, class: "pure-button button-success button-small" %>
-                  <% end %>
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+                    <% if invoice.created? %>
+                      <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
+                    <% end %>
+                    <% unless invoice.paid? %>
+                      <%= button_to "Mark Paid", mark_paid_invoice_path(invoice), method: :patch, class: "pure-button button-success button-small" %>
+                    <% end %>
+                  </div>
                 </td>
               </tr>
             <% end %>
@@ -112,5 +114,24 @@
   .empty-state p {
     margin-bottom: 1.5em;
     color: #777;
+  }
+
+  /* Action buttons container */
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+
+  /* For smaller screens, allow wrapping if needed */
+  @media (max-width: 768px) {
+    .action-buttons {
+      flex-wrap: wrap;
+    }
+  }
+
+  .actions-cell {
+    white-space: nowrap;
+    min-width: 200px;
   }
 </style>
