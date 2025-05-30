@@ -2,6 +2,7 @@
 class Invoice < ApplicationRecord
   belongs_to :client
   has_many :client_sessions, dependent: :nullify
+  has_one_attached :pdf
 
   monetize :amount_pence
 

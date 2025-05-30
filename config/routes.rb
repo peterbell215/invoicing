@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :invoices, only: [:create, :index, :show, :edit, :update] do
     member do
       patch :mark_paid
+      post :send_invoice
     end
   end
 

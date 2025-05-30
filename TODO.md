@@ -11,8 +11,6 @@
 - Once a session has been invoiced, it cannot be amended unless a credit note for the invoice
   has also been issued.
 - Generate and store a PDF with the invoice.
-- When going to edit an invoice all uninvoiced sessions are ticked.  Instead, only those that
-  are alreadu on the invoice should be ticked.
 - Add a validator that checks that the amount reflects the sum of the client_sessions on create
   and update.
 - 

@@ -1,0 +1,22 @@
+Invoice #<%= @invoice.id %> from Katy's Services
+
+Dear <%= @client.name %>,
+
+Please find attached your invoice #<%= @invoice.id %> for a total of <%= @invoice.amount.format %>.
+
+Payment Details:
+Bank: Example Bank
+Account Name: Katy Smith
+Account Number: 12345678
+Sort Code: 01-02-03
+Reference: INV-<%= @invoice.id %>
+
+Payment Terms: Due within 30 days of issue.
+
+Thank you for your business!
+
+Best regards,
+Katy Smith
+Katy's Services
+Phone: 020 1234 5678
+Email: katy@example.com

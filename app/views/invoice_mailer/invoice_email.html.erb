@@ -1,0 +1,26 @@
+<h1>Invoice #<%= @invoice.id %> from Katy's Services</h1>
+
+<p>Dear <%= @client.name %>,</p>
+
+<p>Please find attached your invoice #<%= @invoice.id %> for a total of <%= @invoice.amount.format %>.</p>
+
+<p>
+  Payment Details:<br>
+  Bank: Example Bank<br>
+  Account Name: Katy Smith<br>
+  Account Number: 12345678<br>
+  Sort Code: 01-02-03<br>
+  Reference: INV-<%= @invoice.id %>
+</p>
+
+<p>Payment Terms: Due within 30 days of issue.</p>
+
+<p>Thank you for your business!</p>
+
+<p>
+Best regards,<br>
+Katy Smith<br>
+Katy's Services<br>
+Phone: 020 1234 5678<br>
+Email: katy@example.com
+</p>

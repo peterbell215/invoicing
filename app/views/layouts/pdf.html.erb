@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= content_for?(:title) ? yield(:title) : "Katy's Services" %></title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .invoice-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .invoice-title {
+      text-align: right;
+    }
+
+    .invoice-title h1 {
+      font-size: 28px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .invoice-status {
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .invoice-status.paid {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .client-info, .invoice-info {
+      width: 48%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border-bottom: 1px solid #ddd;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .total-label {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .total-amount {
+      font-weight: bold;
+    }
+
+    .payment-details, .thank-you {
+      margin-top: 30px;
+    }
+
+    address {
+      font-style: normal;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>
+

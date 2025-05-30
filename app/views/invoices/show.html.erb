@@ -3,6 +3,7 @@
 <div class="invoice-actions">
   <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
   <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
+  <%= link_to "Send Invoice", send_invoice_invoice_path(@invoice), method: :post, class: "pure-button pure-button-primary", data: { turbo_method: :post, turbo_confirm: "Are you sure you want to send this invoice?" } unless @invoice.paid? %>
 </div>
 
 <div class="invoice-container">

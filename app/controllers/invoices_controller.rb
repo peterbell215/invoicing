@@ -1,7 +1,7 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [:new]
-  before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update]
-  
+  before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update, :send_invoice]
+
   def index
     @invoices = Invoice.all.order(created_at: :desc)
   end
@@ -62,6 +62,29 @@ class InvoicesController < ApplicationController
     redirect_to invoices_path, notice: "Invoice #{@invoice.reference} has been marked as paid."
   end
   
+  def send_invoice
+    # Check if PDF is already attached
+    unless @invoice.pdf.attached?
+      # Generate PDF using Grover
+      pdf_content = generate_invoice_pdf
+
+      # Attach the PDF to the invoice
+      @invoice.pdf.attach(
+        io: StringIO.new(pdf_content),
+        filename: "invoice_#{@invoice.id}.pdf",
+        content_type: 'application/pdf'
+      )
+    end
+
+    # Send the email
+    InvoiceMailer.invoice_email(@invoice).deliver_now
+
+    # Mark the invoice as sent
+    @invoice.sent! unless @invoice.sent? || @invoice.paid?
+
+    redirect_to @invoice, notice: 'Invoice was successfully sent.'
+  end
+
   private
   
   def set_client
@@ -75,5 +98,13 @@ class InvoicesController < ApplicationController
   
   def invoice_params
     params.require(:invoice).permit(:date, :amount, :client_id, client_session_ids: [])
+  end
+
+  def generate_invoice_pdf
+    # Get the HTML of the invoice show page
+    html = render_to_string template: 'invoices/show', layout: 'pdf', locals: { invoice: @invoice }
+
+    # Convert to PDF using Ferrum_pdf
+    FerrumPdf.render_pdf(html: html)
   end
 end
