@@ -49,13 +49,12 @@
         <table>
           <tr>
             <th>Invoice Number:</th>
-            <td><%= @invoice.id %></td>
+            <td class="text-right"><%= @invoice.id %></td>
           </tr>
           <tr>
             <th> Date:</th>
-            <td><%= @invoice.created_at.strftime('%d %b %Y') %></td>
+            <td class="text-right"><%= @invoice.created_at.strftime('%d %b %Y') %></td>
           </tr>
-
         </table>
       </div>
     </div>
@@ -86,7 +85,7 @@
         <tfoot>
           <tr>
             <td colspan="4" class="total-label">Total Amount:</td>
-            <td class="total-amount"><%= @invoice.amount.format %></td>
+            <td class="total-amount text-right"><%= @invoice.amount.format %></td>
           </tr>
         </tfoot>
       </table>
@@ -120,32 +119,47 @@
 <style>
   /* Print styles to hide navigation and make invoice printable */
   @media print {
-    nav, .banner, .invoice-actions, footer {
-      display: none !important;
+    /* Hide everything by default */
+    body * {
+      visibility: hidden !important;
     }
-    
+
+    /* Make the invoice container and all its children visible */
+    .invoice-container,
+    .invoice-container * {
+      visibility: visible !important;
+    }
+
+    /* Style the invoice container to be the main content on the printed page */
     .invoice-container {
-      margin: 0;
-      padding: 0;
-      border: none;
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      min-height: 100% !important; /* Ensure it tries to fill height */
+      margin: 0 !important;
+      padding: 20px !important; /* Apply padding for the content within the container */
+      border: none !important;
+      box-shadow: none !important; /* Remove screen shadow */
+      background: white !important; /* Ensure container background is white */
     }
-    
-    .container {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-    }
-    
-    body {
-      background: white;
-    }
-    
+
+    /* If .invoice-content is inside .invoice-container, its padding might need adjustment.
+       The screen style for .invoice-content has padding: 20px.
+       If .invoice-container has padding: 20px for print, and .invoice-content also has padding,
+       it could be too much. Let's ensure .invoice-content's own padding is reset if needed,
+       relying on .invoice-container's padding.
+    */
     .invoice-content {
-      padding: 0;
+      padding: 0 !important; /* Reset padding if .invoice-container provides it */
+    }
+
+    body {
+      background: white !important; /* Ensure body background is white */
     }
     
     @page {
-      margin: 0.5cm;
+      margin: 0.5cm; /* Define page margins */
     }
   }
   
