@@ -5,14 +5,14 @@
     <legend>Client Information</legend>
     
     <% if client.persisted? %>
-    <div class="pure-g">
-      <div class="pure-u-1">
-        <div class="toggle-switch">
-          <%= form.check_box :active, class: "toggle-input" %>
-          <%= form.label :active, "Active Client", class: "toggle-label" %>
+      <div class="pure-g">
+        <div class="pure-u-1">
+          <div class="toggle-switch">
+            <%= form.check_box :active, class: "toggle-input" %>
+            <%= form.label :active, "Active Client", class: "toggle-label" %>
+          </div>
         </div>
       </div>
-    </div>
     <% end %>
 
     <div class="pure-g">

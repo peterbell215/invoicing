@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_client, only: [:new, :create]
+  before_action :set_client, only: [:new]
   before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update]
   
   def index
@@ -11,12 +11,12 @@ class InvoicesController < ApplicationController
   end
   
   def new
+    @invoice = Invoice.new(client: @client)
     @available_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
   end
   
   def create
     @invoice = Invoice.new(invoice_params)
-    @invoice.client = @client
     
     if @invoice.save
       # Associate selected sessions with the new invoice
@@ -26,6 +26,7 @@ class InvoicesController < ApplicationController
       
       redirect_to @invoice, notice: 'Invoice was successfully generated.'
     else
+      @client = Client.find(invoice_params[:client_id])
       @uninvoiced_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
       render :new, status: :unprocessable_entity
     end
@@ -73,6 +74,6 @@ class InvoicesController < ApplicationController
   end
   
   def invoice_params
-    params.require(:invoice).permit(:date, :amount, client_session_ids: [])
+    params.require(:invoice).permit(:date, :amount, :client_id, client_session_ids: [])
   end
 end

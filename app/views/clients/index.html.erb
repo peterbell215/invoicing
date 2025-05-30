@@ -40,7 +40,7 @@
                   <%= link_to "Show", client, class: "pure-button pure-button-primary button-small" %>
                   <%= link_to "Edit", edit_client_path(client), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
                   <% if client.uninvoiced_sessions.any? %>
-                    <%= link_to "Invoice", new_client_invoice_path(client), class: "pure-button button-warning button-small" %>
+                    <%= link_to "Invoice", new_client_invoice_path(client), data: { turbo: false }, class: "pure-button button-warning button-small" %>
                   <% else %>
                     <button class="pure-button button-warning button-small disabled" disabled>Invoice</button>
                   <% end %>
