@@ -35,7 +35,7 @@
       <%= render "sessions_table", form: form do  %>
         <div class="actions">
           <%= form.submit "Update Invoice", class: "pure-button pure-button-primary" %>
-          <%= link_to "Cancel", invoice_path(@invoice), class: "pure-button" %>
+          <%= link_to "Cancel", invoices_path, class: "pure-button" %>
         </div>
       <% end %>
     <% end %>

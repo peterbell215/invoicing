@@ -46,10 +46,7 @@ class InvoicesController < ApplicationController
     @invoice = Invoice.find(params[:id])
     @client = @invoice.client
     
-    client_session_ids = invoice_params[:client_session_ids].reject(&:blank?).map(&:to_i)
-    
-    if @invoice.update(invoice_params.except(:client_session_ids))
-      @invoice.update_client_sessions(client_session_ids)
+    if @invoice.update(invoice_params)
       redirect_to invoice_path(@invoice), notice: "Invoice was successfully updated."
     else
       @available_sessions = @client.client_sessions
