@@ -32,7 +32,7 @@
 
       <h2>Uninvoiced Sessions</h2>
 
-      <%= render "sessions_table" do %>
+      <%= render "sessions_table", form: form do  %>
         <div class="actions">
           <%= form.submit "Update Invoice", class: "pure-button pure-button-primary" %>
           <%= link_to "Cancel", invoice_path(@invoice), class: "pure-button" %>

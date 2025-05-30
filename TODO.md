@@ -11,10 +11,8 @@
 - Once a session has been invoiced, it cannot be amended unless a credit note for the invoice
   has also been issued.
 - Generate and store a PDF with the invoice.
-- Status field on invoice index should use the status enum in model.
 - When going to edit an invoice all uninvoiced sessions are ticked.  Instead, only those that
   are alreadu on the invoice should be ticked.
-- Update to created or edited invoices shows amount / 100 - Money object issue.
 - Add a validator that checks that the amount reflects the sum of the client_sessions on create
   and update.
 - 

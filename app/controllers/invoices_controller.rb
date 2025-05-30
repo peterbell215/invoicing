@@ -39,7 +39,7 @@ class InvoicesController < ApplicationController
     end
     
     # Get available sessions (uninvoiced or belonging to this invoice)
-    @available_sessions = @client.client_sessions.where("invoice_id IS NULL OR invoice_id = ?", @invoice.id).order(start: :desc)
+    @available_sessions = @client.client_sessions.where("invoice_id IS NULL OR invoice_id = ?", @invoice.id).order(start: :asc)
   end
 
   def update
