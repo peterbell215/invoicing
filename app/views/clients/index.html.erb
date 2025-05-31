@@ -4,9 +4,15 @@
 
 <div class="pure-g">
   <div class="pure-u-1">
-    <div class="filter-controls">
+    <div class="filter-controls" data-controller="active-filter">
       <div class="toggle-switch">
-        <%= check_box_tag :active_only, "true", @show_active_only, class: "toggle-input", data: { turbo_frame: "clients_list", turbo_action: "advance" } %>
+        <%= check_box_tag :active_only, "true", @show_active_only, class: "toggle-input", 
+            data: { 
+              active_filter_target: "checkbox",
+              action: "change->active-filter#toggle",
+              turbo_frame: "clients_list", 
+              turbo_action: "advance" 
+            } %>
         <%= label_tag :active_only, "Show active clients only", class: "toggle-label" %>
       </div>
     </div>
