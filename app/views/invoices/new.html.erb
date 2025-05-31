@@ -42,39 +42,3 @@
     text-align: right;
   }
 </style>
-
-<script>
-  document.addEventListener('turbo:load', function() {
-    const selectAllCheckbox = document.getElementById('select-all');
-    if (selectAllCheckbox) {
-      // Set initial state to checked since all checkboxes start checked
-      selectAllCheckbox.checked = true;
-      
-      selectAllCheckbox.addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('input[name="session_ids[]"]');
-        checkboxes.forEach(checkbox => {
-          checkbox.checked = selectAllCheckbox.checked;
-        });
-        updateTotal();
-      });
-      
-      // Add event listeners to individual checkboxes
-      const checkboxes = document.querySelectorAll('input[name="session_ids[]"]');
-      checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-          updateTotal();
-          // Update select-all checkbox based on individual selections
-          selectAllCheckbox.checked = Array.from(checkboxes).every(cb => cb.checked);
-        });
-      });
-      
-      // Function to update the total based on selected sessions
-      function updateTotal() {
-        // This would require a more complex implementation to calculate totals client-side
-        // For simplicity, we could use a fetch request to get updated totals
-        // or implement with Stimulus/JavaScript
-        console.log('Total would update based on selections');
-      }
-    }
-  });
-</script>

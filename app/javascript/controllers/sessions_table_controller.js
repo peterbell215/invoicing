@@ -4,7 +4,14 @@ export default class extends Controller {
   static targets = ["checkbox", "total", "selectAll", "amountField"]
 
   connect() {
+    // Set initial state to checked since all checkboxes start checked
+    this.selectAllTarget.checked = true
+    this.updateSelectAllState()
     this.updateTotal()
+  }
+
+  updateSelectAllState() {
+    this.selectAllTarget.checked = this.checkboxTargets.every(cb => cb.checked)
   }
 
   toggleSelectAll() {
