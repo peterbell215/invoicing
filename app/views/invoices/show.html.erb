@@ -73,9 +73,9 @@
           </tr>
         </thead>
         <tbody>
-          <% @invoice.client_sessions.order(start: :asc).each do |session| %>
+          <% @invoice.client_sessions.order(session_date: :asc).each do |session| %>
             <tr>
-              <td><%= session.start.strftime('%d %b %Y') %></td>
+              <td><%= session.session_date.strftime('%d %b %Y') %></td>
               <td><%= session.description %></td>
               <td><%= session.duration %> minutes</td>
               <td><%= session.hourly_session_rate.format %></td>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_30_173652) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_31_193541) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -42,13 +42,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_30_173652) do
   create_table "client_sessions", force: :cascade do |t|
     t.integer "client_id"
     t.integer "invoice_id"
-    t.datetime "start", null: false
     t.integer "duration", null: false
     t.integer "hourly_session_rate_pence", default: 0, null: false
     t.string "hourly_session_rate_currency", default: "GBP", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description"
+    t.date "session_date", null: false
     t.index ["client_id"], name: "index_client_sessions_on_client_id"
     t.index ["invoice_id"], name: "index_client_sessions_on_invoice_id"
   end

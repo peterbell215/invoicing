@@ -20,9 +20,9 @@ describe Client do
       subject(:test_client) { create(:client, :with_client_sessions) }
 
       specify { expect(test_client.client_sessions.length).to eq 4 }
-      specify { expect(test_client.client_sessions[0].start).to eq DateTime.new(2025, 1, 10, 9, 0) }
+      specify { expect(test_client.client_sessions[0].session_date).to eq DateTime.new(2025, 1, 10) }
       specify { expect(test_client.client_sessions[0].duration).to eq 60 }
-      specify { expect(test_client.client_sessions[0].start + 1.week).to eq test_client.client_sessions[1].start }
+      specify { expect(test_client.client_sessions[0].session_date + 1.week).to eq test_client.client_sessions[1].session_date }
     end
   end
 

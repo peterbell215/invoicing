@@ -3,7 +3,7 @@ class ClientSessionsController < ApplicationController
 
   # GET /client_sessions or /client_sessions.json
   def index
-    @client_sessions = ClientSession.order(start: :asc)
+    @client_sessions = ClientSession.order(session_date: :asc)
   end
 
   # GET /client_sessions/1 or /client_sessions/1.json
@@ -66,6 +66,6 @@ class ClientSessionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def client_session_params
-    params.require(:client_session).permit(:client_id, :start, :duration, :description)
+    params.require(:client_session).permit(:client_id, :session_date, :duration, :description)
   end
 end

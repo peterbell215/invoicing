@@ -5,7 +5,7 @@ class ClientSession < ApplicationRecord
 
   monetize :hourly_session_rate_pence
 
-  validates :start, presence: true
+  validates :session_date, presence: true
   validates :duration, presence: true, numericality: { greater_than: 0 }
 
   before_validation :set_hourly_session_rate, on: :create

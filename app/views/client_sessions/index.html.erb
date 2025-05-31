@@ -10,7 +10,6 @@
           <tr>
             <th>Client</th>
             <th>Date</th>
-            <th>Time</th>
             <th>Duration</th>
             <th>Description</th>
             <th>Hourly Rate</th>
@@ -24,8 +23,7 @@
             <% @client_sessions.each do |client_session| %>
               <tr id="<%= dom_id client_session %>">
                 <td><%= client_session.client.name %></td>
-                <td><%= client_session.start.to_date.to_fs(:long) %></td>
-                <td><%= client_session.start.strftime("%H:%M") %></td>
+                <td><%= client_session.session_date.strftime("%d %B %Y") %></td>
                 <td><%= pluralize(client_session.duration, "minute") %></td>
                 <td class="description-cell"><%= truncate(client_session.description, length: 50) if client_session.description.present? %></td>
                 <td><%= number_to_currency(client_session.hourly_session_rate, unit: "£") %></td>
@@ -49,7 +47,7 @@
             <% end %>
           <% else %>
             <tr>
-              <td colspan="9" class="is-center">No client sessions found</td>
+              <td colspan="8" class="is-center">No client sessions found</td>
             </tr>
           <% end %>
         </tbody>

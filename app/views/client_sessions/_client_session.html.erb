@@ -25,11 +25,7 @@
         <h3>Session Information</h3>
         <div class="detail-item">
           <div class="detail-label">Date:</div>
-          <div class="detail-value"><%= client_session.start.to_date.to_fs(:long) %></div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Time:</div>
-          <div class="detail-value"><%= client_session.start.strftime("%H:%M") %></div>
+          <div class="detail-value"><%= client_session.session_date.strftime("%d %B %Y") %></div>
         </div>
         <div class="detail-item">
           <div class="detail-label">Duration:</div>
