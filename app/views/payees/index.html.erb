@@ -35,7 +35,9 @@
               <td>
                 <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
                 <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
-                <%= button_to "Delete", payee, method: :delete, class: "pure-button button-error button-small", form: {data: {turbo_confirm: "Are you sure? This will remove the payee."}} if payee.clients.empty? %>
+                <% if payee.clients.empty? %>
+                  <button class="pure-button button-error button-small delete-payee-btn" data-payee-id="<%= payee.id %>" data-payee-name="<%= payee.name %>">Delete</button>
+                <% end %>
               </td>
             </tr>
           <% end %>
@@ -49,13 +51,58 @@
   </div>
 </div>
 
-<div class="pure-g">
-  <div class="pure-u-1">
-    <div class="form-buttons">
-      <%= link_to "New Payee", new_payee_path, class: "pure-button pure-button-primary" %>
+<!-- Dialog for delete confirmation -->
+<dialog id="delete-confirmation-dialog" class="delete-dialog">
+  <div class="dialog-content">
+    <h3>Confirm Deletion</h3>
+    <p>Are you sure you want to delete the payee: <span id="payee-to-delete"></span>?</p>
+    <p>This action cannot be undone.</p>
+    <div class="dialog-buttons">
+      <button id="cancel-delete" class="pure-button">Cancel</button>
+      <%= form_tag "", method: :delete, id: "delete-payee-form", class: "dialog-form" do %>
+        <button type="submit" class="pure-button pure-button-primary button-error">Delete</button>
+      <% end %>
     </div>
   </div>
-</div>
+</dialog>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dialog = document.getElementById('delete-confirmation-dialog');
+    const deleteForm = document.getElementById('delete-payee-form');
+    const payeeNameSpan = document.getElementById('payee-to-delete');
+    const cancelButton = document.getElementById('cancel-delete');
+
+    // Add click event listeners to all delete buttons
+    document.querySelectorAll('.delete-payee-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const payeeId = this.getAttribute('data-payee-id');
+        const payeeName = this.getAttribute('data-payee-name');
+
+        // Set the payee name in the dialog
+        payeeNameSpan.textContent = payeeName;
+
+        // Set the form action
+        deleteForm.action = `/payees/${payeeId}`;
+
+        // Show the dialog
+        dialog.showModal();
+      });
+    });
+
+    // Close the dialog when Cancel is clicked
+    cancelButton.addEventListener('click', function() {
+      dialog.close();
+    });
+
+    // Close the dialog if clicked outside (optional)
+    dialog.addEventListener('click', function(event) {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
+  });
+</script>
 
 <style>
   .status-badge {
@@ -80,6 +127,39 @@
   .button-small {
     font-size: 0.8em;
     padding: 5px 10px;
+  }
+
+  /* Dialog styles */
+  .delete-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 100%;
+  }
+
+  .delete-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .dialog-content {
+    padding: 20px;
+  }
+
+  .dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .dialog-form {
+    display: inline;
+  }
+
+  #payee-to-delete {
+    font-weight: bold;
   }
 
   .button-error {
