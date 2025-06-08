@@ -4,6 +4,17 @@
   <fieldset>
     <legend>Payee Information</legend>
 
+    <% if payee.persisted? %>
+      <div class="pure-g">
+        <div class="pure-u-1">
+          <div class="toggle-switch">
+            <%= form.check_box :active, class: "toggle-input" %>
+            <%= form.label :active, "Active Payee", class: "toggle-label" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
     <div class="pure-g">
       <div class="pure-u-1">
         <%= form.label :organisation %>
@@ -27,13 +38,6 @@
       <div class="pure-u-1 pure-u-md-1-2">
         <%= form.label :phone %>
         <%= form.telephone_field :phone, class: "pure-input-1" %>
-      </div>
-
-      <div class="pure-u-1 pure-u-md-1-2">
-        <div class="form-field">
-          <%= form.label :active %>
-          <%= form.check_box :active, class: "pure-checkbox" %>
-        </div>
       </div>
     </div>
 

@@ -1,0 +1,116 @@
+/* Form styling for the invoicing application */
+
+/* Fieldset styling */
+fieldset {
+  margin-bottom: 1.5em;
+  border: 1px solid #ddd;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+}
+
+/* Grid and spacing */
+.pure-g {
+  margin-bottom: 1em;
+}
+
+.pure-g [class*="pure-u"] {
+  padding-right: 1em;
+  box-sizing: border-box;
+}
+
+/* Form elements */
+.pure-form label {
+  margin: 0.5em 0 0.2em;
+  font-weight: bold;
+}
+
+.pure-input-prepend {
+  position: relative;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.pure-input-prepend input {
+  padding-left: 25px;
+}
+
+.form-buttons {
+  margin-top: 2em;
+}
+
+.pure-button {
+  margin-right: 0.5em;
+}
+
+/* Toggle switch styles */
+.toggle-switch {
+  margin: 1em 0;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-input {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  position: absolute;
+}
+
+.toggle-label {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 60px;
+  height: 25px;
+  line-height: 25px;
+}
+
+.toggle-label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 50px;
+  height: 25px;
+  background: #ccc;
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+.toggle-label:after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 19px;
+  height: 19px;
+  background: #fff;
+  border-radius: 19px;
+  transition: 0.3s;
+}
+
+.toggle-input:checked + .toggle-label:before {
+  background: #4CAF50;
+}
+
+.toggle-input:checked + .toggle-label:after {
+  left: calc(50px - 22px);
+}
+
+/* Field hints */
+.field-hint, .form-hint {
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 0.3em;
+}

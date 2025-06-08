@@ -1,18 +1,15 @@
 <% content_for :title, "Edit Payee" %>
 
-<div class="page-header">
-  <h1>Edit Payee</h1>
-  <div class="action-buttons">
-    <%= link_to payees_path, class: "pure-button" do %>
-      <span class="material-symbols-outlined">arrow_back</span> Back
-    <% end %>
-    <%= link_to payee_path(@payee), class: "pure-button pure-button-primary" do %>
-      <span class="material-symbols-outlined">visibility</span> View
-    <% end %>
-  </div>
-</div>
+<h1>Edit Payee</h1>
 
 <%= render "form", payee: @payee %>
+
+<br>
+
+<div>
+  <%= link_to "Show this payee", @payee %> |
+  <%= link_to "Back to payees", payees_path %>
+</div>
 
 <style>
   .page-header {

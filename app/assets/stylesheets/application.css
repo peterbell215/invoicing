@@ -13,6 +13,7 @@
 
 @import url("rails-messages.css");
 @import url("div-tables.css");
+@import url("forms.css");
 
 .banner {
     background-color: #FF8200; /* Modaxo orange */
