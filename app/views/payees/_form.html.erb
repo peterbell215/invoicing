@@ -5,6 +5,13 @@
     <legend>Payee Information</legend>
 
     <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :organisation %>
+        <%= form.text_field :organisation, class: "pure-input-1" %>
+      </div>
+    </div>
+
+    <div class="pure-g">
       <div class="pure-u-1 pure-u-md-1-2">
         <%= form.label :name %>
         <%= form.text_field :name, required: true, class: "pure-input-1" %>
@@ -47,17 +54,12 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-3">
+      <div class="pure-u-1 pure-u-md-1-2">
         <%= form.label :town %>
         <%= form.text_field :town, required: true, class: "pure-input-1" %>
       </div>
 
-      <div class="pure-u-1 pure-u-md-1-3">
-        <%= form.label :county %>
-        <%= form.text_field :county, class: "pure-input-1" %>
-      </div>
-
-      <div class="pure-u-1 pure-u-md-1-3">
+      <div class="pure-u-1 pure-u-md-1-2">
         <%= form.label :postcode %>
         <%= form.text_field :postcode, required: true, class: "pure-input-1" %>
       </div>
