@@ -14,10 +14,10 @@ module Person
 
   # Common methods for both Client and Payee
   def address_multi_line
-    [address1, address2, "#{town}, #{county} #{postcode}"].reject(&:blank?).join("\n")
+    [address1, address2, "#{town}, #{postcode}"].reject(&:blank?).join("\n")
   end
 
   def address_single_line
-    [address1, address2, town, county, postcode].reject(&:blank?).join(", ")
+    [address1, address2, town, postcode].reject(&:blank?).join(", ")
   end
 end
