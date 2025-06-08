@@ -15,7 +15,7 @@ class InvoicesController < ApplicationController
     @invoice = Invoice.new(client: @client)
     # If client has a default payee, set it on the invoice
     @invoice.payee = @client.paid_by if @client.paid_by.present?
-    @available_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
+    @available_sessions = @client.client_sessions.where(invoice_id: nil).order(session_date: :desc)
   end
   
   def create
@@ -30,7 +30,7 @@ class InvoicesController < ApplicationController
       redirect_to @invoice, notice: 'Invoice was successfully generated.'
     else
       @client = Client.find(invoice_params[:client_id])
-      @uninvoiced_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
+      @uninvoiced_sessions = @client.client_sessions.where(invoice_id: nil).order(session_date: :desc)
       render :new, status: :unprocessable_entity
     end
   end
