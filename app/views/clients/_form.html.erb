@@ -53,6 +53,16 @@
         <span class="field-hint">UK format postcode (e.g., SW1A 1AA)</span>
       </div>
     </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :paid_by_id, "Payment Arrangement" %>
+        <%= form.collection_select :paid_by_id, @payees, :id, :name,
+            { include_blank: "Self Paying" },
+            { class: "pure-input-1" } %>
+        <div class="form-hint">Select who pays for this client's sessions</div>
+      </div>
+    </div>
   </fieldset>
   
   <fieldset>

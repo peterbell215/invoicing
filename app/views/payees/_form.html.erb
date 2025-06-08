@@ -1,0 +1,70 @@
+<%= form_with(model: payee, class: "pure-form pure-form-stacked") do |form| %>
+  <%= render 'shared/error_explanation', model: payee %>
+
+  <fieldset>
+    <legend>Payee Information</legend>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :name %>
+        <%= form.text_field :name, required: true, class: "pure-input-1" %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :email %>
+        <%= form.email_field :email, required: true, class: "pure-input-1" %>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :phone %>
+        <%= form.telephone_field :phone, class: "pure-input-1" %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-2">
+        <div class="form-field">
+          <%= form.label :active %>
+          <%= form.check_box :active, class: "pure-checkbox" %>
+        </div>
+      </div>
+    </div>
+
+    <h3>Address</h3>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :address1, "Address Line 1" %>
+        <%= form.text_field :address1, required: true, class: "pure-input-1" %>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :address2, "Address Line 2" %>
+        <%= form.text_field :address2, class: "pure-input-1" %>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-3">
+        <%= form.label :town %>
+        <%= form.text_field :town, required: true, class: "pure-input-1" %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-3">
+        <%= form.label :county %>
+        <%= form.text_field :county, class: "pure-input-1" %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-3">
+        <%= form.label :postcode %>
+        <%= form.text_field :postcode, required: true, class: "pure-input-1" %>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <%= form.submit class: "pure-button pure-button-primary" %>
+  </div>
+<% end %>

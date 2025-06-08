@@ -35,15 +35,23 @@
     <div class="invoice-details">
       <div class="client-info">
         <h3>Bill To:</h3>
-        <div class="client-name"><%= @invoice.client.name %></div>
+        <% bill_to = @invoice.payee || @invoice.client %>
+        <div class="client-name"><%= bill_to.name %></div>
         <address>
-          <%= @invoice.client.address1 %><br>
-          <% if @invoice.client.address2.present? %>
-            <%= @invoice.client.address2 %><br>
+          <%= bill_to.address1 %><br>
+          <% if bill_to.address2.present? %>
+            <%= bill_to.address2 %><br>
           <% end %>
-          <%= @invoice.client.town %><br>
-          <%= @invoice.client.postcode %>
+          <%= bill_to.town %><br>
+          <%= bill_to.postcode %>
         </address>
+
+        <% if @invoice.payee.present? %>
+          <div class="services-for">
+            <h4>Services For:</h4>
+            <div><%= @invoice.client.name %></div>
+          </div>
+        <% end %>
       </div>
       
       <div class="invoice-info">

@@ -1,0 +1,41 @@
+<% content_for :title, "Edit Payee" %>
+
+<div class="page-header">
+  <h1>Edit Payee</h1>
+  <div class="action-buttons">
+    <%= link_to payees_path, class: "pure-button" do %>
+      <span class="material-symbols-outlined">arrow_back</span> Back
+    <% end %>
+    <%= link_to payee_path(@payee), class: "pure-button pure-button-primary" do %>
+      <span class="material-symbols-outlined">visibility</span> View
+    <% end %>
+  </div>
+</div>
+
+<%= render "form", payee: @payee %>
+
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .page-header h1 {
+    margin: 0;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5em;
+  }
+
+  .action-buttons .pure-button {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+  }
+</style>

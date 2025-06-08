@@ -21,6 +21,11 @@ class ClientSession < ApplicationRecord
     self.hourly_session_rate * (self.duration/60.0)
   end
 
+  # Return the entity (Client or Payee) who should be billed for this session
+  def billable_to
+    client.effective_payee
+  end
+
   private
 
   def set_hourly_session_rate

@@ -1,0 +1,96 @@
+<% content_for :title, "Payees" %>
+
+<h1>Payees</h1>
+
+<div class="pure-g">
+  <div class="pure-u-1">
+    <table class="pure-table pure-table-striped" style="width: 100%;">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Status</th>
+          <th>Clients</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @payees.any? %>
+          <% @payees.each do |payee| %>
+            <tr id="<%= dom_id payee %>">
+              <td><%= payee.name %></td>
+              <td><%= payee.email %></td>
+              <td><%= payee.phone %></td>
+              <td><%= payee.address_single_line %></td>
+              <td>
+                <span class="status-badge <%= payee.active? ? 'active' : 'inactive' %>">
+                  <%= payee.active? ? 'Active' : 'Inactive' %>
+                </span>
+              </td>
+              <td><%= payee.clients.count %></td>
+              <td>
+                <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
+                <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
+                <%= button_to "Delete", payee, method: :delete, class: "pure-button button-error button-small", form: {data: {turbo_confirm: "Are you sure? This will remove the payee."}} if payee.clients.empty? %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" class="is-center">No payees found</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="pure-g">
+  <div class="pure-u-1">
+    <div class="form-buttons">
+      <%= link_to "New Payee", new_payee_path, class: "pure-button pure-button-primary" %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+  }
+
+  .status-badge.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+  }
+
+  .status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
+  }
+
+  .button-small {
+    font-size: 0.8em;
+    padding: 5px 10px;
+  }
+
+  .button-error {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+  }
+
+  .button-error:hover {
+    background-color: #fdeeee;
+  }
+
+  .form-buttons {
+    margin-top: 1em;
+  }
+</style>

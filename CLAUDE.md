@@ -63,6 +63,12 @@ rails db:seed
 
 # Reset database (drop, create, migrate, seed)
 rails db:reset
+
+# Generate a new migration
+rails generate migration MigrationName
+
+# Rollback the last migration
+rails db:rollback
 ```
 
 ## Application Architecture
@@ -84,7 +90,14 @@ This is a Rails 8 invoicing application for managing clients and their associate
 
 3. **ClientSession**:
    - Represents billable time spent with a client
-   - Tracks start time and duration
+   - Tracks the session date (`session_date` field) and duration in minutes
+   - Associated with a client and optionally an invoice
+   - Stores the hourly rate applicable at the time of the session
+
+4. **Invoice**:
+   - Represents a billing document sent to clients
+   - Contains multiple client sessions
+   - Tracks status (created, sent, paid)
 
 ### Key Functionality:
 
@@ -99,6 +112,22 @@ This is a Rails 8 invoicing application for managing clients and their associate
    - Validates postcode format using UK-style format
    - Ensures fee periods don't overlap
    - Validates rate change data integrity
+
+3. **Session Management**:
+   - Tracks client sessions with date and duration
+   - Calculates fees based on the client's rate and session duration
+   - Sessions can be grouped into invoices for billing
+
+### View Conventions:
+
+1. **Date Formatting**:
+   - All dates are displayed using UK convention (day month year)
+   - Example: "31 May 2025" instead of "May 31, 2025"
+   - Dates are formatted using `strftime("%d %B %Y")`
+
+2. **Currency Formatting**:
+   - Money values use the UK pound symbol (£)
+   - Formatted using the Money gem and `number_to_currency` helper
 
 ### Testing Strategy:
 
@@ -118,3 +147,4 @@ Tests cover validation rules, rate calculation logic, and fee period management.
 - Uses Solid gems (solid_cache, solid_queue, solid_cable) for caching, job queues, and ActionCable
 - RSpec and FactoryBot are used for testing
 - Uses rubocop-rails-omakase for Ruby style enforcement
+

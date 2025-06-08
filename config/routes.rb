@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     resources :invoices, only: [:new]
   end
   resources :client_sessions
+  resources :payees
 
   resources :invoices, only: [:create, :index, :show, :edit, :update] do
     member do

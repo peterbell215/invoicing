@@ -1,12 +1,10 @@
 # Provides details of a client including address.
 class Client < ApplicationRecord
+  include Person
+
   has_many :client_sessions, dependent: :destroy
   has_many :fees, dependent: :destroy
-
-  # There must be at least one fee record setup for the client
-  validates :name, :address1, :town, presence: true
-  validates :email, presence: true, uniqueness: true
-  validates :postcode, format: { with: /\A[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}\z/i, message: 'is badly formed postcode' }
+  belongs_to :paid_by, class_name: 'Payee', optional: true
 
   validates :fees, presence: true
   validate :fees_must_not_overlap

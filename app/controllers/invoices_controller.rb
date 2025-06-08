@@ -1,6 +1,7 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [:new]
   before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update, :send_invoice]
+  before_action :set_available_payees, only: [:new, :edit, :create, :update]
 
   def index
     @invoices = Invoice.all.order(created_at: :desc)
@@ -12,6 +13,8 @@ class InvoicesController < ApplicationController
   
   def new
     @invoice = Invoice.new(client: @client)
+    # If client has a default payee, set it on the invoice
+    @invoice.payee = @client.paid_by if @client.paid_by.present?
     @available_sessions = @client.client_sessions.where(invoice_id: nil).order(start: :desc)
   end
   
@@ -97,7 +100,7 @@ class InvoicesController < ApplicationController
   end
   
   def invoice_params
-    params.require(:invoice).permit(:date, :amount, :client_id, client_session_ids: [])
+    params.require(:invoice).permit(:date, :amount, :client_id, :payee_id, client_session_ids: [])
   end
 
   def generate_invoice_pdf
@@ -106,5 +109,9 @@ class InvoicesController < ApplicationController
 
     # Convert to PDF using Ferrum_pdf
     FerrumPdf.render_pdf(html: html)
+  end
+
+  def set_available_payees
+    @available_payees = Payee.where(active: true).order(:name)
   end
 end

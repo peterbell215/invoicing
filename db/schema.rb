@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_31_193541) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_08_161312) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -54,17 +54,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_31_193541) do
   end
 
   create_table "clients", force: :cascade do |t|
-    t.string "name"
-    t.string "address1"
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "address1", null: false
     t.string "address2"
-    t.string "town"
-    t.string "postcode"
-    t.string "email"
-    t.string "title"
+    t.string "town", null: false
+    t.string "postcode", null: false
+    t.string "phone"
+    t.integer "paid_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "active"
+    t.boolean "active", default: true
     t.index ["email"], name: "index_clients_on_email", unique: true
+    t.index ["paid_by_id"], name: "index_clients_on_paid_by_id"
   end
 
   create_table "fees", force: :cascade do |t|
@@ -86,9 +88,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_31_193541) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "payee_id"
     t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["payee_id"], name: "index_invoices_on_payee_id"
+  end
+
+  create_table "payees", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "address1", null: false
+    t.string "address2"
+    t.string "town", null: false
+    t.string "postcode", null: false
+    t.string "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "organisation"
+    t.boolean "active", default: true
+    t.index ["email"], name: "index_payees_on_email", unique: true
+    t.index ["organisation"], name: "index_payees_on_organisation", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_sessions", "clients"
+  add_foreign_key "clients", "payees", column: "paid_by_id"
+  add_foreign_key "invoices", "clients"
+  add_foreign_key "invoices", "payees"
 end

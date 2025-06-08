@@ -1,5 +1,6 @@
 class ClientsController < ApplicationController
   before_action :set_client, only: %i[show edit update destroy current_rate]
+  before_action :set_payees, only: %i[new edit create update]
 
   # GET /clients or /clients.json
   def index
@@ -81,7 +82,13 @@ class ClientsController < ApplicationController
       :postcode,
       :new_rate,
       :new_rate_from,
-      :active
+      :active,
+      :paid_by_id
     )
+  end
+
+  # Set available payees for the dropdown
+  def set_payees
+    @payees = Payee.where(active: true).order(:name)
   end
 end
