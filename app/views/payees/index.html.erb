@@ -7,6 +7,7 @@
     <table class="pure-table pure-table-striped" style="width: 100%;">
       <thead>
         <tr>
+          <th>Organisation</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
@@ -20,6 +21,7 @@
         <% if @payees.any? %>
           <% @payees.each do |payee| %>
             <tr id="<%= dom_id payee %>">
+              <td><%= payee.organisation %></td>
               <td><%= payee.name %></td>
               <td><%= payee.email %></td>
               <td><%= payee.phone %></td>
@@ -39,7 +41,7 @@
           <% end %>
         <% else %>
           <tr>
-            <td colspan="7" class="is-center">No payees found</td>
+            <td colspan="8" class="is-center">No payees found</td>
           </tr>
         <% end %>
       </tbody>
