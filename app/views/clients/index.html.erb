@@ -169,16 +169,3 @@
     cursor: not-allowed;
   }
 </style>
-
-<script>
-document.addEventListener('turbo:load', function() {
-  const activeToggle = document.getElementById('active_only');
-  if (activeToggle) {
-    activeToggle.addEventListener('change', function() {
-      const url = new URL(window.location.href);
-      url.searchParams.set('active_only', this.checked);
-      Turbo.visit(url.toString());
-    });
-  }
-});
-</script>
