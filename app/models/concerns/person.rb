@@ -5,6 +5,9 @@ module Person
   extend ActiveSupport::Concern
 
   included do
+    # Default scope to only show active clients
+    scope :active, -> { where(active: true) }
+
     validates :name, presence: true
     validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :address1, presence: true

@@ -9,9 +9,6 @@ class Client < ApplicationRecord
   validates :fees, presence: true
   validate :fees_must_not_overlap
 
-  # Default scope to only show active clients
-  scope :active, -> { where(active: true) }
-
   # Set clients to active by default
   attribute :active, :boolean, default: true
 
