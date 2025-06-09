@@ -202,36 +202,4 @@
   .filter-controls {
     margin-bottom: 1em;
   }
-
-  .toggle-switch {
-    display: flex;
-    align-items: center;
-  }
-
-  .toggle-input {
-    display: none;
-  }
-
-  .toggle-label {
-    cursor: pointer;
-    padding-left: 30px;
-    position: relative;
-  }
-
-  .toggle-label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    background-color: #ccc;
-    border-radius: 50%;
-    transition: background-color 0.3s;
-  }
-
-  .toggle-input:checked + .toggle-label::before {
-    background-color: #4caf50;
-  }
 </style>
