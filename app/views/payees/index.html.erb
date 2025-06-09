@@ -4,50 +4,65 @@
 
 <div class="pure-g">
   <div class="pure-u-1">
-    <table class="pure-table pure-table-striped" style="width: 100%;">
-      <thead>
-        <tr>
-          <th>Organisation</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Address</th>
-          <th>Status</th>
-          <th>Clients</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if @payees.any? %>
-          <% @payees.each do |payee| %>
-            <tr id="<%= dom_id payee %>">
-              <td><%= payee.organisation %></td>
-              <td><%= payee.name %></td>
-              <td><%= payee.email %></td>
-              <td><%= payee.phone %></td>
-              <td><%= payee.address_single_line %></td>
-              <td>
-                <span class="status-badge <%= payee.active? ? 'active' : 'inactive' %>">
-                  <%= payee.active? ? 'Active' : 'Inactive' %>
-                </span>
-              </td>
-              <td><%= payee.clients.count %></td>
-              <td>
-                <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
-                <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
-                <% if payee.clients.empty? %>
-                  <button class="pure-button button-error button-small delete-payee-btn" data-payee-id="<%= payee.id %>" data-payee-name="<%= payee.name %>">Delete</button>
-                <% end %>
-              </td>
+    <div class="filter-controls" data-controller="active-filter">
+      <div class="toggle-switch">
+        <%= check_box_tag :active_only, "true", @show_active_only, class: "toggle-input",
+            data: {
+              active_filter_target: "checkbox",
+              action: "change->active-filter#toggle",
+              turbo_frame: "payees_list",
+              turbo_action: "advance"
+            } %>
+        <%= label_tag :active_only, "Show active payees only", class: "toggle-label" %>
+      </div>
+    </div>
+
+    <%= turbo_frame_tag "payees_list" do %>
+      <table class="pure-table pure-table-striped" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Organisation</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Status</th>
+            <th>Clients</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @payees.any? %>
+            <% @payees.each do |payee| %>
+              <tr id="<%= dom_id payee %>">
+                <td><%= payee.organisation %></td>
+                <td><%= payee.name %></td>
+                <td><%= payee.email %></td>
+                <td><%= payee.phone %></td>
+                <td><%= payee.address_single_line %></td>
+                <td>
+                  <span class="status-badge <%= payee.active? ? 'active' : 'inactive' %>">
+                    <%= payee.active? ? 'Active' : 'Inactive' %>
+                  </span>
+                </td>
+                <td><%= payee.clients.count %></td>
+                <td>
+                  <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
+                  <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
+                  <% if payee.clients.empty? %>
+                    <button class="pure-button button-error button-small delete-payee-btn" data-payee-id="<%= payee.id %>" data-payee-name="<%= payee.name %>">Delete</button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="is-center">No payees found</td>
             </tr>
           <% end %>
-        <% else %>
-          <tr>
-            <td colspan="8" class="is-center">No payees found</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    <% end %>
   </div>
 </div>
 
@@ -182,5 +197,41 @@
 
   .form-buttons {
     margin-top: 1em;
+  }
+
+  .filter-controls {
+    margin-bottom: 1em;
+  }
+
+  .toggle-switch {
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-input {
+    display: none;
+  }
+
+  .toggle-label {
+    cursor: pointer;
+    padding-left: 30px;
+    position: relative;
+  }
+
+  .toggle-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+  }
+
+  .toggle-input:checked + .toggle-label::before {
+    background-color: #4caf50;
   }
 </style>

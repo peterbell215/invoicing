@@ -3,7 +3,8 @@ class PayeesController < ApplicationController
 
   # GET /payees or /payees.json
   def index
-    @payees = Payee.all.order(:name)
+    @show_active_only = params[:active_only] == "true"
+    @payees = (@show_active_only ? Payee.active : Payee.all).order(:name)
   end
 
   # GET /payees/1 or /payees/1.json
