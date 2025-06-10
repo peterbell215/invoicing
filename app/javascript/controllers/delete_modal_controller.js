@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["dialog", "form", "payeeName"]
+  static targets = ["dialog", "form", "name"]
+  static values = { entity: String }
 
   connect() {
     // Listen for the custom event from delete_confirmation_controller
@@ -14,13 +15,13 @@ export default class extends Controller {
   }
 
   handleDeleteRequest(event) {
-    const { payeeId, payeeName } = event.detail;
+    const { id, name } = event.detail;
 
     // Set the payee name in the dialog
-    this.payeeNameTarget.textContent = payeeName;
+    this.nameTarget.textContent = name;
 
     // Set the form action
-    this.formTarget.action = `/payees/${payeeId}`;
+    this.formTarget.action = `/${this.entityValue}s/${id}`;
 
     // Show the dialog
     this.dialogTarget.showModal();

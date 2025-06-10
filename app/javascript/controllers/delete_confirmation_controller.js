@@ -8,28 +8,18 @@ export default class extends Controller {
   }
 
   open(event) {
-    const payeeId = event.currentTarget.getAttribute('data-payee-id');
-    const payeeName = event.currentTarget.getAttribute('data-payee-name');
+    const id = event.currentTarget.getAttribute('data-id');
+    const name = event.currentTarget.getAttribute('data-name');
 
     // Dispatch custom event to be handled by delete_modal_controller
     const deleteEvent = new CustomEvent('delete-payee', {
       bubbles: true,
       detail: {
-        payeeId: payeeId,
-        payeeName: payeeName
+        id: id,
+        name: name
       }
     });
 
     document.dispatchEvent(deleteEvent);
-  }
-
-  close() {
-    this.dialogTarget.close();
-  }
-
-  clickOutside(event) {
-    if (event.target === this.dialogTarget) {
-      this.dialogTarget.close();
-    }
   }
 }

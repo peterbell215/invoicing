@@ -51,8 +51,8 @@
                   <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
                   <% if payee.clients.empty? %>
                     <button class="pure-button button-error button-small delete-payee-btn"
-                            data-payee-id="<%= payee.id %>"
-                            data-payee-name="<%= payee.name %>"
+                            data-id="<%= payee.id %>"
+                            data-name="<%= payee.name %>"
                             data-action="click->delete-confirmation#open">Delete</button>
                   <% end %>
                 </td>
