@@ -31,7 +31,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody data-controller="delete-confirmation">
           <% if @payees.any? %>
             <% @payees.each do |payee| %>
               <tr id="<%= dom_id payee %>">
@@ -50,7 +50,10 @@
                   <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
                   <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
                   <% if payee.clients.empty? %>
-                    <button class="pure-button button-error button-small delete-payee-btn" data-payee-id="<%= payee.id %>" data-payee-name="<%= payee.name %>">Delete</button>
+                    <button class="pure-button button-error button-small delete-payee-btn"
+                            data-payee-id="<%= payee.id %>"
+                            data-payee-name="<%= payee.name %>"
+                            data-action="click->delete-confirmation#open">Delete</button>
                   <% end %>
                 </td>
               </tr>
@@ -75,57 +78,19 @@
 </div>
 
 <!-- Dialog for delete confirmation -->
-<dialog id="delete-confirmation-dialog" class="delete-dialog">
+<dialog id="delete-confirmation-dialog" data-controller="delete-modal" data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
   <div class="dialog-content">
     <h3>Confirm Deletion</h3>
-    <p>Are you sure you want to delete the payee: <span id="payee-to-delete"></span>?</p>
+    <p>Are you sure you want to delete the payee: <span id="payee-to-delete" data-delete-modal-target="payeeName"></span>?</p>
     <p>This action cannot be undone.</p>
     <div class="dialog-buttons">
-      <button id="cancel-delete" class="pure-button">Cancel</button>
-      <%= form_tag "", method: :delete, id: "delete-payee-form", class: "dialog-form" do %>
+      <button id="cancel-delete" class="pure-button" data-action="click->delete-modal#close">Cancel</button>
+      <%= form_tag "", method: :delete, id: "delete-payee-form", class: "dialog-form", data: { delete_modal_target: "form" } do %>
         <button type="submit" class="pure-button pure-button-primary button-error">Delete</button>
       <% end %>
     </div>
   </div>
 </dialog>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const dialog = document.getElementById('delete-confirmation-dialog');
-    const deleteForm = document.getElementById('delete-payee-form');
-    const payeeNameSpan = document.getElementById('payee-to-delete');
-    const cancelButton = document.getElementById('cancel-delete');
-
-    // Add click event listeners to all delete buttons
-    document.querySelectorAll('.delete-payee-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const payeeId = this.getAttribute('data-payee-id');
-        const payeeName = this.getAttribute('data-payee-name');
-
-        // Set the payee name in the dialog
-        payeeNameSpan.textContent = payeeName;
-
-        // Set the form action
-        deleteForm.action = `/payees/${payeeId}`;
-
-        // Show the dialog
-        dialog.showModal();
-      });
-    });
-
-    // Close the dialog when Cancel is clicked
-    cancelButton.addEventListener('click', function() {
-      dialog.close();
-    });
-
-    // Close the dialog if clicked outside (optional)
-    dialog.addEventListener('click', function(event) {
-      if (event.target === dialog) {
-        dialog.close();
-      }
-    });
-  });
-</script>
 
 <style>
   .status-badge {
