@@ -7,32 +7,53 @@
 }
 
 .status-badge.active {
-    background-color: #e6f7e6;
+    background-color: #e8f5e9;
     color: #2e7d32;
     border: 1px solid #2e7d32;
 }
 
 .status-badge.inactive {
-    background-color: #f7e6e6;
-    color: #d32f2f;
-    border: 1px solid #d32f2f;
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
 }
 
-.filter-controls {
-    margin-bottom: 1em;
-}
-
+/* Button styles */
 .button-small {
     font-size: 0.8em;
     padding: 5px 10px;
 }
 
 .button-warning {
-    background-color: #f0ad4e;
-    color: white;
+    background-color: #f8f8f8;
+    color: #f39c12;
+    border: 1px solid #f39c12;
 }
 
-.button-small.disabled {
+.button-warning:hover {
+    background-color: #fef9e7;
+}
+
+.button-error {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.button-error:hover {
+    background-color: #fdeeee;
+}
+
+/* Layout and utility styles */
+.form-buttons {
+    margin-top: 1em;
+}
+
+.filter-controls {
+    margin-bottom: 1em;
+}
+
+.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
