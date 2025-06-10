@@ -10,10 +10,13 @@
       <span class="material-symbols-outlined">edit</span> Edit
     <% end %>
     <% if @payee.clients.empty? %>
-      <%= button_to @payee, method: :delete, class: "pure-button button-error",
-          data: { turbo_confirm: "Are you sure you want to delete this payee?" } do %>
+      <button class="pure-button button-error delete-payee-btn"
+              data-payee-id="<%= @payee.id %>"
+              data-payee-name="<%= @payee.name %>"
+              data-controller="delete-confirmation"
+              data-action="click->delete-confirmation#open">
         <span class="material-symbols-outlined">delete</span> Delete
-      <% end %>
+      </button>
     <% end %>
   </div>
 </div>
@@ -103,6 +106,8 @@
     </div>
   </div>
 </div>
+
+<%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'payee' } %>
 
 <style>
   .page-header {

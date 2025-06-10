@@ -47,8 +47,8 @@
                 </td>
                 <td><%= payee.clients.count %></td>
                 <td>
-                  <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small" %>
-                  <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small" %>
+                  <%= link_to "Show", payee, class: "pure-button pure-button-primary button-small", data: { turbo_frame: "_top" } %>
+                  <%= link_to "Edit", edit_payee_path(payee), class: "pure-button button-small", data: { turbo_frame: "_top" } %>
                   <% if payee.clients.empty? %>
                     <button class="pure-button button-error button-small delete-payee-btn"
                             data-payee-id="<%= payee.id %>"
@@ -77,20 +77,8 @@
   </div>
 </div>
 
-<!-- Dialog for delete confirmation -->
-<dialog id="delete-confirmation-dialog" data-controller="delete-modal" data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
-  <div class="dialog-content">
-    <h3>Confirm Deletion</h3>
-    <p>Are you sure you want to delete the payee: <span id="payee-to-delete" data-delete-modal-target="payeeName"></span>?</p>
-    <p>This action cannot be undone.</p>
-    <div class="dialog-buttons">
-      <button id="cancel-delete" class="pure-button" data-action="click->delete-modal#close">Cancel</button>
-      <%= form_tag "", method: :delete, id: "delete-payee-form", class: "dialog-form", data: { delete_modal_target: "form" } do %>
-        <button type="submit" class="pure-button pure-button-primary button-error">Delete</button>
-      <% end %>
-    </div>
-  </div>
-</dialog>
+<!-- Replace the hard-coded dialog with the partial -->
+<%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'payee' } %>
 
 <style>
   .status-badge {
@@ -115,39 +103,6 @@
   .button-small {
     font-size: 0.8em;
     padding: 5px 10px;
-  }
-
-  /* Dialog styles */
-  .delete-dialog {
-    padding: 0;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-width: 450px;
-    width: 100%;
-  }
-
-  .delete-dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .dialog-content {
-    padding: 20px;
-  }
-
-  .dialog-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .dialog-form {
-    display: inline;
-  }
-
-  #payee-to-delete {
-    font-weight: bold;
   }
 
   .button-error {

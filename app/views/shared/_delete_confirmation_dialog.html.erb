@@ -1,0 +1,60 @@
+<!-- Dialog for delete confirmation -->
+<dialog id="delete-confirmation-dialog" data-controller="delete-modal" data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
+  <div class="dialog-content">
+    <h3>Confirm Deletion</h3>
+    <p>Are you sure you want to delete the <%= entity_type %>: <span id="<%= entity_type %>-to-delete" data-delete-modal-target="<%= entity_type %>Name"></span>?</p>
+    <p>This action cannot be undone.</p>
+    <div class="dialog-buttons">
+      <button id="cancel-delete" class="pure-button" data-action="click->delete-modal#close">Cancel</button>
+      <%= form_tag "", method: :delete, id: "delete-#{entity_type}-form", class: "dialog-form", data: { delete_modal_target: "form" } do %>
+        <button type="submit" class="pure-button pure-button-primary button-error">Delete</button>
+      <% end %>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Dialog styles */
+  #delete-confirmation-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 100%;
+  }
+
+  #delete-confirmation-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .dialog-content {
+    padding: 20px;
+  }
+
+  .dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .dialog-form {
+    display: inline;
+  }
+
+  [id$="-to-delete"] {
+    font-weight: bold;
+  }
+
+  /* Only include the button-error style if it's not defined elsewhere in your app */
+  .button-error {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+  }
+
+  .button-error:hover {
+    background-color: #fdeeee;
+  }
+</style>
