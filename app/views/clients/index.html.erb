@@ -38,7 +38,7 @@
                 <td><%= client.name %></td>
                 <td><%= client.email %></td>
                 <td><%= full_address(client) %></td>
-                <td><%= number_to_currency(client.current_rate&.amount.to_f / 100, unit: "£") %></td>
+                <td><%= number_to_currency(client.current_rate&.amount, unit: "£") %></td>
                 <td><span class="status-badge <%= client.active ? 'active' : 'inactive' %>"><%= client.active ? 'Active' : 'Inactive' %></span></td>
                 <td><%= client.uninvoiced_sessions.count %></td>
                 <td><%= client.uninvoiced_amount.format %></td>
