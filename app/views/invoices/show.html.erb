@@ -105,10 +105,10 @@
       <h3>Payment Details</h3>
       <p>
         Please make payment to:<br>
-        Bank: Example Bank<br>
-        Account Name: Katy Smith<br>
-        Account Number: 12345678<br>
-        Sort Code: 01-02-03<br>
+        Bank: <%= Rails.application.credentials.payment_details[:bank] || "Bank plc" %><br>
+        Account Name: <%= Rails.application.credentials.payment_details[:account_name] || "Katy's Account" %><br>
+        Account Number: <%= Rails.application.credentials.payment_details[:account_number] || "012345678" %><br>
+        Sort Code: <%= Rails.application.credentials.payment_details[:sort_code] || "00-00-00" %><br>
         Reference: INV-<%= @invoice.id %>
       </p>
       
