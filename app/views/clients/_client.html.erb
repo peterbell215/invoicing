@@ -45,6 +45,12 @@
             <div class="detail-label">Email:</div>
             <div class="detail-value"><%= client.paid_by.email %></div>
           </div>
+          <% if client.payee_reference.present? %>
+          <div class="detail-item">
+            <div class="detail-label">Payee Reference:</div>
+            <div class="detail-value"><%= client.payee_reference %></div>
+          </div>
+          <% end %>
           <div class="detail-item">
             <div class="detail-label">Status:</div>
             <div class="detail-value">

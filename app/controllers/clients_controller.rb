@@ -83,7 +83,8 @@ class ClientsController < ApplicationController
       :new_rate,
       :new_rate_from,
       :active,
-      :paid_by_id
+      :paid_by_id,
+      :payee_reference
     )
   end
 
