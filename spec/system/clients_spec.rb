@@ -186,4 +186,88 @@ RSpec.describe "Clients", type: :system do
       expect(page).to have_content("Inactive Client")
     end
   end
+
+  describe "Payee Reference functionality" do
+    let!(:payee) { FactoryBot.create(:payee) }
+
+    it "hides payee reference field when self-paying is selected", js:true do
+      visit new_client_path
+
+      puts Capybara.default_driver
+      puts Capybara.current_driver
+      puts Capybara.javascript_driver
+
+      # Check that the payee reference field is initially hidden
+      expect(page).to have_select('client_paid_by_id', selected: 'Self Paying')
+      expect(page).to have_css('div[data-payee-reference-target="referenceField", display:none]', visible: false)
+    end
+
+    it "shows payee reference field when a payee is selected" do
+      visit new_client_path
+
+      # Initially hidden
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"].hidden')
+
+      # Select a payee
+      select payee.name, from: 'client_paid_by_id'
+
+      # Field should now be visible
+      expect(page).not_to have_css('div[data-payee-reference-target="referenceField"].hidden')
+    end
+
+    it "saves payee reference when creating a client with a payee" do
+      visit new_client_path
+
+      # Fill in required client fields
+      fill_in "Name", with: "Client with Payee"
+      fill_in "Email", with: "clientwithpayee@example.com"
+      fill_in "Address Line 1", with: "123 Test St"
+      fill_in "Town", with: "Testville"
+      fill_in "Postcode", with: "SW1A 1AA"
+
+      # Select a payee and add a reference
+      select payee.name, from: 'client_paid_by_id'
+      fill_in "Payee Reference", with: "PO-12345"
+
+      # Submit the form
+      click_button "Create Client"
+
+      # Verify client was created with correct payee reference
+      expect(page).to have_content("Client was successfully created")
+      created_client = Client.find_by(email: "clientwithpayee@example.com")
+      expect(created_client.payee_reference).to eq("PO-12345")
+    end
+
+    it "clears payee reference when switching from payee to self-paying" do
+      # First create a client with a payee reference
+      client_with_reference = FactoryBot.create(
+        :client,
+        name: "Reference Client",
+        paid_by: payee,
+        payee_reference: "EXISTING-REF"
+      )
+
+      # Edit the client
+      visit edit_client_path(client_with_reference)
+
+      # Verify the payee and reference are correctly loaded
+      expect(page).to have_select('client_paid_by_id', selected: payee.name)
+      expect(page).to have_field('client_payee_reference', with: "EXISTING-REF")
+
+      # Change to self-paying
+      select "Self Paying", from: 'client_paid_by_id'
+
+      # The reference field should be hidden but still contain the value
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"].hidden')
+
+      # Submit the form
+      click_button "Update Client"
+
+      # Verify client was updated and reference was cleared
+      expect(page).to have_content("Client was successfully updated")
+      client_with_reference.reload
+      expect(client_with_reference.paid_by).to be_nil
+      expect(client_with_reference.payee_reference).to be_nil
+    end
+  end
 end

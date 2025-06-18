@@ -1,4 +1,3 @@
-- The CSS is a bit all over the place.  Consolidate them so that the majority are in the css files.
 - Add system tests for client_sessions
 - Add system tests for invoice
 - Add an ability to allow the sessions to be paid by someone else

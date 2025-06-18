@@ -46,4 +46,10 @@ RSpec.configure do |config|
 end
 
 # Capybara configuration
+# Capybara.register_driver :chrome do |app|
+#   options = Selenium::WebDriver::Chrome::Options.new
+#   options.add_argument('--start-maximized')
+#   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+# end
 Capybara.default_driver = :selenium_chrome
+Capybara.javascript_driver = :selenium_chrome

@@ -17,9 +17,9 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Money gem for handling money and currency conversions
-gem 'money-rails', '~>1.12'
+gem "money-rails", "~>1.12"
 # HTML to PDF conversion with Ferrum [https://github.com/rails/ferrum-pdf]
-gem 'ferrum_pdf'
+gem "ferrum_pdf"
 # Use Active Storage for file attachments
 gem "image_processing", "~> 1.2"
 
@@ -55,11 +55,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  
+
   # RSpec testing framework
   gem "rspec-rails"
   gem "factory_bot_rails"
-  gem 'faker'
+  gem "faker"
 end
 
 group :development do
@@ -70,6 +70,6 @@ group :development do
 end
 
 group :test do
-  gem 'capybara', '~> 3.40'
-  gem 'selenium-webdriver'
+  gem "capybara"
+  gem "selenium-webdriver"
 end

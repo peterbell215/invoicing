@@ -38,5 +38,10 @@ FactoryBot.define do
         client.reload
       end
     end
+
+    trait :with_payee do
+      paid_by { association :payee }
+      payee_reference { "PO-00001" }
+    end
   end
 end
