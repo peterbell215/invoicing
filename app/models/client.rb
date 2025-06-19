@@ -5,6 +5,8 @@ class Client < ApplicationRecord
   has_many :client_sessions, dependent: :destroy
   has_many :fees, dependent: :destroy
   belongs_to :paid_by, class_name: 'Payee', optional: true
+  has_many :messages_for_clients, dependent: :destroy
+  has_many :messages, through: :messages_for_clients
 
   validates :fees, presence: true
   validate :fees_must_not_overlap
@@ -96,5 +98,13 @@ class Client < ApplicationRecord
     return unless overlap_error
 
     self.errors.add(:fees, "fee to #{overlap_error.to} overlaps with its successor")
+  end
+
+  # Returns all messages applicable to this client,
+  # including global messages that apply to all clients
+  def applicable_messages
+    Message.current.left_joins(:messages_for_clients)
+           .where('messages_for_clients.client_id = ? OR messages_for_clients.client_id IS NULL', id)
+           .distinct
   end
 end

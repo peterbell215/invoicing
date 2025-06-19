@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_13_195352) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_042129) do
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -94,6 +104,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_195352) do
     t.index ["payee_id"], name: "index_invoices_on_payee_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.date "from_date"
+    t.date "until_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "messages_for_clients", force: :cascade do |t|
+    t.integer "message_id", null: false
+    t.integer "client_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_messages_for_clients_on_client_id"
+    t.index ["message_id"], name: "index_messages_for_clients_on_message_id"
+  end
+
   create_table "payees", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -116,4 +142,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_195352) do
   add_foreign_key "clients", "payees", column: "paid_by_id"
   add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "payees"
+  add_foreign_key "messages_for_clients", "clients"
+  add_foreign_key "messages_for_clients", "messages"
 end
