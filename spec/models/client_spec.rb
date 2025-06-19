@@ -178,4 +178,96 @@ describe Client do
       end
     end
   end
+
+  describe '#applicable_messages' do
+    let(:client) { create(:client) }
+    let(:other_client) { create(:client, name: "Other Client") }
+    let(:today) { Date.new(2025, 6, 19) }
+
+    before do
+      # Mock the current date to ensure consistent test results
+      allow(Date).to receive(:today).and_return(today)
+    end
+
+    context 'with client-specific messages' do
+      it 'includes messages specifically assigned to the client' do
+        client_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        client_message.apply_to_client(client)
+
+        expect(client.applicable_messages).to include(client_message)
+      end
+
+      it 'does not include messages assigned to other clients' do
+        other_client_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        other_client_message.apply_to_client(other_client)
+
+        expect(client.applicable_messages).not_to include(other_client_message)
+      end
+    end
+
+    context 'with global messages' do
+      it 'includes global messages that apply to all clients' do
+        global_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        global_message.apply_to_all_clients
+
+        expect(client.applicable_messages).to include(global_message)
+        expect(other_client.applicable_messages).to include(global_message)
+      end
+    end
+
+    context 'with date filtering' do
+      it 'only includes current messages' do
+        # Current client-specific message
+        current_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        current_message.apply_to_client(client)
+
+        # Expired client-specific message
+        expired_message = create(:message, from_date: today - 10.days, until_date: today - 1.day)
+        expired_message.apply_to_client(client)
+
+        # Future client-specific message
+        future_message = create(:message, from_date: today + 1.day, until_date: today + 10.days)
+        future_message.apply_to_client(client)
+
+        expect(client.applicable_messages).to include(current_message)
+        expect(client.applicable_messages).not_to include(expired_message)
+        expect(client.applicable_messages).not_to include(future_message)
+      end
+
+      it 'includes messages with no date restrictions' do
+        unrestricted_message = create(:message, from_date: nil, until_date: nil)
+        unrestricted_message.apply_to_client(client)
+
+        expect(client.applicable_messages).to include(unrestricted_message)
+      end
+    end
+
+    context 'with mixed message types' do
+      it 'returns all applicable messages without duplicates' do
+        # Client-specific message
+        client_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        client_message.apply_to_client(client)
+
+        # Global message
+        global_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        global_message.apply_to_all_clients
+
+        # Other client's message
+        other_client_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
+        other_client_message.apply_to_client(other_client)
+
+        # Non-current message for this client
+        expired_message = create(:message, from_date: today - 10.days, until_date: today - 1.day)
+        expired_message.apply_to_client(client)
+
+        applicable_messages = client.applicable_messages
+
+        expect(applicable_messages).to include(client_message)
+        expect(applicable_messages).to include(global_message)
+        expect(applicable_messages).not_to include(other_client_message)
+        expect(applicable_messages).not_to include(expired_message)
+        expect(applicable_messages.count).to eq(2)
+      end
+    end
+  end
 end
