@@ -11,13 +11,13 @@
     <!-- Header Section -->
     <div class="invoice-header">
       <div class="business-info">
-        <h2>Katy's Services</h2>
+        <h2><%= Rails.application.credentials.org_details[:name] %></h2>
         <address>
-          123 Business Street<br>
-          London, SW1 2AB<br>
-          United Kingdom<br>
-          Phone: 020 1234 5678<br>
-          Email: katy@example.com
+          <%= Rails.application.credentials.org_details[:address1] %><br>
+          <%= Rails.application.credentials.org_details[:address2] %><br>
+          <%= Rails.application.credentials.org_details[:town] %><br>
+          <%= Rails.application.credentials.org_details[:postcode] %><br>
+          <%= Rails.application.credentials.org_details[:email] %>
         </address>
       </div>
       
