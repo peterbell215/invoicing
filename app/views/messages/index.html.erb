@@ -1,0 +1,52 @@
+<% content_for :title, "Messages" %>
+
+<div class="header">
+  <h1>Messages</h1>
+</div>
+
+<div class="content">
+  <div class="pure-g">
+    <div class="pure-u-1">
+      <% if @messages.any? %>
+        <table class="pure-table pure-table-striped" style="width: 100%;">`
+          <thead>
+            <tr>
+              <th>Message</th>
+              <th>From</th>
+              <th>Until</th>
+              <th>Recipients</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @messages.each do |message| %>
+              <tr>
+                <td><%= truncate(strip_tags(message.text.to_s), length: 100) %></td>
+                <td><%= message.from_date&.strftime('%d %b %Y') || 'No start date' %></td>
+                <td><%= message.until_date&.strftime('%d %b %Y') || 'No end date' %></td>
+                <td>
+                  <% if message.applies_to_all_clients? %>
+                    All clients
+                  <% else %>
+                    <%= message.clients.count %> client<%= 's' if message.clients.count != 1 %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "Show", message_path(message), class: "pure-button pure-button-primary button-small" %>
+                  <%= link_to "Edit", edit_message_path(message), class: "pure-button pure-button-primary button-small" %>
+                  <%= button_to "Delete", message_path(message), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="pure-u-1 empty-state">
+          <p>No messages found.</p>
+          <%= link_to "Create your first invoice", clients_path, class: "pure-button pure-button-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

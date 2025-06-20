@@ -1,0 +1,59 @@
+<%= form_with(model: message, class: "pure-form pure-form-stacked") do |form| %>
+  <% if message.errors.any? %>
+    <div class="alert alert-danger">
+      <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
+      <ul>
+        <% message.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset>
+    <legend>
+      Message Content
+    </legend>
+    <%= form.label :text, "Message Text", class: "form-label" %>
+    <%= form.rich_text_area :text, class: "form-control" %>
+  </fieldset>
+
+  <fieldset>
+    <legend>Validity Period</legend>
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2">
+        <div class="field">
+          <%= form.label :from_date, "From Date (optional)" %>
+          <%= form.date_field :from_date, class: "pure-input-1" %>
+          <small class="form-text text-muted">Leave blank to make the message effective immediately.</small>
+        </div>
+      </div>
+      <div class="pure-u-1 pure-u-md-1-2">
+        <div class="field">
+          <%= form.label :until_date, "Until Date (optional)" %>
+          <%= form.date_field :until_date, class: "pure-input-1" %>
+          <small class="form-text text-muted">Leave blank if the message has no end date.</small>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <%= form.submit class: "pure-button pure-button-primary" %>
+  </div>
+<% end %>
+
+<style>
+    .field {
+        margin-bottom: 1em;
+        padding-right: 1em;
+    }
+
+    .form-buttons {
+        margin-top: 2em;
+    }
+
+    .align-right {
+        text-align: right;
+    }
+</style>

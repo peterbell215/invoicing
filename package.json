@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@rails/actiontext": "^8.0.200",
     "purecss": "^3.0.0",
-    "sortablejs": "^1.15.6"
+    "sortablejs": "^1.15.6",
+    "trix": "^2.1.15"
   }
 }
