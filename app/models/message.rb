@@ -8,18 +8,23 @@ class Message < ApplicationRecord
                       .where("`until_date` IS NULL OR `until_date` >= ?", Date.today) }
 
   # Helper method to determine if a message applies to all clients
-  def applies_to_all_clients?
+  def applies_to_all_clients
     messages_for_clients.exists?(client_id: nil)
   end
 
   # Helper method to add this message to all clients
-  def apply_to_all_clients
-    messages_for_clients.create(client_id: nil)
+  def apply_to_all_clients=(setting)
+    if setting
+      messages_for_clients.create(client_id: nil)
+      messages_for_clients.where.not(client_id: nil).destroy_all
+    else
+      messages_for_clients.where(client_id: nil).destroy_all
+    end
   end
 
   # Helper method to add this message to a specific client
   def apply_to_client(client)
-    messages_for_clients.create(client: client)
+    messages_for_clients.find_or_create_by(client_id: client.id)
   end
 
   # Helper method to add this message to multiple clients
