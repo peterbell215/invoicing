@@ -101,41 +101,55 @@ RSpec.describe Message, type: :model do
 
   describe 'client associations' do
     subject(:message) { create(:message) }
-    let(:client1) { create(:client, name: 'Client 1') }
-    let(:client2) { create(:client, name: 'Client 2') }
+    let(:clients) { create_list(:client_with_random_name, 3) }
 
-    describe '#applies_to_all_clients' do
+    describe '#all_clients?' do
       it 'returns true when the message applies to all clients' do
         message.messages_for_clients.create(client_id: nil)
-        expect(message.applies_to_all_clients).to be true
+        expect(message.all_clients?).to be true
       end
 
       it 'returns false when the message does not apply to all clients' do
-        expect(message.applies_to_all_clients).to be false
+        expect(message.all_clients?).to be false
       end
     end
 
-    describe '#apply_to_all_clients=' do
-      it 'creates a record with nil client_id when set to true' do
-        message.apply_to_all_clients = true
+    describe '#clients=' do
+      it 'creates a record with nil client_id when set to all' do
+        message.clients = "all"
         expect(message.messages_for_clients.exists?(client_id: nil)).to be true
+        expect(message.messages_for_clients.where.not(client_id: nil).count).to be_zero
       end
 
-      it 'removes any specific client associations when set to true' do
-        message.messages_for_clients.create(client: client1)
-        message.messages_for_clients.create(client: client2)
+      it 'allows a subset to be set for the message' do
+        message.client_ids = clients.first(2).map(&:id)
+        message.save!
 
-        message.apply_to_all_clients = true
-
-        expect(message.clients).to be_empty
-        expect(message.messages_for_clients.count).to eq(1)
-        expect(message.messages_for_clients.first.client_id).to be_nil
+        message.reload
+        expect(message.clients.count).to eq(2)
+        expect(message.clients.first.id).to eq(clients.first.id)
+        expect(message.clients.second.id).to eq(clients.second.id)
       end
 
-      it 'removes the all-clients record when set to false' do
-        message.messages_for_clients.create(client_id: nil)
+      it "allows the subset to be changed, adding some and removing others" do
+        message.client_ids = clients.first(2).map(&:id)
+        message.save!
 
-        message.apply_to_all_clients = false
+        message.client_ids = clients.last(2).map(&:id)
+        message.save!
+
+        message.reload
+        expect(message.clients.count).to eq(2)
+        expect(message.clients.first.id).to eq(clients.second.id)
+        expect(message.clients.second.id).to eq(clients.third.id)
+      end
+
+      it 'removes the all-clients record when set to a specific subset' do
+        message.client_ids = "all"
+        message.save!
+
+        message.client_ids = clients.first(2).map(&:id)
+        message.save!
 
         expect(message.messages_for_clients.exists?(client_id: nil)).to be false
       end
@@ -143,37 +157,16 @@ RSpec.describe Message, type: :model do
 
     describe '#apply_to_client' do
       it 'creates an association with the specified client' do
-        message.apply_to_client(client1)
+        message.apply_to_client(clients.first)
 
-        expect(message.clients).to include(client1)
+        expect(message.clients).to include(clients.first)
       end
 
       it 'does not create duplicate client associations' do
-        message.apply_to_client(client1)
-        message.apply_to_client(client1)
+        message.apply_to_client(clients.first)
+        message.apply_to_client(clients.first)
 
         expect(message.clients.count).to eq(1)
-      end
-    end
-
-    describe '#apply_to_clients' do
-      it 'creates associations with multiple clients' do
-        message.apply_to_clients([client1.id, client2.id])
-
-        expect(message.clients).to include(client1, client2)
-        expect(message.clients.count).to eq(2)
-      end
-
-      it 'handles empty array gracefully' do
-        message.apply_to_clients([])
-
-        expect(message.clients).to be_empty
-      end
-
-      it 'handles string IDs properly' do
-        message.apply_to_clients([client1.id.to_s, client2.id.to_s])
-
-        expect(message.clients).to include(client1, client2)
       end
     end
   end
