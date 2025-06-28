@@ -100,26 +100,30 @@ RSpec.describe Message, type: :model do
   end
 
   describe 'client associations' do
-    subject(:message) { create(:message) }
     let(:clients) { create_list(:client_with_random_name, 3) }
 
-    describe '#all_clients?' do
-      it 'returns true when the message applies to all clients' do
-        message.messages_for_clients.create(client_id: nil)
-        expect(message.all_clients?).to be true
+    describe '#all_clients' do
+      context "when set to true" do
+        subject(:message_for_all_clients) { create(:message_for_all_clients) }
+
+        it 'returns true when the message applies to all clients' do
+          message_for_all_clients.reload
+          expect(message_for_all_clients.all_clients).to be true
+        end
       end
 
-      it 'returns false when the message does not apply to all clients' do
-        expect(message.all_clients?).to be false
+      context "when set to false" do
+        subject(:message_for_no_clients) { create(:message) }
+
+        it 'returns false when the message does not apply to all clients' do
+          message_for_no_clients.reload
+          expect(message_for_no_clients.all_clients).to be false
+        end
       end
     end
 
     describe '#clients=' do
-      it 'creates a record with nil client_id when set to all' do
-        message.clients = "all"
-        expect(message.messages_for_clients.exists?(client_id: nil)).to be true
-        expect(message.messages_for_clients.where.not(client_id: nil).count).to be_zero
-      end
+      subject(:message) { create(:message) }
 
       it 'allows a subset to be set for the message' do
         message.client_ids = clients.first(2).map(&:id)
@@ -145,7 +149,7 @@ RSpec.describe Message, type: :model do
       end
 
       it 'removes the all-clients record when set to a specific subset' do
-        message.client_ids = "all"
+        message.all_clients = true
         message.save!
 
         message.client_ids = clients.first(2).map(&:id)
@@ -156,6 +160,8 @@ RSpec.describe Message, type: :model do
     end
 
     describe '#apply_to_client' do
+      subject(:message) { create(:message) }
+
       it 'creates an association with the specified client' do
         message.apply_to_client(clients.first)
 
