@@ -1,0 +1,9 @@
+<% content_for :title, "New Messages" %>
+
+<h1>New Message</h1>
+
+<%= render 'form', message: @message, clients: @clients %>
+
+<div class="mt-3">
+  <%= link_to "Back to Messages", messages_path, class: "btn btn-secondary" %>
+</div>

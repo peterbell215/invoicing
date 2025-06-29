@@ -25,7 +25,7 @@
                 <td><%= message.from_date&.strftime('%d %b %Y') || 'No start date' %></td>
                 <td><%= message.until_date&.strftime('%d %b %Y') || 'No end date' %></td>
                 <td>
-                  <% if message.applies_to_all_clients? %>
+                  <% if message.all_clients %>
                     All clients
                   <% else %>
                     <%= message.clients.count %> client<%= 's' if message.clients.count != 1 %>

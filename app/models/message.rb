@@ -10,6 +10,8 @@ class Message < ApplicationRecord
 
   # Helper method to add this message to all clients
   def all_clients=(setting)
+    setting = ActiveRecord::Type::Boolean.new.cast(setting)
+
     if setting
       messages_for_clients.build(client_id: nil)
       messages_for_clients.where.not(client_id: nil).destroy_all
