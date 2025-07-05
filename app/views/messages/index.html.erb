@@ -18,7 +18,7 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-controller="delete-confirmation">
             <% @messages.each do |message| %>
               <tr>
                 <td><%= truncate(strip_tags(message.text.to_s), length: 100) %></td>
@@ -34,7 +34,10 @@
                 <td>
                   <%= link_to "Show", message_path(message), class: "pure-button pure-button-primary button-small" %>
                   <%= link_to "Edit", edit_message_path(message), class: "pure-button pure-button-primary button-small" %>
-                  <%= button_to "Delete", message_path(message), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                  <button class="pure-button button-error button-small delete-message-btn"
+                          data-id="<%= message.id %>"
+                          data-name="<%= truncate(strip_tags(message.text.to_s), length: 50) %>"
+                          data-action="click->delete-confirmation#open">Delete</button>
                 </td>
               </tr>
             <% end %>
@@ -57,4 +60,4 @@
   </div>
 </div>
 
-
+<%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'message' } %>

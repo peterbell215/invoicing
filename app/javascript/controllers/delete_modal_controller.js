@@ -5,23 +5,32 @@ export default class extends Controller {
   static values = { entity: String }
 
   connect() {
-    // Listen for the custom event from delete_confirmation_controller
-    document.addEventListener('delete-payee', this.handleDeleteRequest.bind(this));
+    // Listen for delete events for different entity types
+    this.boundHandlers = {};
+    const entityTypes = ['payee', 'client', 'message'];
+
+    entityTypes.forEach(entityType => {
+      this.boundHandlers[entityType] = this.handleDeleteRequest.bind(this);
+      document.addEventListener(`delete-${entityType}`, this.boundHandlers[entityType]);
+    });
   }
 
   disconnect() {
-    // Clean up event listener when controller is disconnected
-    document.removeEventListener('delete-payee', this.handleDeleteRequest.bind(this));
+    // Clean up event listeners when controller is disconnected
+    Object.keys(this.boundHandlers).forEach(entityType => {
+      document.removeEventListener(`delete-${entityType}`, this.boundHandlers[entityType]);
+    });
   }
 
   handleDeleteRequest(event) {
     const { id, name } = event.detail;
+    const entityType = event.type.replace('delete-', '');
 
-    // Set the payee name in the dialog
+    // Set the entity name in the dialog
     this.nameTarget.textContent = name;
 
-    // Set the form action
-    this.formTarget.action = `/${this.entityValue}s/${id}`;
+    // Set the form action based on entity type
+    this.formTarget.action = `/${entityType}s/${id}`;
 
     // Show the dialog
     this.dialogTarget.showModal();
