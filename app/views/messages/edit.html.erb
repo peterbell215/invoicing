@@ -1,8 +1,8 @@
 <h1>Edit Message</h1>
 
 <%= render 'form', message: @message, clients: @clients,
-              selected_client_ids: @selected_client_ids,
-              applies_to_all: @applies_to_all %>
+           selected_client_ids: @selected_client_ids,
+           all_clients: @all_clients %>
 
 <div class="mt-3">
   <%= link_to "Show Message", message_path(@message), class: "btn btn-info me-2" %>

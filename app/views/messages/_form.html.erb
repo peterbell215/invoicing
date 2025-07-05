@@ -43,7 +43,7 @@
 
     <div data-controller="client-selection">
       <div class="field checkbox-field">
-        <%= form.check_box :all_clients, id: "apply_to_all", data: { client_selection_target: "applyToAll", action: "change->client-selection#toggleClientSelection" } %>
+        <%= form.check_box :all_clients, data: { client_selection_target: "applyToAll", action: "change->client-selection#toggleClientSelection" } %>
         <%= form.label :all_clients, "Apply to all clients" %>
       </div>
 

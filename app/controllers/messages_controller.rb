@@ -29,7 +29,7 @@ class MessagesController < ApplicationController
   def edit
     @clients = Client.where(active: true).order(:surname, :given_name)
     @client_ids = @message.clients.pluck(:id)
-    @applies_to_all = @message.all_clients
+    @all_clients = @message.all_clients
   end
 
   def update
@@ -40,7 +40,7 @@ class MessagesController < ApplicationController
     else
       @clients = Client.where(active: true).order(:surname, :given_name)
       @selected_client_ids = @message.clients.pluck(:id)
-      @applies_to_all = @message.applies_to_all
+      @all_clients = @message.all_clients
       render :edit, status: :unprocessable_entity
     end
   end

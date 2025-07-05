@@ -3,6 +3,8 @@ class Message < ApplicationRecord
   has_many :messages_for_clients, dependent: :destroy
   has_many :clients, through: :messages_for_clients
 
+  validates :text, presence: true
+
   # Scopes for finding active messages based on date
   scope :current, -> { where("`from_date` IS NULL OR `from_date` <= ?", Date.today)
                       .where("`until_date` IS NULL OR `until_date` >= ?", Date.today) }

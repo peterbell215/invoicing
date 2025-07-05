@@ -72,4 +72,5 @@ end
 group :test do
   gem "capybara"
   gem "selenium-webdriver"
+  gem 'numbers_and_words'
 end

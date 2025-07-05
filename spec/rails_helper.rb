@@ -43,13 +43,12 @@ RSpec.configure do |config|
   end
 
   config.include Rails.application.routes.url_helpers
-end
 
-# Capybara configuration
-# Capybara.register_driver :chrome do |app|
-#   options = Selenium::WebDriver::Chrome::Options.new
-#   options.add_argument('--start-maximized')
-#   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
-# end
-Capybara.default_driver = :selenium_chrome
-Capybara.javascript_driver = :selenium_chrome
+  config.before(:each, type: :system) do |example|
+    if example.metadata[:js]
+      driven_by :selenium_chrome
+    else
+      driven_by :selenium_chrome_headless
+    end
+  end
+end
