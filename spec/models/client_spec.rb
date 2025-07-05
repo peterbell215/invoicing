@@ -5,7 +5,7 @@ describe Client do
     context 'when FactoryBot builds a client' do
       subject(:test_client) { create(:client) }
 
-      specify { expect(test_client.name).to eq('Test Client') }
+      specify { expect(test_client.name).to eq('Test One') }
     end
 
     context 'when Factorybot builds a client with fees' do
@@ -60,7 +60,7 @@ describe Client do
     context 'when a new record is created with a nil value for hourly_charge' do
       before { create(:client) }
 
-      let(:read_back_client) { Client.find_by(name: 'Test Client') }
+      let(:read_back_client) { Client.find_by(name: 'Test One') }
 
       it 'creates a child record fee with a default value' do
         expect(read_back_client.current_rate).to eq Money.new(6000)
@@ -88,7 +88,7 @@ describe Client do
     end
 
     context 'when a new client record is created with current_rate set' do
-      subject(:read_back_client) { Client.find_by(name: 'Test Client') }
+      subject(:read_back_client) { Client.find_by(name: 'Test One') }
 
       before { Client.create!(attributes_for(:client, new_rate: Money.new(7000), new_rate_from: Time.zone.today)) }
 
@@ -208,7 +208,7 @@ describe Client do
     context 'with global messages' do
       it 'includes global messages that apply to all clients' do
         global_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
-        global_message.apply_to_all_clients
+        global_message.all_clients = true
 
         expect(client.applicable_messages).to include(global_message)
         expect(other_client.applicable_messages).to include(global_message)
@@ -250,7 +250,7 @@ describe Client do
 
         # Global message
         global_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)
-        global_message.apply_to_all_clients
+        global_message.all_clients = true
 
         # Other client's message
         other_client_message = create(:message, from_date: today - 5.days, until_date: today + 5.days)

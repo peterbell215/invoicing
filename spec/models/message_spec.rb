@@ -104,7 +104,7 @@ RSpec.describe Message, type: :model do
 
     describe '#all_clients' do
       context "when set to true" do
-        subject(:message_for_all_clients) { create(:message_for_all_clients) }
+        subject(:message_for_all_clients) { create(:message, :for_all_clients) }
 
         it 'returns true when the message applies to all clients' do
           message_for_all_clients.reload
