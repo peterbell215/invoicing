@@ -13,6 +13,8 @@ class Invoice < ApplicationRecord
 
   enum :status, { created: 0, sent: 1, paid: 2 }
 
+  before_save :update_amount
+
   # Returns the entity (Client or Payee) who should receive the invoice
   def bill_to
     payee || client
@@ -24,6 +26,10 @@ class Invoice < ApplicationRecord
   end
 
   private
+
+  def update_amount
+    self.amount= client_sessions.sum(&:fee)
+  end
 
   def validate_editable_status
     if status_changed? && status_was != 'created'
