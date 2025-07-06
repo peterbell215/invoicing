@@ -2,7 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["dialog", "form", "name"]
-  static values = { entity: String }
 
   connect() {
     // Listen for delete events for different entity types
@@ -23,8 +22,7 @@ export default class extends Controller {
   }
 
   handleDeleteRequest(event) {
-    const { id, name } = event.detail;
-    const entityType = event.type.replace('delete-', '');
+    const { id, name, entityType } = event.detail;
 
     // Set the entity name in the dialog
     this.nameTarget.textContent = name;

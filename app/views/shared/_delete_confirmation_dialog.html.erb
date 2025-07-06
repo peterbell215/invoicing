@@ -1,6 +1,5 @@
 <!-- Dialog for delete confirmation -->
-<dialog id="delete-confirmation-dialog" data-controller="delete-modal" data-delete-modal-entity-value="<%= entity_type %>"
-        data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
+<dialog id="delete-confirmation-dialog" data-controller="delete-modal" data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
   <div class="dialog-content">
     <h3>Confirm Deletion</h3>
     <p>Are you sure you want to delete the <%= entity_type %>: <span id="<%= entity_type %>-to-delete" data-delete-modal-target="name"></span>?</p>

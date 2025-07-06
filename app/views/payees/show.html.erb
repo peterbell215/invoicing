@@ -2,7 +2,7 @@
 
 <div class="page-header">
   <h1>Payee Details</h1>
-  <div class="action-buttons">
+  <div class="action-buttons" data-controller="delete-confirmation">
     <%= link_to payees_path, class: "pure-button" do %>
       <span class="material-symbols-outlined">arrow_back</span> Back
     <% end %>
@@ -11,9 +11,8 @@
     <% end %>
     <% if @payee.clients.empty? %>
       <button class="pure-button button-error delete-payee-btn"
-              data-payee-id="<%= @payee.id %>"
-              data-payee-name="<%= @payee.name %>"
-              data-controller="delete-confirmation"
+              data-id="<%= @payee.id %>"
+              data-name="<%= @payee.name %>"
               data-action="click->delete-confirmation#open">
         <span class="material-symbols-outlined">delete</span> Delete
       </button>
