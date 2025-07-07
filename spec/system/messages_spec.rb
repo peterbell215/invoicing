@@ -341,10 +341,10 @@ RSpec.describe "Messages", type: :system do
       # Check "Apply to all clients"
       check "Apply to all clients"
 
-      # Client checkboxes should now be disabled
-      expect(page).to have_field("Test One", disabled: true)
-      expect(page).to have_field("Test Two", disabled: true)
-      expect(page).to have_field("Test Three", disabled: true)
+      # Client checkboxes should now be invisible
+      expect(page).not_to have_field("Test One")
+      expect(page).not_to have_field("Test Two")
+      expect(page).not_to have_field("Test Three")
 
       # Uncheck "Apply to all clients"
       uncheck "Apply to all clients"
