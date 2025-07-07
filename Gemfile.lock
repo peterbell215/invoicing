@@ -236,7 +236,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
-    numbers_and_words (1.0.1)
+    numbers_and_words (1.0.2)
       i18n (<= 2)
     ostruct (0.6.2)
     parallel (1.27.0)
