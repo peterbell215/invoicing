@@ -29,7 +29,7 @@ RSpec.describe "Clients", type: :system do
       expect(created_client.current_rate.to_s).to eq("85.00")
     end
 
-    it "shows validation errors when submitting invalid information" do
+    it "shows validation errors when submitting invalid information", js: true do
       visit new_client_path
 
       # Submit without filling any fields
