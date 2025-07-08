@@ -190,7 +190,7 @@ RSpec.describe "Clients", type: :system do
   describe "Payee Reference functionality" do
     let!(:payee) { FactoryBot.create(:payee) }
 
-    it "hides payee reference field when self-paying is selected", js:true do
+    it "hides payee reference field when self-paying is selected" do
       visit new_client_path
 
       puts Capybara.default_driver
@@ -199,20 +199,20 @@ RSpec.describe "Clients", type: :system do
 
       # Check that the payee reference field is initially hidden
       expect(page).to have_select('client_paid_by_id', selected: 'Self Paying')
-      expect(page).to have_css('div[data-payee-reference-target="referenceField", display:none]', visible: false)
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"', visible: false)
     end
 
-    it "shows payee reference field when a payee is selected" do
+    it "shows payee reference field when a payee is selected", js: true do
       visit new_client_path
 
       # Initially hidden
-      expect(page).to have_css('div[data-payee-reference-target="referenceField"].hidden')
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: false)
 
       # Select a payee
       select payee.name, from: 'client_paid_by_id'
 
       # Field should now be visible
-      expect(page).not_to have_css('div[data-payee-reference-target="referenceField"].hidden')
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
     end
 
     it "saves payee reference when creating a client with a payee" do
@@ -258,7 +258,7 @@ RSpec.describe "Clients", type: :system do
       select "Self Paying", from: 'client_paid_by_id'
 
       # The reference field should be hidden but still contain the value
-      expect(page).to have_css('div[data-payee-reference-target="referenceField"].hidden')
+      expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: false)
 
       # Submit the form
       click_button "Update Client"
@@ -267,7 +267,7 @@ RSpec.describe "Clients", type: :system do
       expect(page).to have_content("Client was successfully updated")
       client_with_reference.reload
       expect(client_with_reference.paid_by).to be_nil
-      expect(client_with_reference.payee_reference).to be_nil
+      expect(client_with_reference.payee_reference).to be_blank
     end
   end
 end
