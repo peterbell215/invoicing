@@ -6,65 +6,6 @@
 
 <div class="pure-g">
   <div class="pure-u-1">
-    <%= form_with(model: @invoice, class: "pure-form pure-form-stacked") do |form| %>
-      <% if @invoice.errors.any? %>
-        <div class="error-explanation">
-          <h2><%= pluralize(@invoice.errors.count, "error") %> prohibited this invoice from being saved:</h2>
-          <ul>
-            <% @invoice.errors.each do |error| %>
-              <li><%= error.full_message %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <fieldset>
-        <legend>Invoice Information</legend>
-        <div class="pure-g">
-          <div class="pure-u-1 pure-u-md-1-2">
-            <div class="field">
-              <%= form.label :date, "Invoice Date" %>
-              <%= form.date_field :date, class: "pure-input-1" %>
-            </div>
-          </div>
-
-          <div class="pure-u-1 pure-u-md-1-2">
-            <div class="field">
-              <%= form.label :payee_id, "Bill To" %>
-              <%= form.collection_select :payee_id,
-                                        [@client] + @available_payees,
-                                        :id,
-                                        :name,
-                                        { include_blank: "#{@client.name} (Client)" },
-                                        { class: "pure-input-1" } %>
-              <div class="form-hint">Who should receive this invoice</div>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <h2>Uninvoiced Sessions</h2>
-
-      <%= render "sessions_table", form: form do  %>
-        <div class="actions">
-          <%= form.submit "Update Invoice", class: "pure-button pure-button-primary" %>
-          <%= link_to "Cancel", invoices_path, class: "pure-button" %>
-        </div>
-      <% end %>
-    <% end %>
+    <%= render 'form', invoice: @invoice %>
   </div>
 </div>
-
-<style>
-  .field {
-    margin-bottom: 1rem;
-  }
-
-  .actions {
-    margin-top: 2rem;
-  }
-
-  table {
-    margin-bottom: 1rem;
-  }
-</style>

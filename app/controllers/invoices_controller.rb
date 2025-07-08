@@ -100,7 +100,7 @@ class InvoicesController < ApplicationController
   end
   
   def invoice_params
-    params.require(:invoice).permit(:date, :amount, :client_id, :payee_id, client_session_ids: [])
+    params.require(:invoice).permit(:date, :amount, :client_id, :payee_id, :text, client_session_ids: [])
   end
 
   def generate_invoice_pdf

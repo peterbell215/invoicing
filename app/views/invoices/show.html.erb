@@ -100,6 +100,16 @@
       </table>
     </div>
 
+    <!-- Invoice Text Section -->
+    <% if @invoice.text.present? %>
+      <div class="invoice-text">
+        <h3>Additional Information</h3>
+        <div class="rich-text-content">
+          <%= @invoice.text %>
+        </div>
+      </div>
+    <% end %>
+
     <!-- Payment Details -->
     <div class="payment-details">
       <h3>Payment Details</h3>

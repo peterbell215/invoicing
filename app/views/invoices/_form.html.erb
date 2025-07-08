@@ -1,0 +1,79 @@
+<%= form_with(model: invoice, class: "pure-form pure-form-stacked", data: { controller: "validation" }) do |form| %>
+  <%= render 'shared/error_explanation', model: invoice %>
+
+  <fieldset>
+    <legend>Invoice Information</legend>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :date %>
+        <%= form.date_field :date, required: true, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :status %>
+        <%= form.select :status, Invoice.statuses.map { |key, _value| [key.humanize, key] }, {}, { class: "pure-input-1" } %>
+      </div>
+    </div>
+  </fieldset>
+
+  <% if defined?(@available_sessions) && @available_sessions.any? %>
+    <fieldset>
+      <legend>Sessions to Include</legend>
+      <div class="sessions-table">
+        <table class="pure-table pure-table-bordered">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Duration</th>
+              <th>Rate</th>
+              <th>Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @available_sessions.each do |session| %>
+              <tr>
+                <td>
+                  <%= check_box_tag "invoice[client_session_ids][]", session.id,
+                      invoice.persisted? ? invoice.client_sessions.include?(session) : true,
+                      { id: "session_#{session.id}" } %>
+                </td>
+                <td><%= session.session_date.strftime('%d %b %Y') %></td>
+                <td><%= session.description %></td>
+                <td><%= session.duration %> mins</td>
+                <td><%= session.hourly_session_rate.format %></td>
+                <td><%= session.fee.format %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="form-hint">
+          Select which sessions to include in this invoice. Only sessions that haven't been invoiced yet are shown.
+        </div>
+      </div>
+    </fieldset>
+  <% else %>
+    <fieldset>
+      <legend>Sessions</legend>
+      <div class="no-sessions-message">
+        <p>No uninvoiced sessions available for this client.</p>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <fieldset>
+    <legend>Additional Information</legend>
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.rich_text_area :text, class: "pure-input-1", style: "min-height: 200px;" %>
+        <div class="form-hint">Use this field to add notes, terms, or additional information to the invoice</div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-buttons">
+    <%= form.submit class: "pure-button pure-button-primary", data: { action: "click->validation#resetValidationErrorText" } %>
+    <%= link_to "Cancel", invoice_path(invoice), class: "pure-button" %>
+  </div>
+<% end %>

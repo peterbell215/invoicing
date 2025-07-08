@@ -4,6 +4,7 @@ class Invoice < ApplicationRecord
   belongs_to :payee, class_name: 'Payee', optional: true
   has_many :client_sessions, dependent: :nullify
   has_one_attached :pdf
+  has_rich_text :text
 
   monetize :amount_pence
 
