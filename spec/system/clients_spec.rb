@@ -36,7 +36,7 @@ RSpec.describe "Clients", type: :system do
       click_button "Create Client"
 
       # Expect to see validation errors
-      expect(page).to have_content("prohibited this client from being saved")
+      expect(page).to have_content("prohibited this record from being saved")
       expect(page).to have_content("Name can't be blank")
       expect(page).to have_content("Email can't be blank")
       expect(page).to have_content("Address Line 1 can't be blank")
@@ -47,7 +47,7 @@ RSpec.describe "Clients", type: :system do
       click_button "Create Client"
 
       # Should still show errors for other fields
-      expect(page).to have_content("prohibited this client from being saved")
+      expect(page).to have_content("prohibited this record from being saved")
       expect(page).not_to have_content("Name can't be blank")
       expect(page).to have_content("Email can't be blank")
     end

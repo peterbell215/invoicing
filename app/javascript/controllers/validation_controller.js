@@ -20,7 +20,7 @@ export default class extends Controller {
   addValidationErrorText(field) {
     // Update error heading
     let heading = this.errorExplanationTarget.querySelector("h2");
-    heading.innerText = `${this.numberOfValidationErrors} prohibited this client from being saved:`
+    heading.innerText = `${this.numberOfValidationErrors} prohibited this record from being saved:`
 
     // Clear existing error messages
     const errorList = this.errorExplanationTarget.querySelector("ul");
