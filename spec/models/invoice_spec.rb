@@ -37,4 +37,54 @@ RSpec.describe Invoice do
       end
     end
   end
+
+  describe 'destruction' do
+    context 'when invoice status is created' do
+      it 'allows destruction' do
+        invoice = create(:invoice, status: :created)
+        expect(invoice.destroy).not_to be_falsey
+        expect(invoice.persisted?).to be_falsey
+      end
+    end
+
+    context 'when invoice status is sent' do
+      it 'prevents destruction' do
+        invoice = create(:invoice, status: :sent)
+        expect(invoice.destroy).to be_falsey
+      end
+
+      it 'does not destroy the record' do
+        invoice = create(:invoice, status: :sent)
+        invoice.destroy
+        expect(invoice.persisted?).to be true
+      end
+    end
+
+    context 'when invoice status is paid' do
+      it 'prevents destruction' do
+        invoice = create(:invoice, status: :paid)
+        expect(invoice.destroy).to be_falsey
+      end
+
+      it 'does not destroy the record' do
+        invoice = create(:invoice, status: :paid)
+        invoice.destroy
+        expect(invoice.persisted?).to be true
+      end
+    end
+  end
+
+  describe 'client session handling during destruction' do
+    context 'when invoice is destroyed' do
+      it 'removes invoice association from client sessions' do
+        client = create(:client)
+        invoice = create(:invoice, client: client, status: :created)
+        client_session = create(:client_session, client: client, invoice: invoice)
+
+        invoice.destroy
+        client_session.reload
+        expect(client_session.invoice_id).to be_nil
+      end
+    end
+  end
 end

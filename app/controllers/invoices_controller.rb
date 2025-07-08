@@ -1,6 +1,6 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [:new]
-  before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update, :send_invoice]
+  before_action :set_invoice_and_client, only: [:show, :mark_paid, :edit, :update, :send_invoice, :destroy]
   before_action :set_available_payees, only: [:new, :edit, :create, :update]
 
   def index
@@ -86,6 +86,18 @@ class InvoicesController < ApplicationController
     @invoice.sent! unless @invoice.sent? || @invoice.paid?
 
     redirect_to @invoice, notice: 'Invoice was successfully sent.'
+  end
+
+  def destroy
+    # Only allow deletion if invoice can be deleted
+    if @invoice.destroy
+      # Delete the invoice
+      redirect_to invoices_path, notice: "Invoice was successfully deleted."
+    else
+      redirect_to invoices_path, alert: "Cannot delete invoice that has been sent or paid."
+    end
+
+
   end
 
   private

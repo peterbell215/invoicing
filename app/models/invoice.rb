@@ -12,9 +12,12 @@ class Invoice < ApplicationRecord
   validate :validate_editable_status, on: :update
   before_validation :set_payee_from_client, on: :create
 
+
   enum :status, { created: 0, sent: 1, paid: 2 }
 
   before_save :update_amount
+  after_initialize :populate_text_from_messages, if: :new_record?
+  before_destroy :deletable?
 
   # Returns the entity (Client or Payee) who should receive the invoice
   def bill_to
@@ -41,5 +44,33 @@ class Invoice < ApplicationRecord
   # Set the payee based on the client's payment arrangement
   def set_payee_from_client
     self.payee ||= client.paid_by if client&.paid_by.present?
+  end
+
+  # Populate the text field with relevant messages when creating a new invoice
+  def populate_text_from_messages
+    return if client.nil? # Guard clause for cases where client isn't set yet
+
+    # Get current messages for this client (including global messages)
+    client_messages = client.messages.current
+    global_messages = Message.joins(:messages_for_clients)
+                            .where(messages_for_clients: { client_id: nil })
+                            .current
+
+    relevant_messages = (client_messages + global_messages).uniq.sort(&:created_at)
+
+    return if relevant_messages.empty?
+
+    # Build formatted text from messages
+    message_content = relevant_messages.map do |message|
+      message.text.to_plain_text.strip
+    end.join("\n\n")
+
+    # Set the rich text content
+    self.text = message_content
+  end
+
+  # Returns true if this invoice can be deleted
+  def deletable?
+    throw :abort unless created?
   end
 end

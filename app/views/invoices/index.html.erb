@@ -1,137 +1,149 @@
 <% content_for :title, "Invoices" %>
 
-<div class="header">
+<div class="page-header">
   <h1>Invoices</h1>
 </div>
 
-<div class="content">
-  <div class="pure-g">
-    <div class="pure-u-1">
-      <% if @invoices.any? %>
-        <table class="pure-table pure-table-striped" style="width: 100%;">
-          <thead>
-            <tr>
-              <th>Reference</th>
-              <th>Client</th>
-              <th>Issue Date</th>
-              <th>Due Date</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @invoices.each do |invoice| %>
-              <tr>
-                <td><%= invoice.id %></td>
-                <td><%= invoice.client.name %></td>
-                <td><%= invoice.created_at.strftime('%d %b %Y') %></td>
-                <td><%= invoice.date.strftime('%d %b %Y') %></td>
-                <td><%= invoice.amount.format %></td>
-                <td>
-                  <span class="status <%= invoice.status %>">
-                    <%= invoice.status.titleize %>
-                  </span>
-                </td>
-                <td class="actions-cell">
-                  <div class="action-buttons">
-                    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
-                    <% if invoice.created? %>
-                      <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
-                    <% end %>
-                    <% unless invoice.paid? %>
-                      <%= button_to "Mark Paid", mark_paid_invoice_path(invoice), method: :patch, class: "pure-button button-success button-small" %>
-                    <% end %>
-                  </div>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <div class="pure-u-1 empty-state">
-          <p>No invoices found.</p>
-          <%= link_to "Create your first invoice", clients_path, class: "pure-button pure-button-primary" %>
-        </div>
-      <% end %>
+<div class="invoices-index">
+  <% if @invoices.any? %>
+    <table class="pure-table pure-table-striped">
+      <thead>
+        <tr>
+          <th>Invoice #</th>
+          <th>Client</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody data-controller="delete-confirmation">
+        <% @invoices.each do |invoice| %>
+          <tr>
+            <td><%= link_to invoice.id, invoice_path(invoice) %></td>
+            <td><%= invoice.client.name %></td>
+            <td><%= invoice.date.strftime('%d %b %Y') if invoice.date %></td>
+            <td><%= invoice.amount.format if invoice.amount %></td>
+            <td>
+              <span class="status-badge <%= invoice.status %>">
+                <%= invoice.status.humanize %>
+              </span>
+            </td>
+            <td class="actions">
+              <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+
+              <% if invoice.created? %>
+                <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
+                <button class="pure-button button-small button-danger delete-invoice-btn"
+                        data-id="<%= invoice.id %>"
+                        data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+                        data-action="click->delete-confirmation#open">Delete</button>
+              <% end %>
+
+              <% unless invoice.paid? %>
+                <%= link_to "Send", send_invoice_invoice_path(invoice),
+                    method: :post,
+                    class: "pure-button pure-button-primary button-small",
+                    data: {
+                      turbo_method: :post,
+                      turbo_confirm: "Are you sure you want to send this invoice?"
+                    } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="no-invoices">
+      <p>No invoices found.</p>
+      <p>Create your first invoice by selecting a client and generating an invoice for their sessions.</p>
     </div>
-  </div>
+  <% end %>
 </div>
 
+<%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'invoice' } %>
+
 <style>
-  .status {
-    display: inline-block;
-    padding: 0.3em 0.6em;
-    border-radius: 3px;
-    font-size: 0.85em;
+  .page-header {
+    margin-bottom: 2em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1em;
+  }
+
+  .invoices-index {
+    margin: 20px 0;
+  }
+
+  .pure-table {
+    width: 100%;
+    margin-bottom: 2em;
+  }
+
+  .pure-table th,
+  .pure-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .pure-table th {
+    background-color: #f7f7f7;
     font-weight: bold;
   }
-  
-  .status.paid {
-    background-color: #5cb85c;
-    color: white;
+
+  .actions {
+    white-space: nowrap;
   }
-  
-  .status.unpaid {
-    background-color: #f0ad4e;
-    color: white;
+
+  .actions .pure-button {
+    margin-right: 5px;
   }
-  
-  .status.overdue {
+
+  .button-small {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .button-danger {
     background-color: #d9534f;
     color: white;
   }
-  
-  .status.sent {
-    background-color: #2196F3;
-    color: white;
+
+  .button-danger:hover {
+    background-color: #c9302c;
   }
-  
-  .status.created {
-    background-color: #9E9E9E;
-    color: white;
-  }
-  
-  .button-small {
-    font-size: 0.8em;
-    padding: 0.4em 0.8em;
-    margin: 0.2em;
-  }
-  
-  .button-success {
-    background-color: #5cb85c;
-    color: white;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 3em;
-    background-color: #f8f8f8;
+
+  .status-badge {
+    padding: 3px 8px;
     border-radius: 4px;
-    margin: 2em 0;
-  }
-  
-  .empty-state p {
-    margin-bottom: 1.5em;
-    color: #777;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
   }
 
-  /* Action buttons container */
-  .action-buttons {
-    display: flex;
-    gap: 5px;
-    flex-wrap: nowrap;
+  .status-badge.created {
+    background-color: #f0f0f0;
+    color: #666;
   }
 
-  /* For smaller screens, allow wrapping if needed */
-  @media (max-width: 768px) {
-    .action-buttons {
-      flex-wrap: wrap;
-    }
+  .status-badge.sent {
+    background-color: #d9edf7;
+    color: #31708f;
   }
 
-  .actions-cell {
-    white-space: nowrap;
-    min-width: 200px;
+  .status-badge.paid {
+    background-color: #dff0d8;
+    color: #3c763d;
+  }
+
+  .no-invoices {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+
+  .no-invoices p {
+    margin-bottom: 10px;
   }
 </style>
