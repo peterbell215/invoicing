@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   resources :messages
   resources :payees
 
-  resources :invoices, only: [:create, :index, :show, :edit, :update] do
+  resources :invoices, only: [:create, :index, :show, :edit, :update, :destroy] do
     member do
       patch :mark_paid
       post :send_invoice
