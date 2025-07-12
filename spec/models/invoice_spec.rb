@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Invoice do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe 'FactoryBot' do
     subject(:invoice) { create(:invoice) }
 
@@ -84,6 +86,42 @@ RSpec.describe Invoice do
         invoice.destroy
         client_session.reload
         expect(client_session.invoice_id).to be_nil
+      end
+    end
+  end
+
+  describe 'date initialization' do
+    let(:client) { create(:client) }
+
+    it 'sets date to current date when creating a new invoice without specifying date' do
+      travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+        invoice = Invoice.new(client: client)
+        expect(invoice.date).to eq(Date.current)
+      end
+    end
+
+    it 'does not override explicitly set date when creating new invoice' do
+      custom_date = Date.new(2025, 6, 15)
+      invoice = Invoice.new(client: client, date: custom_date)
+      expect(invoice.date).to eq(custom_date)
+    end
+
+    it 'does not set date when loading existing invoice from database' do
+      # Create an invoice with a specific date
+      invoice = create(:invoice, client: client, date: Date.new(2025, 1, 1))
+
+      # Reload from database and verify date hasn't changed
+      travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+        reloaded_invoice = Invoice.find(invoice.id)
+        expect(reloaded_invoice.date).to eq(Date.new(2025, 1, 1))
+        expect(reloaded_invoice.date).not_to eq(Date.current)
+      end
+    end
+
+    it 'sets date when building through association' do
+      travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+        invoice = client.invoices.build
+        expect(invoice.date).to eq(Date.current)
       end
     end
   end

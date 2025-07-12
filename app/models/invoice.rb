@@ -17,6 +17,7 @@ class Invoice < ApplicationRecord
 
   before_save :update_amount
   after_initialize :populate_text_from_messages, if: :new_record?
+  after_initialize :set_default_date, if: :new_record?
   before_destroy :deletable?
 
   # Returns the entity (Client or Payee) who should receive the invoice
@@ -67,6 +68,11 @@ class Invoice < ApplicationRecord
 
     # Set the rich text content
     self.text = message_content
+  end
+
+  # Sets the default date for new invoice records
+  def set_default_date
+    self.date ||= Date.current
   end
 
   # Returns true if this invoice can be deleted

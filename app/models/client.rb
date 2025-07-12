@@ -7,6 +7,7 @@ class Client < ApplicationRecord
   belongs_to :paid_by, class_name: 'Payee', optional: true
   has_many :messages_for_clients, dependent: :destroy
   has_many :messages, through: :messages_for_clients
+  has_many :invoices, dependent: :nullify
 
   validates :fees, presence: true
   validate :fees_must_not_overlap
