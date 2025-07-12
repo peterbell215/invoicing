@@ -136,19 +136,27 @@ RSpec.describe "Invoices", type: :system do
     it "displays invoice details correctly" do
       visit invoice_path(invoice)
 
-      expect(page).to have_content("Invoice ##{invoice.id}")
+      within("div.invoice-info > table > tbody > tr:nth-child(1)") do
+        expect(page).to have_content("Invoice Number")
+        expect(page).to have_content(invoice.id.to_s)
+      end
+
+      within("div.invoice-info > table > tbody > tr:nth-child(2)") do
+        expect(page).to have_content("Date")
+        expect(page).to have_content(invoice.date.strftime('%d %b %Y'))
+      end
+
       expect(page).to have_content(client.name)
       expect(page).to have_content(payee.name)
       expect(page).to have_content("Test invoice text")
-      expect(page).to have_content(invoice.date.strftime('%d %b %Y'))
     end
 
     it "shows session details in the invoice" do
       visit invoice_path(invoice)
 
       invoice.client_sessions.each do |session|
-        expect(page).to have_content(session.session_date.strftime('%d/%m/%Y'))
-        expect(page).to have_content("#{session.duration} mins")
+        expect(page).to have_content(session.session_date.strftime('%d %b %Y'))
+        expect(page).to have_content("#{session.duration} minutes")
         expect(page).to have_content(session.hourly_session_rate.format)
       end
     end
