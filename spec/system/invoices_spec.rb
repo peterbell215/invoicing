@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Invoices", type: :system do
+  include ActionText::SystemTestHelper
+
   let!(:client) { FactoryBot.create(:client) }
   let!(:payee) { FactoryBot.create(:payee) }
   let!(:client_sessions) do
@@ -170,7 +172,7 @@ RSpec.describe "Invoices", type: :system do
 
       expect(page).to have_content("Edit Invoice")
 
-      fill_in "Text", with: "Updated invoice text"
+      fill_in_rich_textarea "Text", with: "Updated invoice text"
       click_button "Update Invoice"
 
       expect(page).to have_content("Invoice was successfully updated")

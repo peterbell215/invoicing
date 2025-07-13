@@ -67,6 +67,7 @@
     <legend>Additional Information</legend>
     <div class="pure-g">
       <div class="pure-u-1">
+        <%= form.label :text, "Message Text", class: "form-label" %>
         <%= form.rich_text_area :text, class: "pure-input-1", style: "min-height: 200px;" %>
         <div class="form-hint">Use this field to add notes, terms, or additional information to the invoice</div>
       </div>
