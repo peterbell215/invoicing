@@ -4,7 +4,7 @@
 */
 
 /* Error Explanation - Both Rails default and custom styles */
-#error_explanation, #notice_explanation, .error-explanation {
+#error_explanation, #notice_explanation, #alert_explanation, .error-explanation {
     box-sizing: border-box;
     padding: 0.5em 1em;
     border-radius: 4px;
@@ -17,6 +17,12 @@
     background-color: #fdf7f7;
     color: #e74c3c;
     border-left: 4px solid #e74c3c;
+}
+
+#alert_explanation {
+    border: 1px solid #e86b11;
+    background-color: #f39c12;
+    color: #d35400;
 }
 
 #notice_explanation {

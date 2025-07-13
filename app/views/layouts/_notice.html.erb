@@ -1,3 +1,9 @@
+<% if alert.present? %>
+  <div id="alert_explanation">
+    <h2><%= alert %></h2>
+  </div>
+<% end %>
+
 <% if notice.present? %>
   <div id="notice_explanation">
     <h2><%= notice %></h2>
