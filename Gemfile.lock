@@ -126,7 +126,7 @@ GEM
       concurrent-ruby (~> 1.1)
       webrick (~> 1.7)
       websocket-driver (~> 0.7)
-    ferrum_pdf (0.3.0)
+    ferrum_pdf (0.4.0)
       ferrum (~> 0.15)
       rails (>= 6.0.0)
     ffi (1.17.2-aarch64-linux-gnu)
