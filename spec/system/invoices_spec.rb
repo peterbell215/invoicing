@@ -81,20 +81,18 @@ RSpec.describe "Invoices", type: :system do
   end
 
   describe "Creating a new invoice" do
-    it "allows creating an invoice with selected sessions" do
+    it "allows creating an invoice with selected sessions", js: true do
       visit new_client_invoice_path(client)
 
-      expect(page).to have_content("New Invoice")
-      expect(page).to have_content(client.name)
+      expect(page).to have_content("New Invoice for #{client.name}")
 
       # Fill in invoice details
       fill_in "Date", with: Date.current.strftime("%Y-%m-%d")
       select payee.name, from: "Payee"
-      fill_in "Text", with: "Invoice for consulting services"
+      fill_in_rich_textarea "Text", with: "Invoice for consulting services"
 
       # Select some sessions
-      check "client_session_ids_#{client_sessions[0].id}"
-      check "client_session_ids_#{client_sessions[1].id}"
+      uncheck "session_#{client_sessions[2].id}"
 
       click_button "Create Invoice"
 
@@ -104,7 +102,7 @@ RSpec.describe "Invoices", type: :system do
       invoice = Invoice.last
       expect(invoice.client).to eq(client)
       expect(invoice.payee).to eq(payee)
-      expect(invoice.text).to eq("Invoice for consulting services")
+      expect(invoice.text.body.to_plain_text).to eq("Invoice for consulting services")
       expect(invoice.client_sessions).to include(client_sessions[0], client_sessions[1])
       expect(invoice.client_sessions).not_to include(client_sessions[2])
     end

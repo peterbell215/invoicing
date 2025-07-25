@@ -22,11 +22,6 @@ class InvoicesController < ApplicationController
     @invoice = Invoice.new(invoice_params)
 
     if @invoice.save
-      # Associate selected sessions with the new invoice
-      if params[:session_ids].present?
-        @client.client_sessions.where(id: params[:client_session_ids]).update_all(invoice_id: @invoice.id)
-      end
-
       redirect_to @invoice, notice: "Invoice was successfully generated."
     else
       @client = Client.find(invoice_params[:client_id])
@@ -110,7 +105,7 @@ class InvoicesController < ApplicationController
   end
 
   def invoice_params
-    params.require(:invoice).permit(:date, :amount, :client_id, :payee_id, :text, client_session_ids: [])
+    params.require(:invoice).permit(:date, :status, :amount, :client_id, :payee_id, :text, client_session_ids: [])
   end
 
   def generate_invoice_pdf
