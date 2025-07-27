@@ -191,27 +191,76 @@ RSpec.describe "Invoices", type: :system do
     end
   end
 
-  describe "Sending an invoice" do
+  describe "Sending an invoice", js: true do
     let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :created) }
 
-    it "allows sending a created invoice with confirmation" do
+    it "allows sending a created invoice with confirmation dialog from index page" do
       visit invoices_path
 
-      within("tr", text: "Invoice ##{invoice.id}") do
-        accept_confirm("Are you sure you want to send this invoice?") do
-          click_link "Send"
-        end
+      within("tbody tr:first-child") do
+        click_button "Send"
+      end
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog[open]")
+      expect(page).to have_content("Confirm Send Invoice")
+      expect(page).to have_content("Invoice ##{invoice.id}")
+
+      within("dialog") do
+        click_button "Send Invoice"
       end
 
       expect(page).to have_content("Invoice was successfully sent")
       expect(invoice.reload.status).to eq("sent")
     end
 
-    it "updates invoice status to sent after sending" do
+    it "allows sending a created invoice with confirmation dialog from show page" do
       visit invoice_path(invoice)
 
-      accept_confirm("Are you sure you want to send this invoice?") do
-        click_link "Send"
+      click_button "Send"
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog[open]")
+      expect(page).to have_content("Confirm Send Invoice")
+      expect(page).to have_content("Invoice ##{invoice.id}")
+
+      within("dialog") do
+        click_button "Send Invoice"
+      end
+
+      expect(page).to have_content("Invoice was successfully sent")
+      expect(invoice.reload.status).to eq("sent")
+    end
+
+    it "allows canceling the send action" do
+      visit invoices_path
+
+      within("tbody tr:first-child") do
+        click_button "Send"
+      end
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog[open]")
+
+      within("dialog") do
+        click_button "Cancel"
+      end
+
+      # Dialog should close and invoice should remain unchanged
+      expect(page).not_to have_css("dialog[open]")
+      expect(invoice.reload.status).to eq("created")
+    end
+
+    it "updates invoice status to sent after sending from invoice view" do
+      visit invoice_path(invoice)
+
+      click_button "Send"
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog[open]")
+
+      within("dialog") do
+        click_button "Send Invoice"
       end
 
       expect(page).to have_content("Invoice was successfully sent")

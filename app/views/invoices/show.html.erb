@@ -1,9 +1,14 @@
 <% content_for :title, "Invoice #{@invoice.id}" %>
 
-<div class="invoice-actions">
+<div class="invoice-actions" data-controller="send-confirmation">
   <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
   <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
-  <%= link_to "Send Invoice", send_invoice_invoice_path(@invoice), method: :post, class: "pure-button pure-button-primary", data: { turbo_method: :post, turbo_confirm: "Are you sure you want to send this invoice?" } unless @invoice.paid? %>
+  <% unless @invoice.paid? %>
+    <button class="pure-button pure-button-primary send-invoice-btn"
+            data-id="<%= @invoice.id %>"
+            data-name="Invoice #<%= @invoice.id %> for <%= @invoice.client.name %>"
+            data-action="click->send-confirmation#open">Send Invoice</button>
+  <% end %>
 </div>
 
 <div class="invoice-container">
@@ -326,3 +331,5 @@
     color: white;
   }
 </style>
+
+<%= render partial: 'shared/send_confirmation_dialog' %>

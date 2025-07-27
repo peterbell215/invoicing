@@ -1,0 +1,49 @@
+<!-- Dialog for send confirmation -->
+<dialog id="send-confirmation-dialog" data-controller="send-modal" data-send-modal-target="dialog" data-action="click->send-modal#clickOutside">
+  <div class="dialog-content">
+    <h3>Confirm Send Invoice</h3>
+    <p>Are you sure you want to send the invoice: <span id="invoice-to-send" data-send-modal-target="name"></span>?</p>
+    <p>This will send the invoice to the client and change its status to "sent".</p>
+    <div class="dialog-buttons">
+      <button id="cancel-send" class="pure-button" data-action="click->send-modal#close">Cancel</button>
+      <%= form_tag "", method: :post, id: "send-invoice-form", class: "dialog-form", data: { send_modal_target: "form" } do %>
+        <button type="submit" class="pure-button pure-button-primary">Send Invoice</button>
+      <% end %>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Dialog styles */
+  #send-confirmation-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 100%;
+  }
+
+  #send-confirmation-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .dialog-content {
+    padding: 20px;
+  }
+
+  .dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .dialog-form {
+    display: inline;
+  }
+
+  #invoice-to-send {
+    font-weight: bold;
+  }
+</style>
