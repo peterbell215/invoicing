@@ -67,15 +67,15 @@ RSpec.describe "Invoices", type: :system do
       visit invoices_path
 
       within("tbody tr:first-child") do
-        expect(page).to have_link("Send")
+        expect(page).to have_button("Send")
       end
 
       within("tbody tr:nth-child(2)") do
-        expect(page).to have_link("Send")
+        expect(page).to have_button("Send")
       end
 
       within("tbody tr:nth-child(3)") do
-        expect(page).not_to have_link("Send")
+        expect(page).not_to have_button("Send")
       end
     end
   end
@@ -250,9 +250,7 @@ RSpec.describe "Invoices", type: :system do
     it "allows deleting a created invoice with confirmation dialog" do
       visit invoices_path
 
-      within("tr", text: "Invoice ##{created_invoice.id}") do
-        click_button "Delete"
-      end
+      find_link(created_invoice.id.to_s).ancestor('tr').click_button("Delete")
 
       # Wait for the delete confirmation dialog to appear
       expect(page).to have_css("dialog[open]")
@@ -270,9 +268,7 @@ RSpec.describe "Invoices", type: :system do
     it "allows canceling the delete action" do
       visit invoices_path
 
-      within("tr", text: "Invoice ##{created_invoice.id}") do
-        click_button "Delete"
-      end
+      find_link(created_invoice.id.to_s).ancestor('tr').click_button("Delete")
 
       # Wait for the delete confirmation dialog to appear
       expect(page).to have_css("dialog[open]")
@@ -283,15 +279,15 @@ RSpec.describe "Invoices", type: :system do
 
       # Dialog should close and invoice should still be there
       expect(page).not_to have_css("dialog[open]")
-      expect(page).to have_content("Invoice ##{created_invoice.id}")
+
+      expect(page).to have_link(created_invoice.id.to_s)
     end
 
     it "prevents deleting sent invoices by not showing delete button" do
       visit invoices_path
 
-      within("tr", text: "Invoice ##{sent_invoice.id}") do
-        expect(page).not_to have_button("Delete")
-      end
+      row = find_link(sent_invoice.id.to_s).ancestor('tr')
+      expect(row).not_to have_button("Delete")
     end
 
     it "frees up associated sessions when invoice is deleted" do
@@ -299,16 +295,14 @@ RSpec.describe "Invoices", type: :system do
       session1 = client_sessions[0]
       session2 = client_sessions[1]
 
-      created_invoice.client_sessions << [session1, session2]
+      created_invoice.client_sessions << [ session1, session2 ]
 
       expect(session1.reload.invoice_id).to eq(created_invoice.id)
       expect(session2.reload.invoice_id).to eq(created_invoice.id)
 
       visit invoices_path
 
-      within("tr", text: "Invoice ##{created_invoice.id}") do
-        click_button "Delete"
-      end
+      find_link(created_invoice.id.to_s).ancestor('tr').click_button("Delete")
 
       within("dialog") do
         click_button "Delete"
