@@ -125,4 +125,27 @@ RSpec.describe Invoice do
       end
     end
   end
+
+  describe 'message text population' do
+    let(:client) { FactoryBot.create(:client) }
+
+    it 'populates text from messages sorted by created_at date' do
+      travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+        # Create two messages with different creation times
+        older_message = FactoryBot.create(:message, text: "This is the first message", created_at: 2.hours.ago)
+        newer_message = FactoryBot.create(:message, text: "This is the second message", created_at: 1.hours.ago)
+
+        # Associate both messages with the client
+        older_message.apply_to_client(client)
+        newer_message.apply_to_client(client)
+
+        # Create new invoice which should populate text from messages
+        invoice = Invoice.new(client: client)
+
+        # Expected text should have messages in chronological order (oldest first)
+        expected_text = "This is the first message\n\nThis is the second message"
+        expect(invoice.text.to_plain_text.strip).to eq(expected_text)
+      end
+    end
+  end
 end

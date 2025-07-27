@@ -57,7 +57,7 @@ class Invoice < ApplicationRecord
                             .where(messages_for_clients: { client_id: nil })
                             .current
 
-    relevant_messages = (client_messages + global_messages).uniq.sort(&:created_at)
+    relevant_messages = (client_messages + global_messages).uniq.sort_by(&:created_at)
 
     return if relevant_messages.empty?
 

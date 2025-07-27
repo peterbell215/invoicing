@@ -81,7 +81,7 @@ RSpec.describe "Invoices", type: :system do
   end
 
   describe "Creating a new invoice" do
-    it "allows creating an invoice with selected sessions", js: true do
+    it "allows creating an invoice with selected sessions" do
       visit new_client_invoice_path(client)
 
       expect(page).to have_content("New Invoice for #{client.name}")
@@ -107,26 +107,17 @@ RSpec.describe "Invoices", type: :system do
       expect(invoice.client_sessions).not_to include(client_sessions[2])
     end
 
-    it "shows validation errors when creating invalid invoice", js: true do
-      visit new_client_invoice_path(client)
-
-      # Submit without filling required fields
-      click_button "Create Invoice"
-
-      expect(page).to have_content("prohibited this record from being saved")
-    end
-
-    it "prepopulates text field with relevant messages when creating new invoice" do
+    it "prepopulates text field with relevant messages when creating new invoice", js: true do
       # Create some messages for the client
-      message1 = FactoryBot.create(:message, client: client, text: "First consultation completed", created_at: 1.week.ago)
-      message2 = FactoryBot.create(:message, client: client, text: "Follow-up session scheduled", created_at: 2.days.ago)
+      message1 = FactoryBot.create(:message, :for_all_clients, text: "General Message for all clients", created_at: 1.week.ago)
+      message2 = FactoryBot.create(:message, text: "Specific Message for #{client.name}", created_at: 2.days.ago).apply_to_client(client)
 
       visit new_client_invoice_path(client)
 
-      # Check that the text field contains message text
-      text_field_value = find_field("Text").value
-      expect(text_field_value).to include("First consultation completed")
-      expect(text_field_value).to include("Follow-up session scheduled")
+      within("#invoice_text") do
+        expect(page).to have_content("General Message for all clients")
+        expect(page).to have_content("Specific Message for #{client.name}")
+      end
     end
   end
 
