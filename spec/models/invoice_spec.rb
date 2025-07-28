@@ -87,6 +87,29 @@ RSpec.describe Invoice do
         client_session.reload
         expect(client_session.invoice_id).to be_nil
       end
+
+      it 'removes invoice association from multiple client sessions' do
+        client = create(:client)
+        invoice = create(:invoice, client: client, status: :created)
+
+        # Create multiple client sessions associated with the invoice
+        session1 = create(:client_session, client: client, invoice: invoice)
+        session2 = create(:client_session, client: client, invoice: invoice)
+        session3 = create(:client_session, client: client, invoice: invoice)
+
+        # Verify sessions are associated with the invoice
+        expect(session1.reload.invoice_id).to eq(invoice.id)
+        expect(session2.reload.invoice_id).to eq(invoice.id)
+        expect(session3.reload.invoice_id).to eq(invoice.id)
+
+        # Destroy the invoice
+        invoice.destroy
+
+        # Verify all sessions have their invoice_id reset to nil
+        expect(session1.reload.invoice_id).to be_nil
+        expect(session2.reload.invoice_id).to be_nil
+        expect(session3.reload.invoice_id).to be_nil
+      end
     end
   end
 

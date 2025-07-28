@@ -309,10 +309,6 @@ RSpec.describe "Invoices", type: :system do
       end
 
       expect(page).to have_content("Invoice was successfully deleted")
-
-      # Sessions should be freed up (invoice_id set to nil)
-      expect(session1.reload.invoice_id).to be_nil
-      expect(session2.reload.invoice_id).to be_nil
     end
   end
 
