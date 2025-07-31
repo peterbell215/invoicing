@@ -171,4 +171,151 @@ RSpec.describe Invoice do
       end
     end
   end
+
+  describe 'validate_editable_status' do
+    let(:client) { create(:client) }
+    let(:invoice) { create(:invoice, client: client, status: :created) }
+
+    context 'when status is created' do
+      it 'allows changing non-status fields' do
+        invoice.date = Date.current + 1.day
+        invoice.text = 'Updated text'
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+      end
+
+      it 'allows changing status from created to sent' do
+        invoice.status = :sent
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+        expect(invoice.reload.status).to eq('sent')
+      end
+
+      it 'allows changing status from created to paid' do
+        invoice.status = :paid
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+        expect(invoice.reload.status).to eq('paid')
+      end
+
+      it 'allows changing both status and other fields simultaneously' do
+        invoice.status = :sent
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+      end
+    end
+
+    context 'when status is sent' do
+      before { invoice.update!(status: :sent) }
+
+      it 'prevents changing non-status fields' do
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
+        expect(invoice.errors[:base]).to include("Cannot modify invoice fields once it has been sent or paid")
+      end
+
+      it 'prevents changing text field' do
+        invoice.text = 'Updated text'
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+
+      it 'allows changing status from sent to paid' do
+        invoice.status = :paid
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+        expect(invoice.reload.status).to eq('paid')
+      end
+
+      it 'prevents changing status from sent to created' do
+        invoice.status = :created
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:status]).to include("can only be marked as 'paid' after being 'sent'")
+      end
+
+      it 'prevents changing multiple non-status fields' do
+        invoice.date = Date.current + 1.day
+        invoice.text = 'Updated text'
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
+        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+    end
+
+    context 'when status is paid' do
+      before { invoice.update!(status: :sent) }
+      before { invoice.update!(status: :paid) }
+
+      it 'prevents changing non-status fields' do
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
+        expect(invoice.errors[:base]).to include("Cannot modify invoice fields once it has been sent or paid")
+      end
+
+      it 'prevents changing text field' do
+        invoice.text = 'Updated text'
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+
+      it 'prevents changing status from paid to sent' do
+        invoice.status = :sent
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:status]).to include("can only be marked as 'paid' after being 'sent'")
+      end
+
+      it 'prevents changing status from paid to created' do
+        invoice.status = :created
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:status]).to include("can only be marked as 'paid' after being 'sent'")
+      end
+    end
+
+    context 'edge cases' do
+      it 'allows status to remain the same while changing other fields when status is created' do
+        invoice.status = :created  # Same as current status
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).to be_valid
+        expect(invoice.save).to be true
+      end
+
+      it 'prevents direct transition from created to paid with field changes' do
+        invoice.status = :paid
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).to be_valid  # The status change itself is allowed
+        expect(invoice.save).to be true
+      end
+
+      it 'handles multiple validation errors correctly' do
+        invoice.update!(status: :sent)
+        invoice.date = Date.current + 1.day
+        invoice.text = 'Updated text'
+        invoice.status = :created
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors.count).to be > 1
+        expect(invoice.errors[:status]).to be_present
+        expect(invoice.errors[:date]).to be_present
+        expect(invoice.errors[:text]).to be_present
+      end
+    end
+  end
 end

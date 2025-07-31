@@ -37,9 +37,52 @@ class Invoice < ApplicationRecord
   end
 
   def validate_editable_status
-    if status_changed? && status_was != 'created'
-      errors.add(:base, "Cannot modify an invoice that has been sent or paid")
+    non_status_changes = changed_attributes.keys - ['status', 'updated_at']
+
+    # Check if any non-status fields are being changed when status is not 'created'
+    #
+    non_status_changes_ok?(non_status_changes)
+
+    # Check status transition rules
+    status_change_ok?
+  end
+
+  def status_change_ok?
+    if status_changed?
+      case status_was
+      when 'created'
+        # From 'created', can go to 'sent' or 'paid' (both allowed)
+        unless %w[sent paid].include?(status)
+          errors.add(:status, "invalid status transition")
+        end
+      when 'sent'
+        # From 'sent', can only go to 'paid'
+        unless status == 'paid'
+          errors.add(:status, "can only be marked as 'paid' after being 'sent'")
+        end
+      when 'paid'
+        # From 'paid', cannot change to any other status
+        errors.add(:status, "can only be marked as 'paid' after being 'sent'")
+      end
     end
+  end
+
+  def non_status_changes_ok?(non_status_changes)
+    if (non_status_changes.any? || text_changed) && status_was != 'created'
+      non_status_changes.each do |attr|
+        errors.add(attr, "cannot be changed once the invoice has been sent or paid")
+      end
+
+      if text_changed
+        errors.add(:text, "cannot be changed once the invoice has been sent or paid")
+      end
+
+      errors.add(:base, "Cannot modify invoice fields once it has been sent or paid")
+    end
+  end
+
+  def text_changed
+    text.changed? if text.respond_to?(:changed?)
   end
 
   # Set the payee based on the client's payment arrangement
