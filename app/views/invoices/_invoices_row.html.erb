@@ -1,0 +1,36 @@
+
+<tr is="turbo-frame" id="<%= dom_id(invoice) %>">
+  <td><%= link_to invoice.id, invoice_path(invoice) %></td>
+  <td><%= invoice.client.name %></td>
+  <td><%= invoice.date.strftime('%d %b %Y') if invoice.date %></td>
+  <td><%= invoice.amount.format if invoice.amount %></td>
+  <td>
+    <span class="status-badge <%= invoice.status %>">
+      <%= invoice.status.humanize %>
+    </span>
+  </td>
+
+  <td class="actions">
+    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+
+    <% if invoice.created? %>
+      <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
+      <button class="pure-button button-small button-danger delete-invoice-btn"
+              data-id="<%= invoice.id %>"
+              data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+              data-action="click->delete-confirmation#open">Delete</button>
+    <% end %>
+
+    <% unless invoice.paid? %>
+      <button class="pure-button pure-button-primary button-small send-invoice-btn"
+              data-id="<%= invoice.id %>"
+              data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+              data-action="click->send-confirmation#open">Send</button>
+
+      <%= button_to "Mark Paid", invoice_path(invoice),
+                    class: "pure-button button-success button-small",
+                    params: {invoice: { status: "paid" }},
+                    method: :put, data: { confirm: "Mark this invoice as being paid?" } %>
+    <% end %>
+  </td>
+</tr>

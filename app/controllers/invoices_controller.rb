@@ -1,6 +1,6 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [ :new ]
-  before_action :set_invoice_and_client, only: [ :show, :mark_paid, :edit, :update, :send_invoice, :destroy ]
+  before_action :set_invoice_and_client, only: [ :show, :edit, :update, :send_invoice, :destroy ]
   before_action :set_available_payees, only: [ :new, :edit, :create, :update ]
 
   def index
@@ -46,18 +46,17 @@ class InvoicesController < ApplicationController
     @client = @invoice.client
 
     if @invoice.update(invoice_params)
-      redirect_to invoice_path(@invoice), notice: "Invoice was successfully updated."
+      if request.referrer == invoices_url
+        render turbo_stream: turbo_stream.replace(@invoice, partial: "invoices/invoices_row", locals: { invoice: @invoice })
+      else
+        redirect_to invoice_path(@invoice), notice: "Invoice was successfully updated."
+      end
     else
       @available_sessions = @client.client_sessions
                                   .where("invoice_id IS NULL OR invoice_id = ?", @invoice.id)
-                                  .order(date: :desc)
+                                  .order(session_date: :desc)
       render :edit, status: :unprocessable_entity
     end
-  end
-
-  def mark_paid
-    @invoice.update(paid: true, paid_date: Date.today)
-    redirect_to invoices_path, notice: "Invoice #{@invoice.reference} has been marked as paid."
   end
 
   def send_invoice

@@ -28,9 +28,10 @@
       
       <div class="invoice-title">
         <h1>INVOICE</h1>
-        <% if @invoice.paid? %>
-          <div class="invoice-status paid">
-            PAID
+        <!-- Status Box -->
+        <% if @invoice.sent? || @invoice.paid? %>
+          <div class="invoice-status <%= @invoice.status %>">
+            <%= @invoice.status=="sent" ? "Copy" : @invoice.status.capitalize %>
           </div>
         <% end %>
       </div>
@@ -141,7 +142,6 @@
 </div>
 
 <style>
-  /* Print styles to hide navigation and make invoice printable */
   @media print {
     /* Hide everything by default */
     body * {
@@ -245,7 +245,7 @@
     color: white;
   }
   
-  .invoice-status.unpaid {
+  .invoice-status.sent {
     background-color: #f0ad4e;
     color: white;
   }

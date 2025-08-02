@@ -1,15 +1,14 @@
 Rails.application.routes.draw do
   resources :clients do
     get "current_rate", on: :member
-    resources :invoices, only: [:new]
+    resources :invoices, only: [ :new ]
   end
   resources :client_sessions
   resources :messages
   resources :payees
 
-  resources :invoices, only: [:create, :index, :show, :edit, :update, :destroy] do
+  resources :invoices, only: [ :create, :index, :show, :edit, :update, :destroy ] do
     member do
-      patch :mark_paid
       post :send_invoice
     end
   end

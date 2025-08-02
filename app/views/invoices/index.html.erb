@@ -19,35 +19,7 @@
       </thead>
       <tbody data-controller="delete-confirmation send-confirmation">
         <% @invoices.each do |invoice| %>
-          <tr>
-            <td><%= link_to invoice.id, invoice_path(invoice) %></td>
-            <td><%= invoice.client.name %></td>
-            <td><%= invoice.date.strftime('%d %b %Y') if invoice.date %></td>
-            <td><%= invoice.amount.format if invoice.amount %></td>
-            <td>
-              <span class="status-badge <%= invoice.status %>">
-                <%= invoice.status.humanize %>
-              </span>
-            </td>
-            <td class="actions">
-              <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
-
-              <% if invoice.created? %>
-                <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
-                <button class="pure-button button-small button-danger delete-invoice-btn"
-                        data-id="<%= invoice.id %>"
-                        data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
-                        data-action="click->delete-confirmation#open">Delete</button>
-              <% end %>
-
-              <% unless invoice.paid? %>
-                <button class="pure-button pure-button-primary button-small send-invoice-btn"
-                        data-id="<%= invoice.id %>"
-                        data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
-                        data-action="click->send-confirmation#open">Send</button>
-              <% end %>
-            </td>
-          </tr>
+          <%= render partial: "invoices_row", locals: {invoice: invoice} %>
         <% end %>
       </tbody>
     </table>
@@ -112,6 +84,15 @@
     background-color: #c9302c;
   }
 
+  .button-success {
+    background-color: #5cb85c;
+    color: white;
+  }
+
+  .button-success:hover {
+    background-color: #449d44;
+  }
+
   .status-badge {
     padding: 3px 8px;
     border-radius: 4px;
@@ -143,5 +124,11 @@
 
   .no-invoices p {
     margin-bottom: 10px;
+  }
+
+  form.button_to {
+      display: inline;
+      /* Add some gap between buttons */
+      gap: 10px;
   }
 </style>
