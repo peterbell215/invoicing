@@ -68,21 +68,11 @@ class Invoice < ApplicationRecord
   end
 
   def non_status_changes_ok?(non_status_changes)
-    if (non_status_changes.any? || text_changed) && status_was != 'created'
-      non_status_changes.each do |attr|
-        errors.add(attr, "cannot be changed once the invoice has been sent or paid")
-      end
+    return if status_was == 'created'
 
-      if text_changed
-        errors.add(:text, "cannot be changed once the invoice has been sent or paid")
-      end
-
-      errors.add(:base, "Cannot modify invoice fields once it has been sent or paid")
+    non_status_changes.each do |attr|
+      errors.add(attr, "cannot be changed once the invoice has been sent or paid")
     end
-  end
-
-  def text_changed
-    text.changed? if text.respond_to?(:changed?)
   end
 
   # Set the payee based on the client's payment arrangement
