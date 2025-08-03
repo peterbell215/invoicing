@@ -10,7 +10,7 @@
   </td>
 
   <td class="actions">
-    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small" %>
+    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small", data: { turbo_frame: '_top' } %>
 
     <% if invoice.created? %>
       <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button button-small" %>
