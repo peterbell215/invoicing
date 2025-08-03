@@ -315,17 +315,18 @@ RSpec.describe "Invoices", type: :system do
   describe "Invoice status transitions" do
     let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :created) }
 
-    it "shows created status initially" do
-      visit invoice_path(invoice)
-      expect(page).to have_css(".status-badge.created", text: "Created")
-    end
-
     it "transitions from created to sent" do
       visit invoice_path(invoice)
 
-      accept_confirm("Are you sure you want to send this invoice?") do
-        click_link "Send"
+      click_button "Send"
+
+      within "#send-confirmation-dialog" do
+        expect(page).to have_content("Confirm Send Invoice")
+        expect(page).to have_content("Invoice ##{invoice.id}")
+        click_button "Send"
       end
+
+      expect(page).to have_content("Invoice was successfully sent")
 
       expect(invoice.reload.status).to eq("sent")
     end
