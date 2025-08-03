@@ -1,7 +1,7 @@
 # Hold details of an invoice.
 class Invoice < ApplicationRecord
   belongs_to :client
-  belongs_to :payee, class_name: 'Payee', optional: true
+  belongs_to :payee, class_name: "Payee", optional: true
   has_many :client_sessions, dependent: :nullify
   has_one_attached :pdf
   has_rich_text :text
@@ -37,7 +37,7 @@ class Invoice < ApplicationRecord
   end
 
   def validate_editable_status
-    non_status_changes = changed_attributes.keys - ['status', 'updated_at']
+    non_status_changes = changed_attributes.keys - %w[status updated_at]
 
     # Check if any non-status fields are being changed when status is not 'created'
     #
@@ -50,17 +50,17 @@ class Invoice < ApplicationRecord
   def status_change_ok?
     if status_changed?
       case status_was
-      when 'created'
+      when "created"
         # From 'created', can go to 'sent' or 'paid' (both allowed)
         unless %w[sent paid].include?(status)
           errors.add(:status, "invalid status transition")
         end
-      when 'sent'
+      when "sent"
         # From 'sent', can only go to 'paid'
-        unless status == 'paid'
+        unless status == "paid"
           errors.add(:status, "can only be marked as 'paid' after being 'sent'")
         end
-      when 'paid'
+      when "paid"
         # From 'paid', cannot change to any other status
         errors.add(:status, "can only be marked as 'paid' after being 'sent'")
       end
@@ -68,7 +68,7 @@ class Invoice < ApplicationRecord
   end
 
   def non_status_changes_ok?(non_status_changes)
-    return if status_was == 'created'
+    return if status_was == "created"
 
     non_status_changes.each do |attr|
       errors.add(attr, "cannot be changed once the invoice has been sent or paid")
