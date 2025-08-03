@@ -17,7 +17,7 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody data-controller="delete-confirmation send-confirmation">
+      <tbody data-controller="delete-confirmation send-confirmation mark-paid-modal">
         <% @invoices.each do |invoice| %>
           <%= render partial: "invoices_row", locals: {invoice: invoice} %>
         <% end %>
@@ -33,6 +33,7 @@
 
 <%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'invoice' } %>
 <%= render partial: 'shared/send_confirmation_dialog' %>
+<%= render partial: 'shared/mark_paid_confirmation_dialog' %>
 
 <style>
   .page-header {

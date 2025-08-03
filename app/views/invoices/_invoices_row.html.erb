@@ -1,4 +1,3 @@
-
 <tr is="turbo-frame" id="<%= dom_id(invoice) %>">
   <td><%= link_to invoice.id, invoice_path(invoice) %></td>
   <td><%= invoice.client.name %></td>
@@ -18,19 +17,26 @@
       <button class="pure-button button-small button-danger delete-invoice-btn"
               data-id="<%= invoice.id %>"
               data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
-              data-action="click->delete-confirmation#open">Delete</button>
+              data-action="click->delete-confirmation#open">
+        Delete
+      </button>
     <% end %>
 
     <% unless invoice.paid? %>
       <button class="pure-button pure-button-primary button-small send-invoice-btn"
               data-id="<%= invoice.id %>"
               data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
-              data-action="click->send-confirmation#open">Send</button>
+              data-action="click->send-confirmation#open">
+        Send
+      </button>
 
-      <%= button_to "Mark Paid", invoice_path(invoice),
-                    class: "pure-button button-success button-small",
-                    params: {invoice: { status: "paid" }},
-                    method: :put, data: { confirm: "Mark this invoice as being paid?" } %>
+      <button class="pure-button button-success button-small mark-paid-btn"
+              data-id="<%= invoice.id %>"
+              data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+              data-controller="mark-paid"
+              data-action="click->mark-paid#open">
+        Mark Paid
+      </button>
     <% end %>
   </td>
 </tr>
