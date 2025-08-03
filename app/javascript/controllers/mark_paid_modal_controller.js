@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["dialog", "form", "name"]
 
-  connect() {
+  nameTargetConnected(target) {
     this.boundHandler = this.handleMarkPaidRequest.bind(this);
     document.addEventListener('mark-paid-invoice', this.boundHandler);
   }
