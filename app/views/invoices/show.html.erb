@@ -1,14 +1,9 @@
 <% content_for :title, "Invoice #{@invoice.id}" %>
 
-<div class="invoice-actions" data-controller="send-confirmation">
-  <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
+<div class="show-buttons">
+  <%= render partial: "buttons", locals: { invoice: @invoice, button_size:"" } %>
   <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
-  <% unless @invoice.paid? %>
-    <button class="pure-button pure-button-primary send-invoice-btn"
-            data-id="<%= @invoice.id %>"
-            data-name="Invoice #<%= @invoice.id %> for <%= @invoice.client.name %>"
-            data-action="click->send-confirmation#open">Send Invoice</button>
-  <% end %>
+  <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
 </div>
 
 <div class="invoice-container">
@@ -196,12 +191,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
-  .invoice-actions {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
   .invoice-content {
     padding: 20px;
   }
@@ -325,11 +314,4 @@
     line-height: 1.5;
     color: #555;
   }
-  
-  .button-success {
-    background-color: #5cb85c;
-    color: white;
-  }
 </style>
-
-<%= render partial: 'shared/send_confirmation_dialog' %>

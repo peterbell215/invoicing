@@ -32,6 +32,12 @@
   margin: 0;
 }
 
+.show-buttons {
+    justify-content: center;
+    margin-top: 0.5em;
+    display: flex;
+    gap: 0.5em;
+}
 .action-buttons {
   display: flex;
   gap: 0.5em;
@@ -136,8 +142,26 @@ body div.container {
     margin-bottom: 1em; /* Adjust the value as needed */
 }
 
-/* Custom button styles */
 .button-error {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.button-error:hover {
+    background-color: #fdeeee;
+}
+
+.button-success {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.button-success:hover {
+    background-color: #449d44;
+}
+
+.button-danger {
     background-color: #e74c3c;
     color: white;
 }

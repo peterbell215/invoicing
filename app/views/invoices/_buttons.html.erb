@@ -1,0 +1,31 @@
+<% if invoice.created? %>
+  <div data-controller="delete-confirmation" display="inline">
+    <button class="pure-button button-danger delete-invoice-btn <%=button_size%>"
+            data-id="<%= invoice.id %>"
+            data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+            data-action="click->delete-confirmation#open">
+      Delete
+    </button>
+  </div>
+  <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button #{button_size}" %>
+<% end %>
+
+<% unless invoice.paid? %>
+  <div data-controller="send-confirmation" display="inline">
+    <button class="pure-button pure-button-primary send-invoice-btn <%=button_size%>"
+            data-id="<%= invoice.id %>"
+            data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+            data-action="click->send-confirmation#open">
+      Send
+    </button>
+  </div>
+  <%= render partial: 'shared/send_confirmation_dialog' %>
+
+  <button class="pure-button button-success mark-paid-btn <%=button_size%>"
+          data-id="<%= invoice.id %>"
+          data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
+          data-controller="mark-paid"
+          data-action="click->mark-paid#open">
+    Mark Paid
+  </button>
+<% end %>

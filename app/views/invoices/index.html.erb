@@ -19,7 +19,7 @@
       </thead>
       <tbody data-controller="delete-confirmation send-confirmation mark-paid-modal">
         <% @invoices.each do |invoice| %>
-          <%= render partial: "invoices_row", locals: {invoice: invoice} %>
+          <%= render partial: "invoices_row", locals: {invoice: invoice, button_size: "button-small"} %>
         <% end %>
       </tbody>
     </table>
@@ -36,12 +36,6 @@
 <%= render partial: 'shared/mark_paid_confirmation_dialog' %>
 
 <style>
-  .page-header {
-    margin-bottom: 2em;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 1em;
-  }
-
   .invoices-index {
     margin: 20px 0;
   }
@@ -69,29 +63,6 @@
 
   .actions .pure-button {
     margin-right: 5px;
-  }
-
-  .button-small {
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-
-  .button-danger {
-    background-color: #d9534f;
-    color: white;
-  }
-
-  .button-danger:hover {
-    background-color: #c9302c;
-  }
-
-  .button-success {
-    background-color: #5cb85c;
-    color: white;
-  }
-
-  .button-success:hover {
-    background-color: #449d44;
   }
 
   .status-badge {
