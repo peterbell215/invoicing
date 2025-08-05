@@ -2,8 +2,12 @@
 
 <div class="show-buttons">
   <%= render partial: "buttons", locals: { invoice: @invoice, button_size:"" } %>
-  <%= link_to "Print Invoice", "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" %>
-  <%= link_to "Back to Invoices", invoices_path, class: "pure-button" %>
+  <%= link_to "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" do %>
+    <span class="material-symbols-outlined">print</span> Print
+  <% end %>
+  <%= link_to invoices_path, class: "pure-button" do %>
+    <span class="material-symbols-outlined">arrow_back</span> Back to Invoices
+  <% end %>
 </div>
 
 <div class="invoice-container">

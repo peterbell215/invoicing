@@ -4,10 +4,12 @@
             data-id="<%= invoice.id %>"
             data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
             data-action="click->delete-confirmation#open">
-      Delete
+      <span class="material-symbols-outlined">delete</span> Delete
     </button>
   </div>
-  <%= link_to "Edit", edit_invoice_path(invoice), class: "pure-button #{button_size}" %>
+  <%= link_to edit_invoice_path(invoice), class: "pure-button #{button_size}" do %>
+    <span class="material-symbols-outlined">edit</span> Edit
+  <% end %>
 <% end %>
 
 <% unless invoice.paid? %>
@@ -16,7 +18,7 @@
             data-id="<%= invoice.id %>"
             data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
             data-action="click->send-confirmation#open">
-      Send
+      <span class="material-symbols-outlined">mail</span> Send
     </button>
   </div>
   <%= render partial: 'shared/send_confirmation_dialog' %>
@@ -26,6 +28,6 @@
           data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
           data-controller="mark-paid"
           data-action="click->mark-paid#open">
-    Mark Paid
+    <span class="material-symbols-outlined">check</span> Mark as Paid
   </button>
 <% end %>

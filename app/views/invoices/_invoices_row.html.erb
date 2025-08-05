@@ -10,7 +10,9 @@
   </td>
 
   <td class="action-buttons">
-    <%= link_to "View", invoice_path(invoice), class: "pure-button pure-button-primary button-small", data: { turbo_frame: '_top' } %>
+    <%= link_to invoice_path(invoice), class: "pure-button pure-button-primary button-small", data: { turbo_frame: '_top' } do %>
+      <span class="material-symbols-outlined">subject</span> View
+    <% end %>
 
     <%= render partial: "buttons", locals: { invoice: invoice, button_size: "button-small" } %>
   </td>
