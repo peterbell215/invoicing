@@ -5,18 +5,7 @@
     <%= link_to payees_path, class: "pure-button" do %>
       <span class="material-symbols-outlined">arrow_back</span> Back
     <% end %>
-    <%= link_to edit_payee_path(@payee), class: "pure-button pure-button-primary" do %>
-      <span class="material-symbols-outlined">edit</span> Edit
-    <% end %>
-    <% if @payee.clients.empty? %>
-      <button class="pure-button button-danger"
-              data-id="<%= @payee.id %>"
-              data-name="<%= @payee.name %>"
-              data-action="click->delete-confirmation#open">
-        <span class="material-symbols-outlined">delete</span> Delete
-      </button>
-      <%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'payee' } %>
-    <% end %>
+    <%= render partial: "buttons", locals: { payee: @payee, button_size: "" } %>
   </div>
 </div>
 

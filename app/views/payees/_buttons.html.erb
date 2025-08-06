@@ -1,0 +1,14 @@
+<%= link_to edit_payee_path(payee), class: "pure-button #{button_size}", data: { turbo_frame: "_top" } do %>
+  <span class="material-symbols-outlined">edit</span> Edit
+<% end %>
+
+<% if payee.clients.empty? %>
+  <div data-controller="delete-confirmation" style="display: inline">
+    <button class="pure-button button-danger <%= button_size %>"
+            data-id="<%= payee.id %>"
+            data-name="<%= payee.name %>"
+            data-action="click->delete-confirmation#open">
+      <span class="material-symbols-outlined">delete</span> Delete
+    </button>
+  </div>
+<% end %>
