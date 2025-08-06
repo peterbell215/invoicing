@@ -1,13 +1,7 @@
 <% content_for :title, @client.name %>
 
 <div class="show-buttons">
-  <%= link_to edit_client_path(@client), class: "pure-button pure-button-primary" do %>
-    <span class="material-symbols-outlined">edit</span> Edit
-  <% end %>
-  <%= button_to @client, method: :delete, class: "pure-button button-error",
-      data: { turbo_confirm: "Are you sure you want to delete this client?" } do %>
-    <span class="material-symbols-outlined">delete</span> Delete
-  <% end %>
+  <%= render partial: "buttons", locals: { client: @client, button_size: "" } %>
   <%= link_to clients_path, class: "pure-button" do %>
     <span class="material-symbols-outlined">arrow_back</span> Back
   <% end %>

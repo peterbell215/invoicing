@@ -1,0 +1,26 @@
+<%= link_to client, class: "pure-button pure-button-primary #{button_size}", data: { turbo_frame: "_top" } do %>
+  <span class="material-symbols-outlined">subject</span> View
+<% end %>
+
+<%= link_to edit_client_path(client), class: "pure-button #{button_size}", data: { turbo_frame: "_top" } do %>
+  <span class="material-symbols-outlined">edit</span> Edit
+<% end %>
+
+<% if client.uninvoiced_sessions.any? %>
+  <%= link_to new_client_invoice_path(client), data: { turbo: false }, class: "pure-button button-warning #{button_size}" do %>
+    <span class="material-symbols-outlined">receipt_long</span> Invoice
+  <% end %>
+<% else %>
+  <button class="pure-button button-warning <%= button_size %> disabled" disabled>
+    <span class="material-symbols-outlined">receipt_long</span>Invoice
+  </button>
+<% end %>
+
+<div data-controller="delete-confirmation" display="inline">
+  <button class="pure-button button-danger <%= button_size %>"
+          data-id="<%= client.id %>"
+          data-name="<%= client.name %>"
+          data-action="click->delete-confirmation#open">
+    <span class="material-symbols-outlined">delete</span> Delete
+  </button>
+</div>

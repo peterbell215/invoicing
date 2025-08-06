@@ -42,28 +42,8 @@
                 <td><span class="status-badge <%= client.active ? 'active' : 'inactive' %>"><%= client.active ? 'Active' : 'Inactive' %></span></td>
                 <td><%= client.uninvoiced_sessions.count %></td>
                 <td><%= client.uninvoiced_amount.format %></td>
-                <td>
-                  <%= link_to client, class: "pure-button pure-button-primary button-small", data: { turbo_frame: "_top" } do %>
-                    <span class="material-symbols-outlined">subject</span> View
-                  <% end %>
-                  <%= link_to edit_client_path(client), class: "pure-button button-small", data: { turbo_frame: "_top" } do %>
-                    <span class="material-symbols-outlined">edit</span> Edit
-                  <% end %>
-                  <% if client.uninvoiced_sessions.any? %>
-                    <%= link_to new_client_invoice_path(client), data: { turbo: false }, class: "pure-button button-warning button-small" do %>
-                      <span class="material-symbols-outlined">receipt_long</span> Invoice
-                    <% end %>
-                  <% else %>
-                    <button class="pure-button button-warning button-small disabled" disabled>
-                      <span class="material-symbols-outlined">receipt_long</span>Invoice
-                    </button>
-                  <% end %>
-                  <button class="pure-button button-danger button-small delete-client-btn"
-                          data-id="<%= client.id %>"
-                          data-name="<%= client.name %>"
-                          data-action="click->delete-confirmation#open">
-                    <span class="material-symbols-outlined">delete</span> Delete
-                  </button>
+                <td class="action-buttons">
+                  <%= render partial: "buttons", locals: { client: client, button_size: "button-small" } %>
                 </td>
               </tr>
             <% end %>
@@ -81,7 +61,9 @@
 <div class="pure-g">
   <div class="pure-u-1">
     <div class="form-buttons">
-      <%= link_to "New client", new_client_path, class: "pure-button pure-button-primary" %>
+      <%= link_to new_client_path, class: "pure-button pure-button-primary" do %>
+        <span class="material-symbols-outlined"> add </span> New Client
+      <% end %>
     </div>
   </div>
 </div>
