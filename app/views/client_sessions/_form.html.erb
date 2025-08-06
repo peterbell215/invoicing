@@ -49,7 +49,8 @@
     </div>
   </fieldset>
 
-  <div class="actions">
+  <div class="form-buttons">
     <%= form.submit class: "pure-button pure-button-primary", data: { action: "click->validation#resetValidationErrorText" }  %>
+    <%= link_to "Cancel", client_sessions_path, class: "pure-button" %>
   </div>
 <% end %>
