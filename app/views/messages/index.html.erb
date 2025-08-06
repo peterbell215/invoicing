@@ -31,19 +31,11 @@
                     <%= message.clients.count %> client<%= 's' if message.clients.count != 1 %>
                   <% end %>
                 </td>
-                <td>
-                  <%= link_to message_path(message), class: "pure-button pure-button-primary button-small"  do %>
+                <td class="action-buttons">
+                  <%= link_to message_path(message), class: "pure-button pure-button-primary button-small" do %>
                     <span class="material-symbols-outlined">subject</span> View
                   <% end %>
-                  <%= link_to edit_message_path(message), class: "pure-button pure-button-primary button-small" do %>
-                    <span class="material-symbols-outlined">edit</span> Edit
-                  <% end %>
-                  <button class="pure-button button-danger button-small"
-                          data-id="<%= message.id %>"
-                          data-name="<%= truncate(strip_tags(message.text.to_s), length: 50) %>"
-                          data-action="click->delete-confirmation#open">
-                    <span class="material-symbols-outlined">delete</span> Delete
-                  </button>
+                  <%= render partial: "buttons", locals: { message: message, button_size: "button-small" } %>
                 </td>
               </tr>
             <% end %>
@@ -61,7 +53,9 @@
 <div class="pure-g">
   <div class="pure-u-1">
     <div class="form-buttons">
-      <%= link_to "New Message", new_message_path, class: "pure-button pure-button-primary" %>
+      <%= link_to new_message_path, class: "pure-button pure-button-primary" do %>
+        <span class="material-symbols-outlined">add</span> New Message
+      <% end %>
     </div>
   </div>
 </div>

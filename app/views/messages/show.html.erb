@@ -1,12 +1,7 @@
 <% content_for :title, "" %>
 
 <div class="show-buttons">
-  <%= link_to edit_message_path(@message), class: "pure-button pure-button-primary" do %>
-    <span class="material-symbols-outlined">edit</span> Edit
-  <% end %>
-  <%= button_to @message, method: :delete, data: { confirm: "Are you sure?" }, class: "pure-button button-danger" do %>
-    <span class="material-symbols-outlined">delete</span> Delete
-  <% end %>
+  <%= render partial: "buttons", locals: { message: @message, button_size: "" } %>
   <%= link_to messages_path, class: "pure-button" do %>
     <span class="material-symbols-outlined">arrow_back</span> Back
   <% end %>
@@ -61,5 +56,3 @@
     </div>
   </div>
 </div>
-
-

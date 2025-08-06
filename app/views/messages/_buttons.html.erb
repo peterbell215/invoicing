@@ -1,0 +1,12 @@
+<%= link_to edit_message_path(message), class: "pure-button pure-button-primary #{button_size}" do %>
+  <span class="material-symbols-outlined">edit</span> Edit
+<% end %>
+
+<div data-controller="delete-confirmation" display="inline">
+  <button class="pure-button button-danger <%= button_size %>"
+          data-id="<%= message.id %>"
+          data-name="<%= truncate(strip_tags(message.text.to_s), length: 50) %>"
+          data-action="click->delete-confirmation#open">
+    <span class="material-symbols-outlined">delete</span> Delete
+  </button>
+</div>
