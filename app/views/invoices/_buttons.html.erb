@@ -1,6 +1,6 @@
 <% if invoice.created? %>
   <div data-controller="delete-confirmation" display="inline">
-    <button class="pure-button button-danger delete-invoice-btn <%=button_size%>"
+    <button class="pure-button button-danger <%=button_size%>"
             data-id="<%= invoice.id %>"
             data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
             data-action="click->delete-confirmation#open">

@@ -32,12 +32,18 @@
                   <% end %>
                 </td>
                 <td>
-                  <%= link_to "Show", message_path(message), class: "pure-button pure-button-primary button-small" %>
-                  <%= link_to "Edit", edit_message_path(message), class: "pure-button pure-button-primary button-small" %>
-                  <button class="pure-button button-error button-small delete-message-btn"
+                  <%= link_to message_path(message), class: "pure-button pure-button-primary button-small"  do %>
+                    <span class="material-symbols-outlined">subject</span> View
+                  <% end %>
+                  <%= link_to edit_message_path(message), class: "pure-button pure-button-primary button-small" do %>
+                    <span class="material-symbols-outlined">edit</span> Edit
+                  <% end %>
+                  <button class="pure-button button-danger button-small"
                           data-id="<%= message.id %>"
                           data-name="<%= truncate(strip_tags(message.text.to_s), length: 50) %>"
-                          data-action="click->delete-confirmation#open">Delete</button>
+                          data-action="click->delete-confirmation#open">
+                    <span class="material-symbols-outlined">delete</span> Delete
+                  </button>
                 </td>
               </tr>
             <% end %>

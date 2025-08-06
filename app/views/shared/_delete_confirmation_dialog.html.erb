@@ -7,7 +7,9 @@
     <div class="dialog-buttons">
       <button id="cancel-delete" class="pure-button" data-action="click->delete-modal#close">Cancel</button>
       <%= form_tag "", method: :delete, id: "delete-#{entity_type}-form", class: "dialog-form", data: { delete_modal_target: "form" } do %>
-        <button type="submit" class="pure-button pure-button-primary button-danger">Delete</button>
+        <button type="submit" class="pure-button pure-button-primary button-danger">
+          <span class="material-symbols-outlined">delete</span> Delete
+        </button>
       <% end %>
     </div>
   </div>
