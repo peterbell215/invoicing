@@ -43,6 +43,9 @@
                 <td><%= client.uninvoiced_sessions.count %></td>
                 <td><%= client.uninvoiced_amount.format %></td>
                 <td class="action-buttons">
+                  <%= link_to client, class: "pure-button pure-button-primary button-small", data: { turbo_frame: "_top" } do %>
+                    <span class="material-symbols-outlined">subject</span> View
+                  <% end %>
                   <%= render partial: "buttons", locals: { client: client, button_size: "button-small" } %>
                 </td>
               </tr>
