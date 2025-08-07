@@ -3,9 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="client-rate"
 export default class extends Controller {
   static targets = ["clientSelect", "rateField"]
-
   connect() {
-    console.log("Client rate controller connected")
   }
 
   fetchClientRate() {
