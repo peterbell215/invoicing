@@ -23,27 +23,23 @@ class ClientSessionsController < ApplicationController
   def create
     @client_session = ClientSession.new(client_session_params)
 
-    respond_to do |format|
-      if @client_session.save
-        format.html { redirect_to @client_session, notice: "Client session was successfully created." }
-        format.json { render :show, status: :created, location: @client_session }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @client_session.errors, status: :unprocessable_entity }
-      end
+    respond_to :html
+
+    if @client_session.save
+      redirect_to @client_session, notice: "Client session was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /client_sessions/1 or /client_sessions/1.json
   def update
-    respond_to do |format|
-      if @client_session.update(client_session_params)
-        format.html { redirect_to @client_session, notice: "Client session was successfully updated." }
-        format.json { render :show, status: :ok, location: @client_session }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @client_session.errors, status: :unprocessable_entity }
-      end
+    respond_to :html
+
+    if @client_session.update(client_session_params)
+      redirect_to @client_session, notice: "Client session was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -51,10 +47,9 @@ class ClientSessionsController < ApplicationController
   def destroy
     @client_session.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to client_sessions_path, status: :see_other, notice: "Client session was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    respond_to :html
+
+    redirect_to client_sessions_path, status: :see_other, notice: "Client session was successfully destroyed."
   end
 
   private
