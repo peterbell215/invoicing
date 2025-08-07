@@ -30,27 +30,23 @@ class ClientsController < ApplicationController
   def create
     @client = Client.new(client_params)
 
-    respond_to do |format|
-      if @client.save
-        format.html { redirect_to @client, notice: "Client was successfully created." }
-        format.json { render :show, status: :created, location: @client }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @client.errors, status: :unprocessable_entity }
-      end
+    respond_to :html
+
+    if @client.save
+      redirect_to @client, notice: "Client was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /clients/1 or /clients/1.json
   def update
-    respond_to do |format|
-      if @client.update(client_params)
-        format.html { redirect_to @client, notice: "Client was successfully updated." }
-        format.json { render :show, status: :ok, location: @client }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @client.errors, status: :unprocessable_entity }
-      end
+    respond_to :html
+
+    if @client.update(client_params)
+      redirect_to @client, notice: "Client was successfully updated."
+    else
+      frender :edit, status: :unprocessable_entity
     end
   end
 
@@ -58,10 +54,9 @@ class ClientsController < ApplicationController
   def destroy
     @client.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    respond_to :html
+
+    redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed."
   end
 
   private
