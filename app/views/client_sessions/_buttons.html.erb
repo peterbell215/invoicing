@@ -1,0 +1,8 @@
+<%= link_to edit_client_session_path(client_session), class: "pure-button #{button_size}", data: { turbo_frame: "_top" } do %>
+  <span class="material-symbols-outlined">edit</span> Edit
+<% end %>
+
+<%= button_to client_session_path(client_session), method: :delete, class: "pure-button button-danger #{button_size}",
+    data: { turbo_confirm: "Are you sure you want to delete this session?" } do %>
+  <span class="material-symbols-outlined">delete</span> Delete
+<% end %>
