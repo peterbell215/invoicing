@@ -141,7 +141,7 @@
             <tbody>
               <% client.client_sessions.order(session_date: :desc).limit(5).each do |session| %>
                 <tr>
-                  <td><%= session.session_date %></td>
+                  <td><%= session.session_date.strftime('%d %b %Y') %></td>
                   <td><%= pluralize(session.duration, 'minute') %></td>
                   <td><%= number_to_currency(session.hourly_session_rate&.amount, unit: "£") %></td>
                   <td>
