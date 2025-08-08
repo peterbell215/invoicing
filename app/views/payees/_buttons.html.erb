@@ -3,12 +3,8 @@
 <% end %>
 
 <% if payee.clients.empty? %>
-  <div data-controller="delete-confirmation" style="display: inline">
-    <button class="pure-button button-danger <%= button_size %>"
-            data-id="<%= payee.id %>"
-            data-name="<%= payee.name %>"
-            data-action="click->delete-confirmation#open">
-      <span class="material-symbols-outlined">delete</span> Delete
-    </button>
-  </div>
+  <%= render partial: 'shared/delete_confirmation', locals: {
+    entity: payee,
+    button_size: button_size
+  } %>
 <% end %>

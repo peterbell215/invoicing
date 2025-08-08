@@ -12,13 +12,16 @@ class Invoice < ApplicationRecord
   validate :validate_editable_status, on: :update
   before_validation :set_payee_from_client, on: :create
 
-
   enum :status, { created: 0, sent: 1, paid: 2 }
 
   before_save :update_amount
   after_initialize :populate_text_from_messages, if: :new_record?
   after_initialize :set_default_date, if: :new_record?
   before_destroy :deletable?
+
+  def summary
+    "Invoice ##{self.id} for #{self.client.name}"
+  end
 
   # Returns the entity (Client or Payee) who should receive the invoice
   def bill_to

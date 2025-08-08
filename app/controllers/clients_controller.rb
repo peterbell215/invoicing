@@ -46,17 +46,19 @@ class ClientsController < ApplicationController
     if @client.update(client_params)
       redirect_to @client, notice: "Client was successfully updated."
     else
-      frender :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 
   # DELETE /clients/1 or /clients/1.json
   def destroy
-    @client.destroy!
-
     respond_to :html
 
-    redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed."
+    if @client.destroy
+      redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed."
+    else
+      redirect_to @client, status: :unprocessable_entity, alert: "Client could not be destroyed. Please check if there are any associated records."
+    end
   end
 
   private

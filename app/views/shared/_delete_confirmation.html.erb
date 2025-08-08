@@ -1,0 +1,66 @@
+<div data-controller="delete-confirmation" style="display: inline">
+  <button class="pure-button button-danger <%= button_size %>"
+          data-id="<%= entity.id %>"
+          data-entity-type="<%= entity.class.to_s.parameterize %>"
+          data-name="<%= entity.respond_to?(:summary) ? entity.summary : entity.to_s %>"
+          data-action="click->delete-confirmation#open">
+    <span class="material-symbols-outlined">delete</span> Delete
+  </button>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<% unless @delete_confirmation_rendered %>
+  <% content_for :dialogues do %>
+    <dialog data-controller="delete-modal" data-delete-modal-target="dialog" data-action="click->delete-modal#clickOutside">
+      <div class="dialog-content">
+        <h3>Confirm Deletion</h3>
+        <p>Are you sure you want to delete: <span data-delete-modal-target="name"></span>?</p>
+        <p>This action cannot be undone.</p>
+        <div class="dialog-buttons">
+          <button id="cancel-delete" class="pure-button" data-action="click->delete-modal#close">Cancel</button>
+          <%= form_tag "", method: :delete, class: "dialog-form", data: { delete_modal_target: "form" } do %>
+            <button type="submit" class="pure-button pure-button-primary button-danger" data-action="click->delete-modal#close">
+              <span class="material-symbols-outlined">delete</span> Delete
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </dialog>
+  <% end %>
+  <% @delete_confirmation_rendered = true %>
+<% end %>
+
+<style>
+    /* Dialog styles */
+    #delete-confirmation-dialog {
+        padding: 0;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 450px;
+        width: 100%;
+    }
+
+    #delete-confirmation-dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .dialog-content {
+        padding: 20px;
+    }
+
+    .dialog-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .dialog-form {
+        display: inline;
+    }
+
+    [id$="-to-delete"] {
+        font-weight: bold;
+    }
+</style>

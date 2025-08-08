@@ -9,6 +9,9 @@ class Message < ApplicationRecord
   scope :current, -> { where("`from_date` IS NULL OR `from_date` <= ?", Date.today)
                       .where("`until_date` IS NULL OR `until_date` >= ?", Date.today) }
 
+  def summary
+    self.text.to_plain_text.truncate(50)
+  end
 
   # Helper method to add this message to all clients
   def all_clients=(setting)

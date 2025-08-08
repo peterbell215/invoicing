@@ -1,12 +1,8 @@
 <% if invoice.created? %>
-  <div data-controller="delete-confirmation" display="inline">
-    <button class="pure-button button-danger <%=button_size%>"
-            data-id="<%= invoice.id %>"
-            data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
-            data-action="click->delete-confirmation#open">
-      <span class="material-symbols-outlined">delete</span> Delete
-    </button>
-  </div>
+  <%= render partial: 'shared/delete_confirmation', locals: {
+    entity: invoice,
+    button_size: button_size
+  } %>
   <%= link_to edit_invoice_path(invoice), class: "pure-button #{button_size}" do %>
     <span class="material-symbols-outlined">edit</span> Edit
   <% end %>

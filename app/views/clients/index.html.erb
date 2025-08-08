@@ -31,7 +31,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody data-controller="delete-confirmation">
+        <tbody>
           <% if @clients.any? %>
             <% @clients.each do |client| %>
               <tr id="<%= dom_id client %>">
@@ -70,5 +70,3 @@
     </div>
   </div>
 </div>
-
-<%= render partial: 'shared/delete_confirmation_dialog', locals: { entity_type: 'client' } %>

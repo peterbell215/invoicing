@@ -27,6 +27,10 @@ class Client < ApplicationRecord
 
   before_save :create_new_rate
 
+  def summary
+    "#{self.name} (#{self.id})"
+  end
+
   def as_json(options = {})
     # just in case someone says as_json(nil) and bypasses
     # our default...
