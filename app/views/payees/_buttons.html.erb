@@ -3,8 +3,8 @@
 <% end %>
 
 <% if payee.clients.empty? %>
-  <%= render partial: 'shared/delete_confirmation', locals: {
-    entity: payee,
-    button_size: button_size
+  <%= render partial: 'shared/delete_confirmation', locals: { 
+    entity: payee, 
+    button_size: button_size 
   } %>
 <% end %>
