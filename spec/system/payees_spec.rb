@@ -23,11 +23,11 @@ RSpec.describe "Payees", type: :system do
 
       created_payee = Payee.find_by(email: new_payee.email)
       expect(created_payee).to have_attributes(
-        name: new_payee.name,
+        name: new_payee.name, 
         organisation: new_payee.organisation,
-        email: new_payee.email,
+        email: new_payee.email, 
         address1: new_payee.address1,
-        town: new_payee.town,
+        town: new_payee.town, 
         postcode: new_payee.postcode
       )
     end
@@ -204,7 +204,7 @@ RSpec.describe "Payees", type: :system do
 
       # Should show error message
       expect(page).to have_content("Cannot delete payee who has associated clients")
-
+      
       # Payee should still exist
       expect(Payee.exists?(payee_with_clients.id)).to be true
     end
@@ -225,20 +225,20 @@ RSpec.describe "Payees", type: :system do
 
       # Should show success message
       expect(page).to have_content("Payee was successfully destroyed")
-
+      
       # Payee should be deleted
       expect(Payee.exists?(payee_without_clients.id)).to be false
     end
 
     it "does not show delete button for payee with clients" do
       visit payee_path(payee_with_clients)
-
+      
       expect(page).not_to have_button("Delete")
     end
 
     it "shows delete button for payee without clients" do
       visit payee_path(payee_without_clients)
-
+      
       expect(page).to have_button("Delete")
     end
   end
@@ -266,7 +266,7 @@ RSpec.describe "Payees", type: :system do
 
     it "shows zero clients for payee without clients" do
       payee_no_clients = FactoryBot.create(:payee, name: "No Clients Payee")
-
+      
       visit payees_path
 
       within("#payee_#{payee_no_clients.id}") do

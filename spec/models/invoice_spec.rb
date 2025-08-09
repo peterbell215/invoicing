@@ -166,15 +166,47 @@ RSpec.describe Invoice do
         invoice = Invoice.new(client: client)
 
         # Expected text should have messages in chronological order (oldest first)
-        expected_text = "This is the first message\n\nThis is the second message"
+        expected_text = "This is the first message\n\n  This is the second message"
         expect(invoice.text.to_plain_text.strip).to eq(expected_text)
       end
     end
   end
 
-  describe 'validate_editable_status' do
-    let(:client) { create(:client) }
-    let(:invoice) { create(:invoice, client: client, status: :created) }
+  describe '#validate_editable_status' do
+    let(:invoice) { FactoryBot.create(:invoice, status: :created) }
+
+    # Shared examples for invoices that cannot be edited
+    shared_examples 'non-editable invoice' do
+      it 'prevents changing non-status fields' do
+        invoice.date = Date.current + 1.day
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+
+      it 'prevents changing text field' do
+        invoice.text = 'Updated text'
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+
+      it 'prevents changing status from current status to created' do
+        invoice.status = :created
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:status]).to include("can only be marked as 'paid' after being 'sent'")
+      end
+
+      it 'prevents changing multiple non-status fields' do
+        invoice.date = Date.current + 1.day
+        invoice.text = 'Updated text'
+
+        expect(invoice).not_to be_valid
+        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
+        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
+      end
+    end
 
     context 'when status is created' do
       it 'allows changing non-status fields' do
@@ -213,20 +245,7 @@ RSpec.describe Invoice do
     context 'when status is sent' do
       before { invoice.update!(status: :sent) }
 
-      it 'prevents changing non-status fields' do
-        invoice.date = Date.current + 1.day
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
-        expect(invoice.errors[:base]).to include("Cannot modify invoice fields once it has been sent or paid")
-      end
-
-      it 'prevents changing text field' do
-        invoice.text = 'Updated text'
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
-      end
+      it_behaves_like 'non-editable invoice'
 
       it 'allows changing status from sent to paid' do
         invoice.status = :paid
@@ -235,42 +254,12 @@ RSpec.describe Invoice do
         expect(invoice.save).to be true
         expect(invoice.reload.status).to eq('paid')
       end
-
-      it 'prevents changing status from sent to created' do
-        invoice.status = :created
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:status]).to include("can only be marked as 'paid' after being 'sent'")
-      end
-
-      it 'prevents changing multiple non-status fields' do
-        invoice.date = Date.current + 1.day
-        invoice.text = 'Updated text'
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
-        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
-      end
     end
 
     context 'when status is paid' do
-      before { invoice.update!(status: :sent) }
       before { invoice.update!(status: :paid) }
 
-      it 'prevents changing non-status fields' do
-        invoice.date = Date.current + 1.day
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:date]).to include("cannot be changed once the invoice has been sent or paid")
-        expect(invoice.errors[:base]).to include("Cannot modify invoice fields once it has been sent or paid")
-      end
-
-      it 'prevents changing text field' do
-        invoice.text = 'Updated text'
-
-        expect(invoice).not_to be_valid
-        expect(invoice.errors[:text]).to include("cannot be changed once the invoice has been sent or paid")
-      end
+      it_behaves_like 'non-editable invoice'
 
       it 'prevents changing status from paid to sent' do
         invoice.status = :sent

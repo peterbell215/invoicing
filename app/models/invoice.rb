@@ -41,9 +41,9 @@ class Invoice < ApplicationRecord
 
   def validate_editable_status
     non_status_changes = changed_attributes.keys - %w[status updated_at]
+    non_status_changes.push(:text) if self.text.body_changed?
 
     # Check if any non-status fields are being changed when status is not 'created'
-    #
     non_status_changes_ok?(non_status_changes)
 
     # Check status transition rules
@@ -99,7 +99,7 @@ class Invoice < ApplicationRecord
 
     # Build formatted text from messages
     message_content = relevant_messages.map do |message|
-      message.text.to_plain_text.strip
+      message.text.to_s
     end.join("\n\n")
 
     # Set the rich text content
