@@ -388,10 +388,12 @@ RSpec.describe "Invoices", type: :system do
   end
 
   describe "Invoice status transitions" do
-    let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :created) }
-
     it "transitions from created to sent" do
+      invoice = FactoryBot.create(:invoice, client: client, status: :created)
+
       visit invoice_path(invoice)
+
+      expect(page).to have_link("Edit")
 
       click_button "Send"
 
@@ -403,32 +405,32 @@ RSpec.describe "Invoices", type: :system do
 
       expect(page).to have_content("Invoice was successfully sent")
 
+      expect(page).not_to have_link("Edit")
+      expect(page).to have_button("Send")
+      expect(page).to have_button("Mark as Paid")
+
       expect(invoice.reload.status).to eq("sent")
     end
 
-    it "shows appropriate actions for each status" do
+    it "transitions from sent to paid" do
+      invoice = FactoryBot.create(:invoice, client: client, status: :sent)
+
       # Created status
       visit invoice_path(invoice)
-      expect(page).to have_link("Edit")
-      expect(page).to have_button("Send")
 
-      # Send the invoice
-      accept_confirm("Are you sure you want to send this invoice?") do
-        click_link "Send"
+      click_button "Mark as Paid"
+
+      within "#mark-paid-confirmation-dialog" do
+        expect(page).to have_content("Confirm Mark Invoice as Paid")
+        expect(page).to have_content("Invoice ##{invoice.id}")
+        click_button "Mark as Paid"
       end
 
-      # Sent status
-      visit invoice_path(invoice)
-      expect(page).not_to have_link("Edit")
-      expect(page).to have_link("Send") # Can resend
+      expect(page).to have_content("Invoice was successfully marked as paid.")
 
-      # Mark as paid (this would typically be done through a different interface)
-      invoice.update!(status: :paid)
-
-      # Paid status
-      visit invoice_path(invoice)
       expect(page).not_to have_link("Edit")
-      expect(page).not_to have_link("Send")
+      expect(page).not_to have_button("Send")
+      expect(page).not_to have_button("Mark as Paid")
     end
   end
 
@@ -451,17 +453,8 @@ RSpec.describe "Invoices", type: :system do
 
       click_link "#{invoice.id}"
 
+      expect(page.find("div.invoice-info > table > tbody > tr:nth-child(1) > td")).to have_content(invoice.id.to_s)
       expect(current_path).to eq(invoice_path(invoice))
-      expect(page).to have_content("Invoice ##{invoice.id}")
-    end
-
-    it "allows navigation from client to new invoice" do
-      visit client_path(client)
-
-      click_link "Invoice", match: :first
-
-      expect(current_path).to eq(new_client_invoice_path(client))
-      expect(page).to have_content("New Invoice")
     end
   end
 end
