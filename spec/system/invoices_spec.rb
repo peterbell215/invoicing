@@ -197,11 +197,11 @@ RSpec.describe "Invoices", type: :system do
     shared_examples "send invoice" do
       it "allows sending an invoice with confirmation dialog" do
         # Wait for the send confirmation dialog to appear
-        expect(page).to have_css("dialog[open]")
+        expect(page).to have_css("dialog#send-confirmation-dialog[open]")
         expect(page).to have_content("Confirm Send Invoice")
         expect(page).to have_content("Invoice ##{invoice.id}")
 
-        within("dialog") do
+        within("dialog#send-confirmation-dialog") do
           click_button "Send Invoice"
         end
 
@@ -210,12 +210,24 @@ RSpec.describe "Invoices", type: :system do
       end
 
       it "allows canceling the send action" do
-        within("dialog") do
+        within("dialog#send-confirmation-dialog") do
           click_button "Cancel"
         end
 
         # Dialog should close and invoice should remain unchanged
-        expect(page).not_to have_css("dialog[open]")
+        expect(page).not_to have_css("dialog#send-confirmation-dialog[open]")
+        expect(invoice.reload.status).to eq("created")
+      end
+
+      it "allows canceling by clicking outside the dialog" do
+        # Wait for the send confirmation dialog to appear
+        expect(page).to have_css("dialog#send-confirmation-dialog[open]")
+
+        # Click outside the dialog (on the dialog backdrop)
+        page.execute_script("document.querySelector('#send-confirmation-dialog').click()")
+
+        # Dialog should close and invoice should remain unchanged
+        expect(page).not_to have_css("dialog#send-confirmation-dialog[open]")
         expect(invoice.reload.status).to eq("created")
       end
     end
@@ -235,11 +247,74 @@ RSpec.describe "Invoices", type: :system do
     context "when on the show page" do
       before do
         visit invoice_path(invoice)
-
         click_button "Send"
       end
 
       include_examples "send invoice"
+    end
+  end
+
+  describe "Marking an invoice as paid", js: true do
+    let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :sent) }
+
+    shared_examples "mark invoice as paid" do
+      it "allows marking an invoice as paid with confirmation dialog" do
+        # Wait for the mark paid confirmation dialog to appear
+        expect(page).to have_css("dialog#mark-paid-confirmation-dialog[open]")
+        expect(page).to have_content("Confirm Mark Invoice as Paid")
+        expect(page).to have_content("Invoice ##{invoice.id}")
+
+        within("dialog#mark-paid-confirmation-dialog") do
+          click_button "Mark as Paid"
+        end
+
+        expect(page).to have_content("Invoice was successfully marked as paid.")
+        expect(invoice.reload.status).to eq("paid")
+      end
+
+      it "allows canceling the mark as paid action" do
+        within("dialog#mark-paid-confirmation-dialog") do
+          click_button "Cancel"
+        end
+
+        # Dialog should close and invoice should remain unchanged
+        expect(page).not_to have_css("dialog[open]")
+        expect(invoice.reload.status).to eq("sent")
+      end
+
+      it "allows canceling by clicking outside the dialog" do
+        # Wait for the mark paid confirmation dialog to appear
+        expect(page).to have_css("dialog#mark-paid-confirmation-dialog[open]")
+
+        # Click outside the dialog (on the dialog backdrop)
+        page.execute_script("document.querySelector('#mark-paid-confirmation-dialog').click()")
+
+        # Dialog should close and invoice should remain unchanged
+        expect(page).not_to have_css("dialog[open]")
+        expect(invoice.reload.status).to eq("sent")
+      end
+    end
+
+    context "when on the index page" do
+      before do
+        visit invoices_path
+
+        within("tbody tr:first-child") do
+          click_button "Mark as Paid"
+        end
+      end
+
+      include_examples "mark invoice as paid"
+    end
+
+    context "when on the show page" do
+      before do
+        visit invoice_path(invoice)
+
+        click_button "Mark as Paid"
+      end
+
+      include_examples "mark invoice as paid"
     end
   end
 
@@ -335,7 +410,7 @@ RSpec.describe "Invoices", type: :system do
       # Created status
       visit invoice_path(invoice)
       expect(page).to have_link("Edit")
-      expect(page).to have_link("Send")
+      expect(page).to have_button("Send")
 
       # Send the invoice
       accept_confirm("Are you sure you want to send this invoice?") do
