@@ -12,7 +12,6 @@
 @import url("https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive.css");
 
 @import url("rails-messages.css");
-@import url("div-tables.css");
 @import url("forms.css");
 @import url("toggle-switch.css");
 @import url("indexes.css");
