@@ -4,8 +4,10 @@
   </div>
 <% end %>
 
-<% if notice.present? %>
-  <div id="notice_explanation">
-    <h2><%= notice %></h2>
-  </div>
-<% end %>
+<turbo-frame id="notice">
+  <% if notice.present? %>
+    <div id="notice_explanation">
+      <h2><%= notice %></h2>
+    </div>
+  <% end %>
+</turbo-frame>

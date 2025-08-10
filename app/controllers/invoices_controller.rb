@@ -47,7 +47,17 @@ class InvoicesController < ApplicationController
 
     if @invoice.update(invoice_params)
       if request.referrer == invoices_url
-        render turbo_stream: turbo_stream.replace(@invoice, partial: "invoices/invoices_row", locals: { invoice: @invoice })
+        # Determine the appropriate notice message based on what was updated
+        notice_message = if invoice_params[:status] == "paid"
+                          "Invoice was successfully marked as paid."
+                        else
+                          "Invoice was successfully updated."
+                        end
+
+        render turbo_stream: [
+          turbo_stream.replace("notice", partial: "layouts/notice", locals: { notice: notice_message, alert: nil }),
+          turbo_stream.replace(@invoice, partial: "invoices/invoices_row", locals: { invoice: @invoice, button_size: "button-small" })
+        ]
       else
         redirect_to invoice_path(@invoice), notice: "Invoice was successfully updated."
       end
