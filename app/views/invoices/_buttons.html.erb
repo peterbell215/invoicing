@@ -9,7 +9,7 @@
 <% end %>
 
 <% unless invoice.paid? %>
-  <div data-controller="send-confirmation" display="inline">
+  <div data-controller="send-confirmation" style="display: inline">
     <button class="pure-button pure-button-primary send-invoice-btn <%=button_size%>"
             data-id="<%= invoice.id %>"
             data-name="Invoice #<%= invoice.id %> for <%= invoice.client.name %>"
@@ -17,7 +17,6 @@
       <span class="material-symbols-outlined">mail</span> Send
     </button>
   </div>
-  <%= render partial: 'shared/send_confirmation_dialog' %>
 
   <button class="pure-button button-success mark-paid-btn <%=button_size%>"
           data-id="<%= invoice.id %>"
