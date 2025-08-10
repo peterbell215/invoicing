@@ -31,8 +31,10 @@
   <% end %>
 </div>
 
-<%= render partial: 'shared/send_confirmation_dialog' %>
-<%= render partial: 'shared/mark_paid_confirmation_dialog' %>
+<% content_for :dialogues do %>
+  <%= render partial: 'shared/send_confirmation_dialog' %>
+  <%= render partial: 'shared/mark_paid_confirmation_dialog' %>
+<% end %>
 
 <style>
   .invoices-index {
