@@ -2,10 +2,10 @@
 
 <div class="show-buttons">
   <div class="action-buttons">
+    <%= render partial: "buttons", locals: { payee: @payee, button_size: "" } %>
     <%= link_to payees_path, class: "pure-button" do %>
       <span class="material-symbols-outlined">arrow_back</span> Back
     <% end %>
-    <%= render partial: "buttons", locals: { payee: @payee, button_size: "" } %>
   </div>
 </div>
 
