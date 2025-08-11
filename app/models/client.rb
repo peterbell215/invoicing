@@ -3,7 +3,7 @@ class Client < ApplicationRecord
   include Person
 
   has_many :client_sessions, dependent: :destroy
-  has_many :fees, dependent: :destroy
+  has_many :fees, -> { order(to: :desc) }, dependent: :destroy
   belongs_to :paid_by, class_name: 'Payee', optional: true
   has_many :messages_for_clients, dependent: :destroy
   has_many :messages, through: :messages_for_clients
