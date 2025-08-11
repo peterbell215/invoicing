@@ -223,12 +223,8 @@ RSpec.describe "Messages", type: :system do
       click_button "Delete"
 
       # Wait for dialog to appear and verify its content
-      expect(page).to have_selector('#delete-confirmation-dialog[open]')
-      expect(page).to have_content("Are you sure you want to delete the message:")
-      expect(page).to have_content("Message to be deleted")
-
-      # Click the Delete button in the dialog to confirm
-      within('#delete-confirmation-dialog') do
+      within('dialog[open]') do
+        expect(page).to have_content("Are you sure you want to delete: Message to be deleted?")
         click_button "Delete"
       end
 
@@ -247,16 +243,13 @@ RSpec.describe "Messages", type: :system do
       # Click delete button to open the confirmation dialog
       click_button "Delete"
 
-      # Wait for dialog to appear
-      expect(page).to have_selector('#delete-confirmation-dialog[open]')
-
       # Click Cancel button in the dialog
-      within('#delete-confirmation-dialog') do
+      within("dialog[open]") do
         click_button "Cancel"
       end
 
       # Dialog should close and message should still exist
-      expect(page).not_to have_selector('#delete-confirmation-dialog[open]')
+      expect(page).not_to have_selector('dialog[open]')
       expect(page).to have_content("Message to be deleted")
       expect(Message.exists?(message.id)).to be true
     end
@@ -270,13 +263,13 @@ RSpec.describe "Messages", type: :system do
       click_button "Delete"
 
       # Wait for dialog to appear
-      expect(page).to have_selector('#delete-confirmation-dialog[open]')
+      expect(page).to have_selector('dialog[open]')
 
       # Click outside the dialog (on the backdrop)
-      page.execute_script("document.querySelector('#delete-confirmation-dialog').click()")
+      page.execute_script("document.querySelector('dialog').click()")
 
       # Dialog should close and message should still exist
-      expect(page).not_to have_selector('#delete-confirmation-dialog[open]')
+      expect(page).not_to have_selector('dialog[open]')
       expect(page).to have_content("Message to be deleted")
       expect(Message.exists?(message.id)).to be true
     end
