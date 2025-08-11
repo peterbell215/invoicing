@@ -5,6 +5,10 @@ class Payee < ApplicationRecord
   has_many :clients, foreign_key: 'paid_by_id'
   has_many :invoices, foreign_key: 'payee_id'
 
+  def summary
+    "#{self.name} (#{self.id})"
+  end
+
   # A payee can have many clients they pay for
   def client_count
     clients.count

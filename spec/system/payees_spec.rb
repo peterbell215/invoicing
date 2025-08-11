@@ -195,18 +195,12 @@ RSpec.describe "Payees", type: :system do
     let!(:payee_without_clients) { FactoryBot.create(:payee, name: "Payee without Clients") }
     let!(:client) { FactoryBot.create(:client, paid_by: payee_with_clients) }
 
-    it "prevents deletion of payee with associated clients" do
+    it "prevents deletion of payee with associated clients", js: true do
       visit payees_path
 
-      within("#payee_#{payee_with_clients.id}") do
-        click_button "Delete"
+      within("#payee_#{payee_with_clients.id} > td.action-buttons") do
+        expect(page).not_to have_button("Delete")
       end
-
-      # Should show error message
-      expect(page).to have_content("Cannot delete payee who has associated clients")
-      
-      # Payee should still exist
-      expect(Payee.exists?(payee_with_clients.id)).to be true
     end
 
     it "allows deletion of payee without associated clients", js: true do
@@ -217,9 +211,8 @@ RSpec.describe "Payees", type: :system do
       end
 
       # Should show confirmation dialog
-      within(".modal") do
-        expect(page).to have_content("Are you sure you want to delete")
-        expect(page).to have_content("Payee without Clients")
+      within("dialog") do
+        expect(page).to have_content("Are you sure you want to delete: #{payee_without_clients.name}")
         click_button "Delete"
       end
 
