@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_042129) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_041441) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -133,7 +133,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_042129) do
     t.string "organisation", null: false
     t.boolean "active", default: true
     t.index ["email"], name: "index_payees_on_email", unique: true
-    t.index ["organisation"], name: "index_payees_on_organisation", unique: true
+    t.index ["organisation"], name: "index_payees_on_organisation"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
