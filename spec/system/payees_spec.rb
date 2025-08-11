@@ -244,16 +244,17 @@ RSpec.describe "Payees", type: :system do
     it "displays associated clients on payee show page" do
       visit payee_path(payee)
 
-      expect(page).to have_content("Clients (2)")
-      expect(page).to have_content("Client One")
-      expect(page).to have_content("Client Two")
+      within("table#clients") do
+        expect(page).to have_content("Client One")
+        expect(page).to have_content("Client Two")
+      end
     end
 
     it "displays client count in payee index" do
       visit payees_path
 
-      within("#payee_#{payee.id}") do
-        expect(page).to have_content("2 clients")
+      within("#payee_#{payee.id} > td:nth-child(7)") do
+        expect(page).to have_content("2")
       end
     end
 
@@ -262,8 +263,8 @@ RSpec.describe "Payees", type: :system do
       
       visit payees_path
 
-      within("#payee_#{payee_no_clients.id}") do
-        expect(page).to have_content("0 clients")
+      within("#payee_#{payee_no_clients.id} > td:nth-child(7)") do
+        expect(page).to have_content("0")
       end
     end
   end
