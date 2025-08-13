@@ -1,10 +1,10 @@
 <% content_for :title, "Session Details" %>
 
-<div class="action-buttons">
+<div class="show-buttons">
+  <%= render partial: "buttons", locals: { client_session: @client_session, button_size: "" } %>
   <%= link_to client_sessions_path, class: "pure-button" do %>
     <span class="material-symbols-outlined">arrow_back</span> Back
   <% end %>
-  <%= render partial: "buttons", locals: { client_session: @client_session, button_size: "" } %>
 </div>
 
 <div class="card mb-4">
@@ -26,38 +26,10 @@
 </div>
 
 <style>
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5em;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .page-header h1 {
-    margin: 0;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 0.5em;
-  }
-  
-  .action-buttons form {
-    margin: 0;
-  }
-  
   .bottom-buttons {
     margin-top: 1em;
     padding-top: 1em;
     border-top: 1px solid #ddd;
-  }
-  
-  .material-symbols-outlined {
-    font-size: 1.2em;
-    vertical-align: middle;
-    margin-right: 0.2em;
   }
   
   @media (max-width: 768px) {
