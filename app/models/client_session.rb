@@ -21,6 +21,10 @@ class ClientSession < ApplicationRecord
     self.hourly_session_rate * (self.duration/60.0)
   end
 
+  def summary
+    "#{self.client.name} on #{self.session_date.strftime('%d %b %Y')}"
+  end
+
   # Return the entity (Client or Payee) who should be billed for this session
   def billable_to
     client.effective_payee
