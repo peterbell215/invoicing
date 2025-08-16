@@ -1,7 +1,7 @@
 <div data-controller="delete-confirmation" style="display: inline">
   <button class="pure-button button-danger <%= button_size %>"
           data-id="<%= entity.id %>"
-          data-entity-type="<%= entity.class.to_s.parameterize %>"
+          data-entity-type="<%= entity.class.to_s.tableize %>"
           data-name="<%= entity.respond_to?(:summary) ? entity.summary : entity.to_s %>"
           data-action="click->delete-confirmation#open">
     <span class="material-symbols-outlined">delete</span> Delete
