@@ -10,4 +10,5 @@
 - Instead, provide this offer the Show page, and show a modal informing that a credit note
   must be issued for the edited or deleted session.
 - In the Client Show page, Recent Sessions should show the status of the sessions.
+- Add system tests for Client delete functionality.
 
