@@ -6,7 +6,7 @@ export default class extends Controller {
   connect() {
     // Listen for delete events for different entity types
     this.boundHandlers = {};
-    const entityTypes = ['payee', 'client', 'message', 'invoice'];
+    const entityTypes = ['payees', 'clients', 'messages', 'invoices', 'client_sessions'];
 
     entityTypes.forEach(entityType => {
       this.boundHandlers[entityType] = this.handleDeleteRequest.bind(this);
@@ -28,7 +28,7 @@ export default class extends Controller {
     this.nameTarget.textContent = name;
 
     // Set the form action based on entity type
-    this.formTarget.action = `/${entityType}s/${id}`;
+    this.formTarget.action = `/${entityType}/${id}`;
 
     // Show the dialog
     this.dialogTarget.showModal();
