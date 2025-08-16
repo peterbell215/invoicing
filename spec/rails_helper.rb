@@ -33,6 +33,8 @@ RSpec.configure do |config|
 
   # setup for factory bot
   config.include FactoryBot::Syntax::Methods
+  config.include Rails.application.routes.url_helpers
+  config.include ActionView::RecordIdentifier
 
   config.before(:suite) do
     Rails.application.load_seed
@@ -42,7 +44,7 @@ RSpec.configure do |config|
     FactoryBot.rewind_sequences
   end
 
-  config.include Rails.application.routes.url_helpers
+
 
   config.before(:each, type: :system) do |example|
     if example.metadata[:js]
