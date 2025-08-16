@@ -61,7 +61,7 @@
                 <%= client_session.invoice.status.titleize %>
               </span>
               <div class="invoice-number">
-                Invoice #<%= client_session.invoice.id %>
+                <%= link_to "Invoice ##{client_session.invoice.id}", invoice_path(client_session.invoice) %>
               </div>
             <% else %>
               <span class="status-badge unbilled">Unbilled</span>
