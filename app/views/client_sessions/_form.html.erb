@@ -23,7 +23,8 @@
       <div class="pure-u-1 pure-u-md-1-3">
         <%= form.label :unit_session_rate_pence, "Rate (£ per unit session)" %>
         <%= form.text_field :unit_session_rate_pence,
-            readonly: true,
+            readonly: !client_session.destroyable?,
+            required: true,
             class: "pure-input-1",
             data: { client_rate_target: "rateField" },
             value: number_to_currency(client_session.unit_session_rate&.to_f || 0, unit: "£")
