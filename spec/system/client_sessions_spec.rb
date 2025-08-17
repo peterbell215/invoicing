@@ -155,14 +155,8 @@ RSpec.describe "Client Sessions", type: :system do
   describe "Deleting a client session" do
     let!(:client_session) { FactoryBot.create(:client_session, client: client) }
 
-    context "when session is not invoiced" do
-      it "allows deletion from index page", js: true do
-        visit client_sessions_path
-
-        within("tr##{dom_id(client_session)}") do
-          click_button "Delete"
-        end
-
+    shared_examples "delete client session" do
+      it "allows deletion with confirmation dialog" do
         # Wait for the delete confirmation dialog to appear
         expect(page).to have_css("dialog[open]")
         expect(page).to have_content("Are you sure you want to delete")
@@ -176,21 +170,61 @@ RSpec.describe "Client Sessions", type: :system do
         expect(ClientSession.exists?(client_session.id)).to be_falsey
       end
 
-      it "allows deletion from show page", js: true do
-        visit client_session_path(client_session)
+      it "allows canceling the delete action" do
+        within("dialog") do
+          click_button "Cancel"
+        end
 
-        click_button "Delete"
+        # Dialog should close and session should remain unchanged
+        expect(page).not_to have_css("dialog[open]")
+        expect(ClientSession.exists?(client_session.id)).to be_truthy
+      end
 
+      it "allows canceling by clicking outside the dialog" do
         # Wait for the delete confirmation dialog to appear
         expect(page).to have_css("dialog[open]")
 
+        # Click outside the dialog (on the dialog backdrop)
+        page.execute_script("document.querySelector('dialog[open]').click()")
+
+        # Dialog should close and session should remain unchanged
+        expect(page).not_to have_css("dialog[open]")
+        expect(ClientSession.exists?(client_session.id)).to be_truthy
+      end
+
+      it "redirects to index page after successful deletion" do
         within("dialog") do
           click_button "Delete"
         end
 
+        # Wait for the redirect to complete
         expect(page).to have_content("Client session was successfully destroyed")
         expect(current_path).to eq(client_sessions_path)
-        expect(ClientSession.exists?(client_session.id)).to be_falsey
+      end
+
+
+    end
+
+    context "when session is not invoiced" do
+      context "when deleting from index page" do
+        before do
+          visit client_sessions_path
+
+          within("tr##{dom_id(client_session)}") do
+            click_button "Delete"
+          end
+        end
+
+        include_examples "delete client session"
+      end
+
+      context "when deleting from show page" do
+        before do
+          visit client_session_path(client_session)
+          click_button "Delete"
+        end
+
+        include_examples "delete client session"
       end
     end
 
