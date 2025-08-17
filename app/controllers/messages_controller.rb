@@ -22,7 +22,7 @@ class MessagesController < ApplicationController
       redirect_to messages_path, notice: "Message was successfully created."
     else
       @clients = Client.where(active: true).order(:surname, :given_name)
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -41,7 +41,7 @@ class MessagesController < ApplicationController
       @clients = Client.where(active: true).order(:surname, :given_name)
       @selected_client_ids = @message.clients.pluck(:id)
       @all_clients = @message.all_clients
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

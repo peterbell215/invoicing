@@ -26,7 +26,7 @@ class InvoicesController < ApplicationController
     else
       @client = Client.find(invoice_params[:client_id])
       @uninvoiced_sessions = @client.client_sessions.where(invoice_id: nil).order(session_date: :desc)
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -65,7 +65,7 @@ class InvoicesController < ApplicationController
       @available_sessions = @client.client_sessions
                                   .where("invoice_id IS NULL OR invoice_id = ?", @invoice.id)
                                   .order(session_date: :desc)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

@@ -29,8 +29,8 @@ class PayeesController < ApplicationController
         format.html { redirect_to payee_url(@payee), notice: "Payee was successfully created." }
         format.json { render :show, status: :created, location: @payee }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @payee.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @payee.errors, status: :unprocessable_content }
       end
     end
   end
@@ -42,8 +42,8 @@ class PayeesController < ApplicationController
         format.html { redirect_to payee_url(@payee), notice: "Payee was successfully updated." }
         format.json { render :show, status: :ok, location: @payee }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @payee.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @payee.errors, status: :unprocessable_content }
       end
     end
   end
@@ -53,7 +53,7 @@ class PayeesController < ApplicationController
     respond_to do |format|
       if @payee.clients.any?
         format.html { redirect_to payees_url, alert: "Cannot delete payee who has associated clients." }
-        format.json { render json: { error: "Cannot delete payee who has associated clients" }, status: :unprocessable_entity }
+        format.json { render json: { error: "Cannot delete payee who has associated clients" }, status: :unprocessable_content }
       else
         @payee.destroy!
         format.html { redirect_to payees_url, notice: "Payee was successfully destroyed." }

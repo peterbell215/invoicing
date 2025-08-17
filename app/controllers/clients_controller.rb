@@ -35,7 +35,7 @@ class ClientsController < ApplicationController
     if @client.save
       redirect_to @client, notice: "Client was successfully created."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -46,7 +46,7 @@ class ClientsController < ApplicationController
     if @client.update(client_params)
       redirect_to @client, notice: "Client was successfully updated."
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -57,7 +57,7 @@ class ClientsController < ApplicationController
     if @client.destroy
       redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed."
     else
-      redirect_to @client, status: :unprocessable_entity, alert: "Client could not be destroyed. Please check if there are any associated records."
+      redirect_to @client, status: :unprocessable_content, alert: "Client could not be destroyed. Please check if there are any associated records."
     end
   end
 
