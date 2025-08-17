@@ -49,6 +49,30 @@ RSpec.describe "Client Sessions", type: :system do
       end
     end
 
+    it "hides edit and delete buttons for sessions with sent or paid invoice status" do
+      sent_invoice = FactoryBot.create(:invoice, client: client, status: 'sent')
+      paid_invoice = FactoryBot.create(:invoice, client: client, status: 'paid')
+
+      session_with_sent_invoice = FactoryBot.create(:client_session, client: client, invoice: sent_invoice, description: "Session with sent invoice")
+      session_with_paid_invoice = FactoryBot.create(:client_session, client: client, invoice: paid_invoice, description: "Session with paid invoice")
+
+      visit client_sessions_path
+
+      # Session with sent invoice should not have Edit or Delete buttons
+      within("##{dom_id(session_with_sent_invoice)}") do
+        expect(page).to have_link("View")
+        expect(page).not_to have_link("Edit")
+        expect(page).not_to have_button("Delete")
+      end
+
+      # Session with paid invoice should not have Edit or Delete buttons
+      within("##{dom_id(session_with_paid_invoice)}") do
+        expect(page).to have_link("View")
+        expect(page).not_to have_link("Edit")
+        expect(page).not_to have_button("Delete")
+      end
+    end
+
     it "has a link to create a new client session" do
       visit client_sessions_path
 

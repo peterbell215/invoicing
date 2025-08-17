@@ -1,8 +1,8 @@
-<%= link_to edit_client_session_path(client_session), class: "pure-button #{button_size}", data: { turbo_frame: "_top" } do %>
-  <span class="material-symbols-outlined">edit</span> Edit
-<% end %>
-
-<% if client_session.destroyable?  %>
+<% if client_session.destroyable? %>
+  <%= link_to edit_client_session_path(client_session), class: "pure-button #{button_size}", data: { turbo_frame: "_top" } do %>
+    <span class="material-symbols-outlined">edit</span> Edit
+  <% end %>
+  
   <%= render partial: 'shared/delete_confirmation', locals: {
     entity: client_session,
     button_size: button_size
