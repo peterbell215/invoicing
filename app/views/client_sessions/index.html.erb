@@ -9,9 +9,9 @@
         <tr>
           <th>Client</th>
           <th>Date</th>
-          <th>Duration</th>
+          <th>Units</th>
           <th>Description</th>
-          <th>Hourly Rate</th>
+          <th>Unit Rate</th>
           <th>Session Fee</th>
           <th>Invoice Status</th>
           <th>Actions</th>
@@ -23,9 +23,9 @@
             <tr id="<%= dom_id client_session %>">
               <td><%= client_session.client.name %></td>
               <td><%= client_session.session_date.strftime("%d %B %Y") %></td>
-              <td><%= pluralize(client_session.duration, "minute") %></td>
+              <td><%= client_session.units %></td>
               <td class="description-cell"><%= truncate(client_session.description, length: 50) if client_session.description.present? %></td>
-              <td><%= number_to_currency(client_session.hourly_session_rate, unit: "£") %></td>
+              <td><%= number_to_currency(client_session.unit_session_rate, unit: "£") %></td>
               <td><%= number_to_currency(client_session.fee, unit: "£") %></td>
               <td>
                 <% if client_session.invoice %>

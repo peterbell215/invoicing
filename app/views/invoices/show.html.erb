@@ -80,7 +80,7 @@
           <tr>
             <th>Date</th>
             <th>Description</th>
-            <th>Duration</th>
+            <th>Units</th>
             <th>Rate</th>
             <th class="text-right">Amount</th>
           </tr>
@@ -90,8 +90,8 @@
             <tr>
               <td><%= session.session_date.strftime('%d %b %Y') %></td>
               <td><%= session.description %></td>
-              <td><%= session.duration %> minutes</td>
-              <td><%= session.hourly_session_rate.format %></td>
+              <td><%= session.units %></td>
+              <td><%= session.unit_session_rate.format %></td>
               <td class="text-right"><%= session.fee.format %></td>
             </tr>
           <% end %>

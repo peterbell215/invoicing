@@ -115,7 +115,7 @@
               <tr>
                 <td><%= fee.from.strftime("%d %b %Y") %></td>
                 <td><%= fee.to ? fee.to.strftime("%d %b %Y") : "Current" %></td>
-                <td><%= number_to_currency(fee.hourly_charge_rate&.amount, unit: "£") %></td>
+                <td><%= number_to_currency(fee.unit_charge_rate&.amount, unit: "£") %></td>
               </tr>
             <% end %>
           </tbody>
@@ -133,7 +133,7 @@
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Duration</th>
+                <th>Units</th>
                 <th>Rate</th>
                 <th>Total</th>
               </tr>
@@ -142,11 +142,11 @@
               <% client.client_sessions.order(session_date: :desc).limit(5).each do |session| %>
                 <tr>
                   <td><%= session.session_date.strftime('%d %b %Y') %></td>
-                  <td><%= pluralize(session.duration, 'minute') %></td>
-                  <td><%= number_to_currency(session.hourly_session_rate&.amount, unit: "£") %></td>
+                  <td><%= session.units %></td>
+                  <td><%= number_to_currency(session.unit_session_rate&.amount, unit: "£") %></td>
                   <td>
-                    <% if session.hourly_session_rate %>
-                      <%= number_to_currency((session.hourly_session_rate.amount * session.duration / 60.0), unit: "£") %>
+                    <% if session.unit_session_rate %>
+                      <%= number_to_currency((session.unit_session_rate.amount * session.units), unit: "£") %>
                     <% else %>
                       N/A
                     <% end %>

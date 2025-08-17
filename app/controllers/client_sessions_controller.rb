@@ -61,6 +61,6 @@ class ClientSessionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def client_session_params
-    params.require(:client_session).permit(:client_id, :session_date, :duration, :description)
+    params.require(:client_session).permit(:client_id, :session_date, :units, :description)
   end
 end

@@ -15,7 +15,7 @@ RSpec.describe "Clients", type: :system do
       fill_in "Postcode", with: new_client.postcode
 
       # Fill in billing information
-      fill_in "Hourly Rate", with: "85.00"
+      fill_in "Unit Rate", with: "85.00"
 
       # Submit the form
       click_button "Create Client"
@@ -61,7 +61,7 @@ RSpec.describe "Clients", type: :system do
       fill_in "Address Line 1", with: "123 Business Lane"
       fill_in "Town", with: "London"
       fill_in "Postcode", with: "invalid"
-      fill_in "Hourly Rate", with: "85.00"
+      fill_in "Unit Rate", with: "85.00"
 
       # Submit the form
       click_button "Create Client"

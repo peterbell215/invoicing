@@ -21,7 +21,7 @@ describe Client do
 
       specify { expect(test_client.client_sessions.length).to eq 4 }
       specify { expect(test_client.client_sessions[0].session_date).to eq DateTime.new(2025, 1, 10) }
-      specify { expect(test_client.client_sessions[0].duration).to eq 60 }
+      specify { expect(test_client.client_sessions[0].units).to eq 1.0 }
       specify { expect(test_client.client_sessions[0].session_date + 1.week).to eq test_client.client_sessions[1].session_date }
     end
   end
@@ -49,7 +49,7 @@ describe Client do
   end
 
   describe '#current_rate' do
-    context 'when a new record is built with a nil value for hourly_charge' do
+    context 'when a new record is built with a nil value for unit_rate' do
       subject(:test_client) { build(:client) }
 
       it 'autofills the fee.' do
@@ -57,7 +57,7 @@ describe Client do
       end
     end
 
-    context 'when a new record is created with a nil value for hourly_charge' do
+    context 'when a new record is created with a nil value for unit_charge' do
       before { create(:client) }
 
       let(:read_back_client) { Client.find_by(name: 'Test One') }
@@ -69,7 +69,7 @@ describe Client do
   end
 
   describe '#current_rate_since' do
-    context 'when a new record is built with a nil value for hourly_charge' do
+    context 'when a new record is built with a nil value for unit_charge' do
       subject(:test_client) { build(:client) }
 
       it 'autofills the since date.' do
@@ -104,7 +104,7 @@ describe Client do
 
       it 'does not do an update to the current Fee record' do
         test_client.new_rate = Money.new(7000)
-        expect(test_client.current_fee).not_to be_hourly_charge_rate_pence_changed
+        expect(test_client.current_fee).not_to be_unit_charge_rate_pence_changed
       end
     end
   end

@@ -4,10 +4,10 @@ RSpec.describe Fee, type: :model do
   let(:client) { FactoryBot.create(:client) }
 
   describe "monetization" do
-    it "monetizes hourly_charge_rate_pence" do
-      fee = Fee.new(client: client, hourly_charge_rate_pence: 6000)
-      expect(fee.hourly_charge_rate).to be_a(Money)
-      expect(fee.hourly_charge_rate.cents).to eq(6000)
+    it "monetizes unit_charge_rate_pence" do
+      fee = Fee.new(client: client, unit_charge_rate_pence: 6000)
+      expect(fee.unit_charge_rate).to be_a(Money)
+      expect(fee.unit_charge_rate.cents).to eq(6000)
     end
   end
 

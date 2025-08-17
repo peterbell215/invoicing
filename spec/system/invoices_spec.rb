@@ -7,9 +7,9 @@ RSpec.describe "Invoices", type: :system do
   let!(:payee) { FactoryBot.create(:payee) }
   let!(:client_sessions) do
     [
-      FactoryBot.create(:client_session, client: client, session_date: 1.week.ago, duration: 60),
-      FactoryBot.create(:client_session, client: client, session_date: 2.weeks.ago, duration: 90),
-      FactoryBot.create(:client_session, client: client, session_date: 3.weeks.ago, duration: 45)
+      FactoryBot.create(:client_session, client: client, session_date: 1.week.ago, units: 1.0),
+      FactoryBot.create(:client_session, client: client, session_date: 2.weeks.ago, units: 1.5),
+      FactoryBot.create(:client_session, client: client, session_date: 3.weeks.ago, units: 0.75)
     ]
   end
 
@@ -147,8 +147,8 @@ RSpec.describe "Invoices", type: :system do
 
       invoice.client_sessions.each do |session|
         expect(page).to have_content(session.session_date.strftime('%d %b %Y'))
-        expect(page).to have_content("#{session.duration} minutes")
-        expect(page).to have_content(session.hourly_session_rate.format)
+        expect(page).to have_content("#{session.units}")
+        expect(page).to have_content(session.unit_session_rate.format)
       end
     end
   end

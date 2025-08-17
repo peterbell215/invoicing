@@ -37,14 +37,14 @@ class Client < ApplicationRecord
     super((options || {}).merge({ methods: %i[current_rate] }))
   end
 
-  # Returns the current hourly rate for this client
+  # Returns the current unit rate for this client
   #
   # @return Money
   def current_rate
-    self.current_fee&.hourly_charge_rate
+    self.current_fee&.unit_charge_rate
   end
 
-  # returns since when the current hourly rate for this client applies
+  # returns since when the current unit rate for this client applies
   # @return Date
   def current_rate_since
     self.current_fee&.from
@@ -60,7 +60,7 @@ class Client < ApplicationRecord
     if active_fee.nil?
       # No record exists yet, so create a new one.
       _build_active_fee
-    elsif active_fee.hourly_charge_rate != self.new_rate
+    elsif active_fee.unit_charge_rate != self.new_rate
       # Something has changed, so ...
       if active_fee.persisted?
         # If this is a persisted (ie existing) fee, then amend date period and add the new record.
@@ -68,13 +68,13 @@ class Client < ApplicationRecord
         _build_active_fee
       else
         # If not yet persisted, then update existing unsaved record.
-        active_fee.hourly_charge_rate = self.new_rate
+        active_fee.unit_charge_rate = self.new_rate
       end
     end
   end
 
   def _build_active_fee
-    self.fees << Fee.new(from: self.new_rate_from, to: nil, hourly_charge_rate: self.new_rate)
+    self.fees << Fee.new(from: self.new_rate_from, to: nil, unit_charge_rate: self.new_rate)
   end
 
   # Returns the current fee record.

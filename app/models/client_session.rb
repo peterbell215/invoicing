@@ -3,13 +3,13 @@ class ClientSession < ApplicationRecord
   belongs_to :client
   belongs_to :invoice, optional: true
 
-  monetize :hourly_session_rate_pence
+  monetize :unit_session_rate_pence
 
   validates :session_date, presence: true
-  validates :duration, presence: true, numericality: { greater_than: 0 }
+  validates :units, presence: true, numericality: { greater_than: 0 }
 
-  before_validation :set_hourly_session_rate, on: :create
-  after_initialize :set_default_duration
+  before_validation :set_unit_session_rate, on: :create
+  after_initialize :set_default_units
 
   before_destroy :dont_if_invoice_sent
 
@@ -18,7 +18,7 @@ class ClientSession < ApplicationRecord
   end
 
   def fee
-    self.hourly_session_rate * (self.duration/60.0)
+    self.unit_session_rate * self.units
   end
 
   def summary
@@ -32,13 +32,13 @@ class ClientSession < ApplicationRecord
 
   private
 
-  def set_hourly_session_rate
+  def set_unit_session_rate
     return unless client&.current_rate
-    self.hourly_session_rate = client.current_rate
+    self.unit_session_rate = client.current_rate
   end
 
-  def set_default_duration
-    self.duration ||= 50
+  def set_default_units
+    self.units ||= 1.0
   end
 
   def dont_if_invoice_sent

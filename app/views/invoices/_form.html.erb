@@ -37,7 +37,7 @@
               <th>Select</th>
               <th>Date</th>
               <th>Description</th>
-              <th>Duration</th>
+              <th>Units</th>
               <th>Rate</th>
               <th>Fee</th>
             </tr>
@@ -52,8 +52,8 @@
                 </td>
                 <td><%= session.session_date.strftime('%d %b %Y') %></td>
                 <td><%= session.description %></td>
-                <td><%= session.duration %> mins</td>
-                <td><%= session.hourly_session_rate.format %></td>
+                <td><%= session.units %></td>
+                <td><%= session.unit_session_rate.format %></td>
                 <td><%= session.fee.format %></td>
               </tr>
             <% end %>

@@ -28,8 +28,8 @@
           <div class="detail-value"><%= client_session.session_date.strftime("%d %B %Y") %></div>
         </div>
         <div class="detail-item">
-          <div class="detail-label">Duration:</div>
-          <div class="detail-value"><%= pluralize(client_session.duration, "minute") %></div>
+          <div class="detail-label">Units:</div>
+          <div class="detail-value"><%= client_session.units %></div>
         </div>
         <% if client_session.description.present? %>
           <div class="detail-item">
@@ -45,12 +45,12 @@
         <h3>Billing Information</h3>
         <div class="detail-item">
           <div class="detail-label">Rate:</div>
-          <div class="detail-value"><%= number_to_currency(client_session.hourly_session_rate.amount, unit: "£") %></div>
+          <div class="detail-value"><%= number_to_currency(client_session.unit_session_rate.amount, unit: "£") %></div>
         </div>
         <div class="detail-item">
           <div class="detail-label">Total Amount:</div>
           <div class="detail-value">
-            <%= number_to_currency((client_session.hourly_session_rate.amount * client_session.duration / 60.0), unit: "£") %>
+            <%= number_to_currency((client_session.unit_session_rate.amount * client_session.units), unit: "£") %>
           </div>
         </div>
         <div class="detail-item">

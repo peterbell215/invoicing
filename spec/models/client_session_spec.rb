@@ -38,9 +38,9 @@ describe 'ClientSession' do
   end
 
   describe '#fee' do
-    subject(:client_session) { FactoryBot.create(:client_session, duration: 90) }
+    subject(:client_session) { FactoryBot.create(:client_session, units: 1.5) }
 
-    it 'calculates the correct fee based on hourly rate and duration' do
+    it 'calculates the correct fee based on unit rate and units' do
       expect(client_session.fee).to eq(Money.new(9000)) # 1.5 hours at £60/hour = £90.00
     end
   end

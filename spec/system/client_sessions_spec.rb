@@ -5,8 +5,8 @@ RSpec.describe "Client Sessions", type: :system do
   let!(:payee) { FactoryBot.create(:payee) }
 
   describe "Index page" do
-    let!(:client_session1) { FactoryBot.create(:client_session, client: client, session_date: 1.week.ago, duration: 60, description: "First session") }
-    let!(:client_session2) { FactoryBot.create(:client_session, client: client, session_date: 2.days.ago, duration: 90, description: "Second session") }
+    let!(:client_session1) { FactoryBot.create(:client_session, client: client, session_date: 1.week.ago, units: 1.0, description: "First session") }
+    let!(:client_session2) { FactoryBot.create(:client_session, client: client, session_date: 2.days.ago, units: 1.5, description: "Second session") }
 
     it "displays all client sessions ordered by date" do
       visit client_sessions_path
@@ -15,8 +15,8 @@ RSpec.describe "Client Sessions", type: :system do
       expect(page).to have_content(client.name)
       expect(page).to have_content("First session")
       expect(page).to have_content("Second session")
-      expect(page).to have_content("60 minutes")
-      expect(page).to have_content("90 minutes")
+      expect(page).to have_content("1.0")
+      expect(page).to have_content("1.5")
 
       # Check that sessions are ordered by session_date ascending
       session_rows = page.all("tbody tr")
@@ -62,7 +62,7 @@ RSpec.describe "Client Sessions", type: :system do
 
       select client.name, from: "Client"
       fill_in "Session Date", with: Date.current.strftime("%d/%m/%Y")
-      fill_in "Duration", with: "90"
+      fill_in "Units", with: "1.5"
       fill_in "Description", with: "Test session description"
 
       click_button "Create Client session"
@@ -71,7 +71,7 @@ RSpec.describe "Client Sessions", type: :system do
 
       created_session = ClientSession.last
       expect(created_session.client).to eq(client)
-      expect(created_session.duration).to eq(90)
+      expect(created_session.units).to eq(1.5)
       expect(created_session.description).to eq("Test session description")
       expect(created_session.session_date).to eq(Date.current)
     end
@@ -88,27 +88,27 @@ RSpec.describe "Client Sessions", type: :system do
       expect(page).to have_content("Session Date can't be blank")
     end
 
-    it "shows validation errors when duration is not a positive number", js: true do
+    it "shows validation errors when units is not a positive number", js: true do
       visit new_client_session_path
 
       select client.name, from: "Client"
       fill_in "Session Date", with: Date.current.strftime("%d/%m/%Y")
-      fill_in "Duration", with: "-30"
+      fill_in "Units", with: "-3.0"
 
       click_button "Create Client session"
 
-      expect(page).to have_content("Duration (minutes) is too low")
+      expect(page).to have_content("Units is too low")
     end
   end
 
   describe "Viewing a client session" do
-    let!(:client_session) { FactoryBot.create(:client_session, client: client, duration: 75, description: "Detailed session notes") }
+    let!(:client_session) { FactoryBot.create(:client_session, client: client, units: 1.25, description: "Detailed session notes") }
 
     it "displays all session details" do
       visit client_session_path(client_session)
 
       expect(page).to have_content(client.name)
-      expect(page).to have_content("75 minutes")
+      expect(page).to have_content("1.25")
       expect(page).to have_content("Detailed session notes")
       expect(page).to have_content(client_session.session_date.strftime("%d %B %Y"))
     end
@@ -123,12 +123,12 @@ RSpec.describe "Client Sessions", type: :system do
   end
 
   describe "Editing a client session" do
-    let!(:client_session) { FactoryBot.create(:client_session, client: client, duration: 60, description: "Original description") }
+    let!(:client_session) { FactoryBot.create(:client_session, client: client, units: 1.0, description: "Original description") }
 
     it "allows updating session information" do
       visit edit_client_session_path(client_session)
 
-      fill_in "Duration", with: "120"
+      fill_in "Units", with: "2.0"
       fill_in "Description", with: "Updated session description"
 
       click_button "Update Client session"
@@ -136,19 +136,19 @@ RSpec.describe "Client Sessions", type: :system do
       expect(page).to have_content("Client session was successfully updated")
 
       client_session.reload
-      expect(client_session.duration).to eq(120)
+      expect(client_session.units).to eq(2.0)
       expect(client_session.description).to eq("Updated session description")
     end
 
     it "shows validation errors when updating with invalid information", js: true do
       visit edit_client_session_path(client_session)
 
-      fill_in "Duration", with: ""
+      fill_in "Units", with: ""
 
       click_button "Update Client session"
 
       expect(page).to have_content("prohibited this record from being saved")
-      expect(page).to have_content("Duration (minutes) can't be blank")
+      expect(page).to have_content("Units can't be blank")
     end
   end
 
@@ -257,29 +257,29 @@ RSpec.describe "Client Sessions", type: :system do
   end
 
   describe "Session calculations" do
-    let!(:client_session) { FactoryBot.create(:client_session, client: client, duration: 90) }
+    let!(:client_session) { FactoryBot.create(:client_session, client: client, units: 1.5) }
 
-    it "displays calculated session fee based on duration and hourly rate" do
+    it "displays calculated session fee based on units and unit rate" do
       visit client_sessions_path
 
       within("##{dom_id(client_session)}") do
-        expected_fee = (client_session.duration / 60.0) * client_session.hourly_session_rate
+        expected_fee = client_session.units * client_session.unit_session_rate
         expect(page).to have_content("£#{sprintf('%.2f', expected_fee)}")
       end
     end
 
-    it "displays hourly rate for the session" do
+    it "displays unit rate for the session" do
       visit client_sessions_path
 
       within("##{dom_id(client_session)}") do
-        expect(page).to have_content("£#{sprintf('%.2f', client_session.hourly_session_rate)}")
+        expect(page).to have_content("£#{sprintf('%.2f', client_session.unit_session_rate)}")
       end
     end
   end
 
   describe "Invoice integration" do
-    let!(:client_session1) { FactoryBot.create(:client_session, client: client, duration: 60) }
-    let!(:client_session2) { FactoryBot.create(:client_session, client: client, duration: 90) }
+    let!(:client_session1) { FactoryBot.create(:client_session, client: client, units: 1.0) }
+    let!(:client_session2) { FactoryBot.create(:client_session, client: client, units: 1.5) }
 
     context "when sessions are unbilled" do
       it "shows unbilled status" do
@@ -370,7 +370,7 @@ RSpec.describe "Client Sessions", type: :system do
 
       expect(page).to have_selector("label[for='client_session_client_id']")
       expect(page).to have_selector("label[for='client_session_session_date']")
-      expect(page).to have_selector("label[for='client_session_duration']")
+      expect(page).to have_selector("label[for='client_session_units']")
       expect(page).to have_selector("label[for='client_session_description']")
     end
   end

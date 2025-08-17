@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_11_041441) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_17_152735) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -52,13 +52,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_041441) do
   create_table "client_sessions", force: :cascade do |t|
     t.integer "client_id"
     t.integer "invoice_id"
-    t.integer "duration", null: false
-    t.integer "hourly_session_rate_pence", default: 0, null: false
-    t.string "hourly_session_rate_currency", default: "GBP", null: false
+    t.integer "unit_session_rate_pence", default: 0, null: false
+    t.string "unit_session_rate_currency", default: "GBP", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description"
     t.date "session_date", null: false
+    t.float "units"
     t.index ["client_id"], name: "index_client_sessions_on_client_id"
     t.index ["invoice_id"], name: "index_client_sessions_on_invoice_id"
   end
@@ -84,8 +84,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_041441) do
     t.integer "client_id"
     t.date "from"
     t.date "to"
-    t.integer "hourly_charge_rate_pence", default: 0, null: false
-    t.string "hourly_charge_rate_currency", default: "GBP", null: false
+    t.integer "unit_charge_rate_pence", default: 0, null: false
+    t.string "unit_charge_rate_currency", default: "GBP", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_fees_on_client_id"

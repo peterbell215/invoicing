@@ -2,7 +2,7 @@
 class Fee < ApplicationRecord
   belongs_to :client
 
-  monetize :hourly_charge_rate_pence
+  monetize :unit_charge_rate_pence
 
   # Checks if for the provided client_id any fee entries' date ranges overlap.
   # @param [ActiveResult] fees

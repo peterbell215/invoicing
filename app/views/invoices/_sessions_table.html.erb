@@ -7,7 +7,7 @@
           <input type="checkbox" id="select-all" data-sessions-table-target="selectAll" data-action="change->sessions-table#toggleSelectAll" title="Select/deselect all">
         </th>
         <th>Date</th>
-        <th>Duration</th>
+        <th>Units</th>
         <th>Description</th>
         <th>Amount</th>
       </tr>
@@ -22,7 +22,7 @@
           <tr>
             <td><%= client_session.check_box %></td>
             <td><%= client_session.object.session_date %></td>
-            <td><%= client_session.object.duration %> minutes</td>
+            <td><%= client_session.object.units %></td>
             <td><%= client_session.object.description %></td>
             <td><%= client_session.object.fee.format %></td>
           </tr>
