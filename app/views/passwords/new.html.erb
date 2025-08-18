@@ -1,0 +1,16 @@
+<div id="clearance" class="password-reset">
+  <h2><%= t(".title") %></h2>
+
+  <p><%= t(".description") %></p>
+
+  <%= form_for :password, url: passwords_path, class: "pure-form pure-form-stacked" do |form| %>
+    <div class="pure-u-1 pure-u-md-1-2">
+      <%= form.label :email %>
+      <%= form.email_field :email, class: "pure-input-1" %>
+    </div>
+
+    <div class="form-buttons">
+      <%= form.submit class: "pure-button pure-button-primary" %>
+    </div>
+  <% end %>
+</div>

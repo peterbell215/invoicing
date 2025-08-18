@@ -3,15 +3,6 @@
   <component name="CopilotDiffPersistence">
     <option name="pendingDiffs">
       <map>
-        <entry key="$PROJECT_DIR$/app/views/client_sessions/_buttons.html.erb">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/app/views/client_sessions/_buttons.html.erb" />
-              <option name="originalContent" value="&lt;%= link_to edit_client_session_path(client_session), class: &quot;pure-button #{button_size}&quot;, data: { turbo_frame: &quot;_top&quot; } do %&gt;&#10;  &lt;span class=&quot;material-symbols-outlined&quot;&gt;edit&lt;/span&gt; Edit&#10;&lt;% end %&gt;&#10;&#10;&lt;% if client_session.destroyable?  %&gt;&#10;  &lt;%= render partial: 'shared/delete_confirmation', locals: {&#10;    entity: client_session,&#10;    button_size: button_size&#10;  } %&gt;&#10;&lt;% end %&gt;&#10;" />
-              <option name="updatedContent" value="&lt;% if client_session.destroyable? %&gt;&#10;  &lt;%= link_to edit_client_session_path(client_session), class: &quot;pure-button #{button_size}&quot;, data: { turbo_frame: &quot;_top&quot; } do %&gt;&#10;    &lt;span class=&quot;material-symbols-outlined&quot;&gt;edit&lt;/span&gt; Edit&#10;  &lt;% end %&gt;&#10;&lt;% end %&gt;&#10;&#10;&lt;% if client_session.destroyable?  %&gt;&#10;  &lt;%= render partial: 'shared/delete_confirmation', locals: {&#10;    entity: client_session,&#10;    button_size: button_size&#10;  } %&gt;&#10;&lt;% end %&gt;" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/spec/system/client_sessions_spec.rb">
           <value>
             <PendingDiffInfo>

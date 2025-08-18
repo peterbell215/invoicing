@@ -32,12 +32,26 @@
   <nav>
     <div class="pure-menu pure-menu-horizontal">
       <ul class="pure-menu-list">
-        <!-- Left-aligned items -->
-        <li class="pure-menu-item"><%= link_to "Clients", clients_path, class: "pure-menu-link" %></li>
-        <li class="pure-menu-item"><%= link_to "Messages", messages_path, class: "pure-menu-link" %></li>
-        <li class="pure-menu-item"><%= link_to "Payees", payees_path, class: "pure-menu-link" %></li>
-        <li class="pure-menu-item"><%= link_to "Sessions", client_sessions_path, class: "pure-menu-link" %></li>
-        <li class="pure-menu-item"><%= link_to "Invoices", invoices_path, class: "pure-menu-link" %></li>
+        <% if signed_in? %>
+          <!-- Left-aligned items -->
+          <li class="pure-menu-item"><%= link_to "Clients", clients_path, class: "pure-menu-link" %></li>
+          <li class="pure-menu-item"><%= link_to "Messages", messages_path, class: "pure-menu-link" %></li>
+          <li class="pure-menu-item"><%= link_to "Payees", payees_path, class: "pure-menu-link" %></li>
+          <li class="pure-menu-item"><%= link_to "Sessions", client_sessions_path, class: "pure-menu-link" %></li>
+          <li class="pure-menu-item"><%= link_to "Invoices", invoices_path, class: "pure-menu-link" %></li>
+        <% end %>
+      </ul>
+
+        <!-- Right-aligned items -->
+      <ul class="pure-menu-list right-menu">
+        <% if signed_in? %>
+          <li class="pure-menu-item"><em><%= current_user.email %></em></li>
+          <li class="pure-menu-item">
+            <%= link_to "Sign Out", sign_out_path, class: "pure-menu-link", data: { "turbo-method": :delete } %>
+          </li>
+        <% else %>
+          <li class="pure-menu-item"><%= link_to "Sign in", sign_in_path, class: "pure-menu-link" %></li>
+        <% end %>
         <!-- Add other nav items as needed -->
       </ul>
     </div>
