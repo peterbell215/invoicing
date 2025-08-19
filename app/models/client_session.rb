@@ -11,6 +11,7 @@ class ClientSession < ApplicationRecord
   before_validation :set_unit_session_rate, on: :create
   after_initialize :set_default_units
 
+  before_update :dont_if_invoice_sent
   before_destroy :dont_if_invoice_sent
 
   def destroyable?

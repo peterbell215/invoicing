@@ -253,10 +253,11 @@ RSpec.describe "Client Sessions", type: :system do
     end
 
     context "when session is invoiced" do
-      let!(:invoice) { FactoryBot.create(:invoice, client: client, status: 'sent') }
+      let!(:invoice) { FactoryBot.create(:invoice, client: client) }
 
       before do
         client_session.update!(invoice: invoice)
+        invoice.update!(status: 'sent')
       end
 
       it "does not show delete button on index page when session is invoiced and sent" do
