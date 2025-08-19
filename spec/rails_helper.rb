@@ -14,6 +14,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # Add additional requires below this line. Rails is not loaded until this point!
 require "capybara/rails"
 require "capybara/rspec"
+require "clearance/rspec"
 
 require 'action_view/helpers/number_helper'
 require 'action_view/record_identifier'
@@ -44,13 +45,14 @@ RSpec.configure do |config|
     FactoryBot.rewind_sequences
   end
 
-
-
   config.before(:each, type: :system) do |example|
     if example.metadata[:js]
       driven_by :selenium_chrome
     else
       driven_by :selenium_chrome_headless
     end
+
+    user ||= FactoryBot.create(:user)
+    visit root_path(as: user)
   end
 end
