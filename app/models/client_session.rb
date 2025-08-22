@@ -7,44 +7,55 @@ class ClientSession < ApplicationRecord
 
   validates :session_date, presence: true
   validates :units, presence: true, numericality: { greater_than: 0 }
+  validates :unit_session_rate, presence: true
 
-  before_validation :set_unit_session_rate, on: :create
-  after_initialize :set_default_units
-
-  before_update :dont_if_invoice_sent
-  before_destroy :dont_if_invoice_sent
-
-  def destroyable?
-    self.invoice.nil? || self.invoice.status == "created"
-  end
-
-  def fee
-    self.unit_session_rate * self.units
-  end
+  before_destroy :check_destroyable
+  before_update :check_updatable
+  after_update :update_invoice_amount, if: :amount_affecting_change?
+  after_save :update_invoice_amount, if: :amount_affecting_change?
 
   def summary
     "#{self.client.name} on #{self.session_date.strftime('%d %b %Y')}"
   end
 
-  # Return the entity (Client or Payee) who should be billed for this session
-  def billable_to
-    client.effective_payee
+  def fee
+    return Money.new(0) unless units && unit_session_rate
+    unit_session_rate * units
+  end
+
+  def destroyable?
+    return true if invoice.nil?
+    invoice.created?
+  end
+
+  def updatable?
+    return true if invoice.nil?
+    invoice.created?
   end
 
   private
 
-  def set_unit_session_rate
-    return unless client&.current_rate
-    self.unit_session_rate = client.current_rate
+  def check_destroyable
+    unless destroyable?
+      errors.add(:base, "Cannot delete once invoice sent or paid")
+      throw :abort
+    end
   end
 
-  def set_default_units
-    self.units ||= 1.0
+  def check_updatable
+    unless updatable?
+      errors.add(:base, "Cannot update once invoice sent or paid")
+      throw :abort
+    end
   end
 
-  def dont_if_invoice_sent
-    return if self.destroyable?
+  def amount_affecting_change?
+    return false unless invoice.present? && invoice.created?
+    saved_change_to_units? || saved_change_to_unit_session_rate_pence?
+  end
 
-    raise ActiveRecord::RecordNotDestroyed, "Cannot delete once invoice sent or paid"
+  def update_invoice_amount
+    return unless invoice.present? && invoice.created?
+    invoice.save! # This will trigger the invoice's before_save callback to update_amount
   end
 end

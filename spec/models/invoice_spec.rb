@@ -4,7 +4,7 @@ RSpec.describe Invoice do
   include ActiveSupport::Testing::TimeHelpers
 
   describe 'FactoryBot' do
-    subject(:invoice) { create(:invoice) }
+    subject(:invoice) { create(:invoice_with_client_sessions) }
 
     specify { expect(invoice.date).to eq Date.new(2025, 2, 1) }
     specify { expect(invoice.client_sessions.length).to eq 3 }

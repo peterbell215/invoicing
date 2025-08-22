@@ -4,7 +4,11 @@ describe 'ClientSession' do
   describe '#destroyable' do
     shared_examples_for 'not destroyable' do |status|
       subject(:client_session) { invoice.client_sessions.first }
-      let(:invoice) { create(:invoice, status: status) }
+      let(:invoice) { create(:invoice_with_client_sessions) }
+
+      before do
+        invoice.update!(status: status)
+      end
 
       specify { expect(client_session.destroyable?).to be_falsey }
 
@@ -23,7 +27,7 @@ describe 'ClientSession' do
 
     context 'when the invoice has not yet been sent' do
       subject(:client_session) { invoice.client_sessions.first }
-      let(:invoice) { create(:invoice, status: :created) }
+      let(:invoice) { create(:invoice_with_client_sessions, status: :created) }
 
       specify { expect(client_session.destroyable?).to be_truthy }
     end
@@ -46,9 +50,59 @@ describe 'ClientSession' do
   end
 
   describe '#updatable' do
+    context 'when no invoice has been associated with the client session' do
+      subject(:client_session) { create(:client_session, client: client) }
+      let(:client) { create(:client) }
+
+      it 'can be updated' do
+        original_date = client_session.session_date
+        original_units = client_session.units
+        new_date = Date.current + 1.day
+        new_units = original_units + 2
+
+        # Update the session
+        client_session.session_date = new_date
+        client_session.units = new_units
+
+        expect { client_session.save! }.not_to raise_error
+
+        # Verify the values have changed
+        client_session.reload
+        expect(client_session.session_date).to eq(new_date)
+        expect(client_session.units).to eq(new_units)
+      end
+    end
+
+    context 'when the invoice is in created state' do
+      subject(:client_session) { invoice.client_sessions.first }
+      let(:invoice) { create(:invoice_with_client_sessions) }
+
+      it 'can be updated' do
+        original_date = client_session.session_date
+        original_units = client_session.units
+        new_date = Date.current + 1.day
+        new_units = original_units + 2
+
+        # Update the session
+        client_session.session_date = new_date
+        client_session.units = new_units
+
+        expect { client_session.save! }.not_to raise_error
+
+        # Verify the values have changed
+        client_session.reload
+        expect(client_session.session_date).to eq(new_date)
+        expect(client_session.units).to eq(new_units)
+      end
+    end
+
     shared_examples_for 'not updatable' do |status|
       subject(:client_session) { invoice.client_sessions.first }
-      let(:invoice) { create(:invoice, status: status) }
+      let(:invoice) { create(:invoice_with_client_sessions) }
+
+      before do
+        invoice.update_attribute(:status, status)
+      end
 
       it 'cannot be updated when invoice has been sent or paid' do
         original_date = client_session.session_date
@@ -58,7 +112,8 @@ describe 'ClientSession' do
         client_session.session_date = Date.current + 1.day
         client_session.units = original_units + 1
 
-        expect { client_session.save! }.to raise_error(ActiveRecord::RecordNotDestroyed, "Cannot delete once invoice sent or paid")
+        expect { client_session.save! }.to raise_error(ActiveRecord::RecordNotSaved)
+        expect(client_session.errors.messages[:base].first).to eq("Cannot update once invoice sent or paid")
 
         # Verify the values haven't changed
         client_session.reload
@@ -67,58 +122,9 @@ describe 'ClientSession' do
       end
 
       it 'raises exception when using update! method' do
-        expect { client_session.update!(units: 5.0) }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        expect { client_session.update!(units: 5.0) }.to raise_error(ActiveRecord::RecordNotSaved)
+        expect(client_session.errors.messages[:base].first).to eq("Cannot update once invoice sent or paid")
       end
-    end
-
-    shared_examples_for 'updatable' do |status|
-      subject(:client_session) { invoice.client_sessions.first }
-      let(:invoice) { create(:invoice, status: status) }
-
-      it 'can be updated when invoice is in created state' do
-        original_date = client_session.session_date
-        original_units = client_session.units
-        new_date = Date.current + 1.day
-        new_units = original_units + 2
-
-        # Update the session
-        client_session.session_date = new_date
-        client_session.units = new_units
-
-        expect { client_session.save! }.not_to raise_error
-
-        # Verify the values have changed
-        client_session.reload
-        expect(client_session.session_date).to eq(new_date)
-        expect(client_session.units).to eq(new_units)
-      end
-    end
-
-    context 'when no invoice has been associated with the client session' do
-      subject(:client_session) { create(:client_session, client: client) }
-      let(:client) { create(:client) }
-
-      it 'can be updated when not associated with any invoice' do
-        original_date = client_session.session_date
-        original_units = client_session.units
-        new_date = Date.current + 1.day
-        new_units = original_units + 2
-
-        # Update the session
-        client_session.session_date = new_date
-        client_session.units = new_units
-
-        expect { client_session.save! }.not_to raise_error
-
-        # Verify the values have changed
-        client_session.reload
-        expect(client_session.session_date).to eq(new_date)
-        expect(client_session.units).to eq(new_units)
-      end
-    end
-
-    context 'when the invoice has not yet been sent' do
-      it_behaves_like 'updatable', :created
     end
 
     context 'when the invoice has been sent' do
@@ -128,21 +134,31 @@ describe 'ClientSession' do
     context 'when the invoice has been paid' do
       it_behaves_like 'not updatable', :paid
     end
+  end
 
-    context 'updating specific fields' do
-      subject(:client_session) { create(:client_session, client: client) }
-      let(:client) { create(:client) }
+  describe 'invoice amount updates' do
+    subject(:invoice) { create(:invoice_with_client_sessions) }
+    let(:first_client_session) { invoice.client_sessions.first }
 
-      it 'allows updating session_date when not invoiced' do
-        new_date = Date.current + 5.days
-        expect { client_session.update!(session_date: new_date) }.not_to raise_error
-        expect(client_session.reload.session_date).to eq(new_date)
+    context 'when invoice is created with client sessions' do
+      it 'initially sets invoice amount based on client session fee' do
+        expect(invoice.amount).to eq(Money.from_amount(60.0*3))
+      end
+    end
+
+    context 'when invoice status is created ' do
+      it 'updates invoice amount when units change' do
+        first_client_session.update!(units: 4.0)
+
+        invoice.reload
+        expect(invoice.amount).to eq(Money.from_amount(60.0*4 + 60.0*2))
       end
 
-      it 'allows updating units when not invoiced' do
-        new_units = 8.5
-        expect { client_session.update!(units: new_units) }.not_to raise_error
-        expect(client_session.reload.units).to eq(new_units)
+      it 'updates invoice amount when unit_session_rate changes' do
+        first_client_session.update!(unit_session_rate: Money.new(8000))
+
+        invoice.reload
+        expect(invoice.amount).to eq(Money.from_amount(80.0*1 + 60.0*2))
       end
     end
   end

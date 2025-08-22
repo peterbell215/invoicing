@@ -4,9 +4,14 @@ FactoryBot.define do
 
     client   { Client.find_by_name("Test Client") || FactoryBot.create(:client) }
 
-    after(:create) do |invoice|
-      create_list(:client_session, 3, client: invoice.client, invoice: invoice)
-      invoice.reload
+    factory :invoice_with_client_sessions do
+      transient do
+        client_sessions_count { 3 }
+      end
+
+      client_sessions do
+        Array.new(client_sessions_count) { association(:client_session, client: client) }
+      end
     end
   end
 end
