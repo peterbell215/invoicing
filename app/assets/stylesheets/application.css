@@ -210,22 +210,6 @@ body div.container {
     margin-top: 0;
 }
 
-.devise-links {
-    margin-top: 1.5em;
-    font-size: 0.9em;
-    text-align: center;
-}
-
-.devise-links a {
-    color: #FF8200; /* Match Modaxo orange */
-    text-decoration: none;
-    margin: 0 0.5em;
-}
-
-.devise-links a:hover {
-    text-decoration: underline;
-}
-
 .password-hint, .field-hint {
     font-size: 0.85em;
     color: #666;
@@ -246,4 +230,44 @@ body div.container {
     margin-top: 2em;
     padding-top: 1em;
     border-top: 1px solid #eee;
+}
+
+/* Status badge styles */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* Status badge custom variants not in indexes.css */
+.status-badge.pending {
+    background-color: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #f57f17;
+}
+
+.status-badge.invoiced {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+}
+
+.status-badge.unbilled {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #1565c0;
+}
+
+.status-badge.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+}
+
+.status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
 }

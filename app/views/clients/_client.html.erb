@@ -136,6 +136,7 @@
                 <th>Units</th>
                 <th>Rate</th>
                 <th>Total</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -149,6 +150,15 @@
                       <%= number_to_currency((session.unit_session_rate.amount * session.units), unit: "£") %>
                     <% else %>
                       N/A
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if session.invoice %>
+                      <span class="status-badge <%= session.invoice.status == 'created' ? 'pending' : 'invoiced' %>">
+                        <%= session.invoice.status.titleize %>
+                      </span>
+                    <% else %>
+                      <span class="status-badge unbilled">Unbilled</span>
                     <% end %>
                   </td>
                 </tr>
