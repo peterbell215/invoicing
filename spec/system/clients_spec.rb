@@ -270,4 +270,138 @@ RSpec.describe "Clients", type: :system do
       expect(client_with_reference.payee_reference).to be_blank
     end
   end
+
+  describe "Client deletability" do
+    let!(:active_client) { FactoryBot.create(:client, name: "Active Client", active: true) }
+    let!(:inactive_client) { FactoryBot.create(:client, name: "Inactive Client", active: false) }
+    let!(:inactive_client_with_sessions) { FactoryBot.create(:client, name: "Inactive Client with Sessions", active: false) }
+    let!(:inactive_client_with_unpaid_invoice) { FactoryBot.create(:client, name: "Inactive Client with Unpaid Invoice", active: false) }
+    let!(:inactive_client_with_recent_paid_invoice) { FactoryBot.create(:client, name: "Inactive Client with Recent Paid Invoice", active: false) }
+    let!(:deletable_client) { FactoryBot.create(:client, name: "Deletable Client", active: false) }
+
+    before do
+      # Set up client with uninvoiced sessions
+      FactoryBot.create(:client_session, client: inactive_client_with_sessions, invoice: nil)
+
+      # Set up client with unpaid invoice
+      unpaid_invoice = FactoryBot.create(:invoice, client: inactive_client_with_unpaid_invoice, status: :created)
+      FactoryBot.create(:client_session, client: inactive_client_with_unpaid_invoice, invoice: unpaid_invoice)
+
+      # Set up client with recent paid invoice (less than 5 years old)
+      recent_paid_invoice = FactoryBot.create(:invoice,
+        client: inactive_client_with_recent_paid_invoice,
+        status: :paid,
+        date: 1.year.ago
+      )
+      FactoryBot.create(:client_session, client: inactive_client_with_recent_paid_invoice, invoice: recent_paid_invoice)
+    end
+
+    it "does not show delete button for active clients" do
+      visit client_path(active_client)
+
+      expect(page).not_to have_button("Delete")
+      expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+    end
+
+    it "does not show delete button for clients with uninvoiced sessions" do
+      visit client_path(inactive_client_with_sessions)
+
+      expect(page).not_to have_button("Delete")
+      expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+    end
+
+    it "does not show delete button for clients with unpaid invoices" do
+      visit client_path(inactive_client_with_unpaid_invoice)
+
+      expect(page).not_to have_button("Delete")
+      expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+    end
+
+    it "does not show delete button for clients with recent paid invoices" do
+      visit client_path(inactive_client_with_recent_paid_invoice)
+
+      expect(page).not_to have_button("Delete")
+      expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+    end
+
+    it "shows delete button for deletable clients" do
+      visit client_path(deletable_client)
+
+      expect(page).to have_button("Delete")
+      expect(page).to have_selector("[data-action*='delete-confirmation']")
+    end
+
+    it "displays deletion reason for active clients" do
+      visit client_path(active_client)
+
+      within('.pure-u-1.pure-u-md-1-2', text: 'Status') do
+        expect(page).to have_content("Deletable:")
+        expect(page).to have_selector('.status-badge.inactive', text: 'No')
+        expect(page).to have_selector('.deletion-reason', text: 'Cannot delete client: client is active')
+      end
+    end
+
+    it "displays deletion reason for clients with uninvoiced sessions" do
+      visit client_path(inactive_client_with_sessions)
+
+      within('.pure-u-1.pure-u-md-1-2', text: 'Status') do
+        expect(page).to have_content("Deletable:")
+        expect(page).to have_selector('.status-badge.inactive', text: 'No')
+        expect(page).to have_selector('.deletion-reason', text: 'Cannot delete client as they have uninvoiced sessions')
+      end
+    end
+
+    it "displays deletion reason for clients with unpaid invoices" do
+      visit client_path(inactive_client_with_unpaid_invoice)
+
+      within('.pure-u-1.pure-u-md-1-2', text: 'Status') do
+        expect(page).to have_content("Deletable:")
+        expect(page).to have_selector('.status-badge.inactive', text: 'No')
+        expect(page).to have_selector('.deletion-reason', text: 'Cannot delete client as they have unpaid invoices')
+      end
+    end
+
+    it "displays deletion reason for clients with recent paid invoices" do
+      visit client_path(inactive_client_with_recent_paid_invoice)
+
+      within('.pure-u-1.pure-u-md-1-2', text: 'Status') do
+        expect(page).to have_content("Deletable:")
+        expect(page).to have_selector('.status-badge.inactive', text: 'No')
+        expect(page).to have_selector('.deletion-reason', text: 'Cannot delete client as they have invoices less than five years old')
+      end
+    end
+
+    it "shows deletable status for deletable clients" do
+      visit client_path(deletable_client)
+
+      within('.pure-u-1.pure-u-md-1-2', text: 'Status') do
+        expect(page).to have_content("Deletable:")
+        expect(page).to have_selector('.status-badge.active', text: 'Yes')
+        expect(page).not_to have_selector('.deletion-reason')
+      end
+    end
+
+    it "does not show delete button on index page for non-deletable clients" do
+      visit clients_path
+
+      within("#client_#{active_client.id}") do
+        expect(page).not_to have_button("Delete")
+        expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+      end
+
+      within("#client_#{inactive_client_with_sessions.id}") do
+        expect(page).not_to have_button("Delete")
+        expect(page).not_to have_selector("[data-action*='delete-confirmation']")
+      end
+    end
+
+    it "shows delete button on index page for deletable clients" do
+      visit clients_path
+
+      within("#client_#{deletable_client.id}") do
+        expect(page).to have_button("Delete")
+        expect(page).to have_selector("[data-action*='delete-confirmation']")
+      end
+    end
+  end
 end
