@@ -2,23 +2,27 @@
 class Client < ApplicationRecord
   include Person
 
+  # See https://stackoverflow.com/questions/1713284/the-before-destroy-callback-prevents-child-records-from-being-deleted-in-ruby-on for explanation
+  # of defining the callback before the dependent: :destroy associations.
+  before_destroy :check_deletable
+
   has_many :client_sessions, dependent: :destroy
   has_many :fees, -> { order(to: :desc) }, dependent: :destroy
-  belongs_to :paid_by, class_name: 'Payee', optional: true
+  belongs_to :paid_by, class_name: "Payee", optional: true
   has_many :messages_for_clients, dependent: :destroy
   has_many :messages, through: :messages_for_clients
   has_many :invoices, dependent: :nullify
 
-  validates :fees, presence: true
+  validates :fees, presence: true, unless: :marked_for_destruction?
   validate :fees_must_not_overlap
 
   # Set clients to active by default
   attribute :active, :boolean, default: true
 
-  attribute :new_rate, :money, default: Money.new(6000, 'GBP')
+  attribute :new_rate, :money, default: Money.new(6000, "GBP")
   attribute :new_rate_from, :date, default: -> { Time.zone.today }
-  validates :new_rate, presence: { message: 'cannot be blank if New Rate From is set' }, if: :new_rate_from
-  validates :new_rate_from, presence: { message: 'cannot be blank if New Rate is set' }, if: :new_rate
+  validates :new_rate, presence: { message: "cannot be blank if New Rate From is set" }, if: :new_rate_from
+  validates :new_rate_from, presence: { message: "cannot be blank if New Rate is set" }, if: :new_rate
 
   # Add a default fee record if none exists.
   after_initialize do |client|
@@ -52,7 +56,7 @@ class Client < ApplicationRecord
 
   # Sets the current fee for client sessions if different from current fee as held in database.  Updates the
   # current rate in the database to be up to yesterday, and creates a new fees record starting
-  # today with an open ended charge period.
+  # today with an open-ended charge period.
   # @return [Money]
   def create_new_rate
     active_fee = self.current_fee
@@ -109,7 +113,36 @@ class Client < ApplicationRecord
   # including global messages that apply to all clients
   def applicable_messages
     Message.current.left_joins(:messages_for_clients)
-           .where('messages_for_clients.client_id = ? OR messages_for_clients.client_id IS NULL', id)
+           .where("messages_for_clients.client_id = ? OR messages_for_clients.client_id IS NULL", id)
            .distinct
+  end
+
+  # Returns true if this client can be deleted
+  # Clients can be deleted if:
+  # 1. They are not active and have no invoices or client_sessions, OR
+  # 2. They are inactive and their last invoice is paid and more than 5 years old
+  def deleteable?
+    if active?
+      return false,  "Cannot delete client: client is active"
+    elsif invoices.empty? && client_sessions.empty?
+      return true, nil
+    elsif self.invoices.where.not(status: :paid).exists?
+      return false, "Cannot delete client as they have unpaid invoices"
+    elsif self.client_sessions.where(invoice_id: nil).exists?
+      return false, "Cannot delete client as they have uninvoiced sessions"
+    elsif self.invoices.where("date >= ?", 5.years.ago).exists?
+      return false, "Cannot delete client as they have invoices less than five years old"
+    end
+    return true, nil
+  end
+
+  private
+
+  def check_deletable
+    status, message = deleteable?
+    if !status
+      errors.add(:base, message)
+      throw(:abort)
+    end
   end
 end

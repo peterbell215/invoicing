@@ -8,7 +8,7 @@ describe Client do
       specify { expect(test_client.name).to eq('Test One') }
     end
 
-    context 'when Factorybot builds a client with fees' do
+    context 'when FactoryBot builds a client with fees' do
       subject(:test_client) { create(:client, :with_fees) }
 
       specify { expect(test_client.fees.length).to eq 3 }
@@ -267,6 +267,112 @@ describe Client do
         expect(applicable_messages).not_to include(other_client_message)
         expect(applicable_messages).not_to include(expired_message)
         expect(applicable_messages.count).to eq(2)
+      end
+    end
+  end
+
+  describe '#deleteable?' do
+    shared_examples "cannot be deleted" do |expected_error|
+      specify do
+        status, message = client.deleteable?
+
+        expect(status).to be false
+        expect(message).to eq(expected_error)
+      end
+    end
+
+    shared_examples "can be deleted" do
+      specify do
+        status, _ = client.deleteable?
+        expect(status).to be true
+      end
+    end
+
+    context 'when client is active' do
+      subject!(:client) { create(:client, active: true) }
+
+      it_behaves_like "cannot be deleted", "Cannot delete client: client is active"
+    end
+
+    context 'when client is inactive and has no invoices or client sessions' do
+      subject!(:client) { create(:client, active: false) }
+
+      it_behaves_like "can be deleted"
+    end
+
+    context 'when client is inactive and has client sessions but no invoices' do
+      subject!(:client) { create(:client, :with_client_sessions, active: false) }
+
+      it_behaves_like "cannot be deleted", "Cannot delete client as they have uninvoiced sessions"
+    end
+
+    context 'when last invoice is paid and more than 5 years old' do
+      subject!(:client) { create(:client, active: false) }
+      before do
+        create(:invoice, client: client, status: :paid, date: 6.years.ago)
+      end
+
+      it_behaves_like "can be deleted"
+    end
+
+    context 'when last invoice is paid but less than 5 years old' do
+      subject!(:client) { create(:client, active: false) }
+
+      before do
+        create(:invoice, client: client, status: :paid, date: 3.years.ago)
+      end
+
+      it_behaves_like "cannot be deleted", "Cannot delete client as they have invoices less than five years old"
+    end
+
+    context 'when last invoice is not paid but more than 5 years old' do
+      subject!(:client) { create(:client, active: false) }
+
+      before do
+        create(:invoice, client: client, status: :sent, date: 6.years.ago)
+      end
+
+      it_behaves_like "cannot be deleted", "Cannot delete client as they have unpaid invoices"
+    end
+
+    context 'when has multiple paid invoices all more than 5 years ago' do
+      subject!(:client) { create(:client, active: false) }
+
+      before do
+        create(:invoice, client: client, status: :paid, date: 7.years.ago)
+        create(:invoice, client: client, status: :paid, date: 6.years.ago)
+      end
+
+      it_behaves_like "can be deleted"
+    end
+
+    context 'when it has multiple paid invoices one of which is less than 5 years old' do
+      subject!(:client) { create(:client, active: false) }
+
+      before do
+        create(:invoice, client: client, status: :paid, date: 7.years.ago)
+        create(:invoice, client: client, status: :paid, date: 1.year.ago)
+      end
+
+      it_behaves_like "cannot be deleted", "Cannot delete client as they have invoices less than five years old"
+    end
+  end
+
+  describe '#destroy' do
+    context 'when client is deletable' do
+      let!(:client) { create(:client, active: false) }
+
+      it 'successfully destroys the client' do
+        expect { client.destroy }.to change(Client, :count).by(-1)
+      end
+    end
+
+    context 'when client is not deletable' do
+      let!(:client) { create(:client, active: true) }
+
+      it 'does not destroy the client' do
+        expect { client.destroy }.not_to change(Client, :count)
+        expect(client.errors.messages[:base].first).to eq("Cannot delete client: client is active")
       end
     end
   end
