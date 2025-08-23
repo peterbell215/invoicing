@@ -32,15 +32,15 @@ RSpec.describe "Invoices", type: :system do
       visit invoices_path
 
       within("tbody tr:first-child") do
-        expect(page).to have_css(".status-badge.created", text: "CREATED")
+        expect(page).to have_css(".status-badge.created", text: "Created")
       end
 
       within("tbody tr:nth-child(2)") do
-        expect(page).to have_css(".status-badge.sent", text: "SENT")
+        expect(page).to have_css(".status-badge.sent", text: "Sent")
       end
 
       within("tbody tr:nth-child(3)") do
-        expect(page).to have_css(".status-badge.paid", text: "PAID")
+        expect(page).to have_css(".status-badge.paid", text: "Paid")
       end
     end
 
