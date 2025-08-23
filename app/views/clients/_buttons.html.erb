@@ -12,7 +12,9 @@
   </button>
 <% end %>
 
-<%= render partial: 'shared/delete_confirmation', locals: {
-  entity: client,
-  button_size: button_size
-} %>
+<% if client.deleteable?.first %>
+  <%= render partial: 'shared/delete_confirmation', locals: {
+    entity: client,
+    button_size: button_size
+  } %>
+<% end %>

@@ -98,6 +98,18 @@
             </span>
           </div>
         </div>
+        <div class="detail-item">
+          <div class="detail-label">Deletable:</div>
+          <div class="detail-value">
+            <% deletable, reason = client.deleteable? %>
+            <% if deletable %>
+              <span class="status-badge active">Yes</span>
+            <% else %>
+              <span class="status-badge inactive">No</span>
+              <div class="deletion-reason"><%= reason %></div>
+            <% end %>
+          </div>
+        </div>
       </div>
 
       <div class="detail-section">
@@ -210,6 +222,17 @@
     flex-grow: 1;
   }
   
+  .deletion-reason {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+    color: #d32f2f;
+    font-style: italic;
+    background-color: #ffebee;
+    padding: 0.5em;
+    border-radius: 3px;
+    border-left: 3px solid #d32f2f;
+  }
+
   @media (max-width: 768px) {
     .detail-item {
       flex-direction: column;
