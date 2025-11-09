@@ -35,6 +35,7 @@ RSpec.configure do |config|
   # setup for factory bot
   config.include FactoryBot::Syntax::Methods
   config.include Rails.application.routes.url_helpers
+  config.include Rails.application.routes.mounted_helpers
   config.include ActionView::RecordIdentifier
 
   config.before(:suite) do
@@ -52,7 +53,7 @@ RSpec.configure do |config|
       driven_by :selenium_chrome_headless
     end
 
-    user ||= FactoryBot.create(:user)
-    visit root_path(as: user)
+    # user ||= FactoryBot.create(:user)
+    # visit root_path(as: user)
   end
 end
