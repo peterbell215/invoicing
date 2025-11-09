@@ -225,8 +225,6 @@ RSpec.describe "Client Sessions", type: :system do
         expect(page).to have_content("Client session was successfully destroyed")
         expect(current_path).to eq(client_sessions_path)
       end
-
-
     end
 
     context "when session is not invoiced" do
