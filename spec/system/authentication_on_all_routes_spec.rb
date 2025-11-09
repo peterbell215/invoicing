@@ -34,7 +34,7 @@ end
 
 RSpec.describe "Authentication on all routes", type: :system do
   FilteredRoutes.instance.filtered_routes.each do |route|
-    path = route.ast.to_s
+    path = route.ast.to_s.dup
     path.gsub!(/:[a-z_]*id/, '1') # replace :id with a dummy id
     path.gsub!(/\(.:format\)/, '') # remove optional format for simplicity
 
