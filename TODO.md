@@ -1,13 +1,7 @@
 - Replace the call to the backend API for session rate with a data field on the option state that the controller looks at.
 - Share the CSS for the client and payee index pages.
-- Instead, provide this offer the Show page, and show a modal informing that a credit note
-  must be issued for the edited or deleted session.
-- In the Client Show page, Recent Sessions should show the status of the sessions.
-- Add system tests for Client delete functionality.
+- Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
 - Provide unpaid sessions in the invoice draft.
-- Authentication system
-- Testing of ClientSessionsController#update for create and update error
-- ClientController#destroy tests
 - InvoicesController#update and #create failed save tests
 - PayeeController#update and #create failed save tests
 - PayeeController#update and #destroy tests
