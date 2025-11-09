@@ -141,7 +141,7 @@ Tests cover validation rules, rate calculation logic, and fee period management.
 
 ## Implementation Notes
 
-- The application uses Rails 8.0.2
+- The application uses Rails 8.1.1
 - Uses SQLite for development and test environments
 - Uses the Money gem for currency handling
 - Uses Solid gems (solid_cache, solid_queue, solid_cable) for caching, job queues, and ActionCable
