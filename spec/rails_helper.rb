@@ -53,7 +53,7 @@ RSpec.configure do |config|
       driven_by :selenium_chrome_headless
     end
 
-    # user ||= FactoryBot.create(:user)
-    # visit root_path(as: user)
+    user ||= FactoryBot.create(:user)
+    visit root_path(as: user)
   end
 end
