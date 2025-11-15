@@ -1,4 +1,3 @@
-- Replace the call to the backend API for session rate with a data field on the option state that the controller looks at.
 - Share the CSS for the client and payee index pages.
 - Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
 - Provide unpaid sessions in the invoice draft.
@@ -6,4 +5,3 @@
 - PayeeController#update and #create failed save tests
 - PayeeController#update and #destroy tests
 - Add a system test for the ClientController#update action
-- Build a test that visits every page without logging in, and checks that the user is redirected to the login page.

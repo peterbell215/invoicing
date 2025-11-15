@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   resources :clients do
-    get "current_rate", on: :member
     resources :invoices, only: [ :new ]
   end
   resources :client_sessions

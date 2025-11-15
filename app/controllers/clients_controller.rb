@@ -21,11 +21,6 @@ class ClientsController < ApplicationController
   def edit
   end
 
-  # GET /clients/:id/client_rate.json
-  def current_rate
-    respond_to :json
-  end
-
   # POST /clients or /clients.json
   def create
     @client = Client.new(client_params)
