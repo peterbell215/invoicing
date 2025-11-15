@@ -81,6 +81,157 @@ RSpec.describe "Payees", type: :system do
     end
   end
 
+  describe "Updating a payee" do
+    let!(:payee) { FactoryBot.create(:payee, name: "Original Name", email: "original@example.com", organisation: "Original Org") }
+
+    it "allows updating payee basic information" do
+      visit edit_payee_path(payee)
+
+      # Update payee information
+      fill_in "Name", with: "Updated Name"
+      fill_in "Organisation", with: "Updated Organisation"
+      fill_in "Email", with: "updated@example.com"
+      fill_in "Address Line 1", with: "456 New Street"
+      fill_in "Town", with: "New Town"
+      fill_in "Postcode", with: "EC1A 1BB"
+
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+
+      payee.reload
+      expect(payee).to have_attributes(
+        name: "Updated Name",
+        organisation: "Updated Organisation",
+        email: "updated@example.com",
+        address1: "456 New Street",
+        town: "New Town",
+        postcode: "EC1A 1BB"
+      )
+    end
+
+    it "shows validation errors when updating with invalid email format" do
+      visit edit_payee_path(payee)
+
+      fill_in "Email", with: "invalid-email"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Email is not a valid format")
+
+      # Payee should not be updated
+      payee.reload
+      expect(payee.email).to eq("original@example.com")
+    end
+
+    it "shows validation errors when clearing required fields" do
+      visit edit_payee_path(payee)
+
+      fill_in "Name", with: ""
+      fill_in "Email", with: ""
+      click_button "Update Payee"
+
+      expect(page).to have_content("prohibited this record from being saved")
+      expect(page).to have_content("Name can't be blank")
+      expect(page).to have_content("Email can't be blank")
+    end
+
+    it "shows validation error for invalid postcode format" do
+      visit edit_payee_path(payee)
+
+      fill_in "Postcode", with: "INVALID"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Postcode format is invalid")
+
+      # Fix and resubmit
+      fill_in "Postcode", with: "W1A 1AA"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+    end
+
+    it "allows updating just the organisation field" do
+      visit edit_payee_path(payee)
+
+      fill_in "Organisation", with: "New Organisation Name"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+
+      payee.reload
+      expect(payee.organisation).to eq("New Organisation Name")
+    end
+
+    it "shows validation errors when email is already taken by another payee" do
+      other_payee = FactoryBot.create(:payee, email: "taken@example.com")
+
+      visit edit_payee_path(payee)
+
+      fill_in "Email", with: "taken@example.com"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Email has already been taken")
+
+      payee.reload
+      expect(payee.email).to eq("original@example.com")
+    end
+
+    it "allows keeping the same email when updating other fields" do
+      visit edit_payee_path(payee)
+
+      original_email = payee.email
+      fill_in "Name", with: "New Name But Same Email"
+      # Don't change email
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+
+      payee.reload
+      expect(payee.email).to eq(original_email)
+      expect(payee.name).to eq("New Name But Same Email")
+    end
+
+    it "validates multiple fields simultaneously and shows all errors" do
+      visit edit_payee_path(payee)
+
+      fill_in "Name", with: ""
+      fill_in "Email", with: "invalid-email"
+      fill_in "Postcode", with: "BAD"
+      click_button "Update Payee"
+
+      expect(page).to have_content("prohibited this record from being saved")
+      expect(page).to have_content("Name can't be blank")
+      expect(page).to have_content("Email is not a valid format")
+      expect(page).to have_content("Postcode format is invalid")
+    end
+
+    it "allows clearing the organisation field" do
+      visit edit_payee_path(payee)
+
+      fill_in "Organisation", with: ""
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+
+      payee.reload
+      expect(payee.organisation).to be_blank
+    end
+
+    it "allows updating address fields independently" do
+      visit edit_payee_path(payee)
+
+      fill_in "Address Line 1", with: "New Address Line 1"
+      fill_in "Address Line 2", with: "New Address Line 2"
+      click_button "Update Payee"
+
+      expect(page).to have_content("Payee was successfully updated")
+
+      payee.reload
+      expect(payee.address1).to eq("New Address Line 1")
+      expect(payee.address2).to eq("New Address Line 2")
+    end
+  end
+
   describe "Active flag functionality" do
     let!(:active_payee) { FactoryBot.create(:payee, name: "Active Payee", active: true) }
     let!(:inactive_payee) { FactoryBot.create(:payee, name: "Inactive Payee", active: false) }

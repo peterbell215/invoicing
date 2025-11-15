@@ -1,7 +1,5 @@
-- Share the CSS for the client and payee index pages.
-- Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
+- - Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
 - Provide unpaid sessions in the invoice draft.
 - InvoicesController#update and #create failed save tests
-- PayeeController#update and #create failed save tests
-- PayeeController#update and #destroy tests
-- Add a system test for the ClientController#update action
+- PayeeController#destroy tests
+
