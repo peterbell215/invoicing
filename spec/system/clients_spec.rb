@@ -67,7 +67,7 @@ RSpec.describe "Clients", type: :system do
       click_button "Create Client"
 
       # Expect to see postcode validation error
-      expect(page).to have_content("Postcode is badly formed postcode")
+      expect(page).to have_content("Postcode format is invalid")
 
       # Fix the postcode and try again
       fill_in "Postcode", with: "SW1A 1AA"
@@ -75,6 +75,253 @@ RSpec.describe "Clients", type: :system do
 
       # Should be successful now
       expect(page).to have_content("Client was successfully created")
+    end
+  end
+
+  describe "Updating a client" do
+    let!(:client) { FactoryBot.create(:client, name: "Original Name", email: "original@example.com") }
+    let!(:payee) { FactoryBot.create(:payee) }
+
+    it "allows updating client basic information" do
+      visit edit_client_path(client)
+
+      # Update client information
+      fill_in "Name", with: "Updated Name"
+      fill_in "Email", with: "updated@example.com"
+      fill_in "Address Line 1", with: "456 New Street"
+      fill_in "Town", with: "New Town"
+      fill_in "Postcode", with: "EC1A 1BB"
+
+      click_button "Update Client"
+
+      expect(page).to have_content("Client was successfully updated")
+
+      client.reload
+      expect(client).to have_attributes(
+        name: "Updated Name",
+        email: "updated@example.com",
+        address1: "456 New Street",
+        town: "New Town",
+        postcode: "EC1A 1BB"
+      )
+    end
+
+    it "allows updating the unit rate" do
+      visit edit_client_path(client)
+
+      fill_in "Unit Rate", with: "95.00"
+      click_button "Update Client"
+
+      expect(page).to have_content("Client was successfully updated")
+
+      client.reload
+      expect(client.current_rate.to_s).to eq("95.00")
+    end
+
+    it "shows validation errors when updating with invalid email format" do
+      visit edit_client_path(client)
+
+      fill_in "Email", with: "invalid-email"
+      click_button "Update Client"
+
+      expect(page).to have_content("Email is not a valid format")
+
+      # Client should not be updated
+      client.reload
+      expect(client.email).to eq("original@example.com")
+    end
+
+    it "shows validation errors when clearing required fields" do
+      visit edit_client_path(client)
+
+      fill_in "Name", with: ""
+      fill_in "Email", with: ""
+      click_button "Update Client"
+
+      expect(page).to have_content("prohibited this record from being saved")
+      expect(page).to have_content("Name can't be blank")
+      expect(page).to have_content("Email can't be blank")
+    end
+
+    it "shows validation error for invalid postcode format" do
+      visit edit_client_path(client)
+
+      fill_in "Postcode", with: "INVALID"
+      click_button "Update Client"
+
+      expect(page).to have_content("Postcode format is invalid")
+
+      # Fix and resubmit
+      fill_in "Postcode", with: "W1A 1AA"
+      click_button "Update Client"
+
+      expect(page).to have_content("Client was successfully updated")
+    end
+
+    describe "Payee reference field visibility", js: true do
+      it "hides payee reference field when self-paying is selected" do
+        visit edit_client_path(client)
+
+        # Verify self-paying is selected and field is hidden
+        expect(page).to have_select('client_paid_by_id', selected: 'Self Paying')
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: false)
+      end
+
+      it "shows payee reference field when a payee is selected" do
+        visit edit_client_path(client)
+
+        # Initially hidden with self-paying
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: false)
+
+        # Select a payee
+        select payee.name, from: 'client_paid_by_id'
+
+        # Field should now be visible
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
+        expect(page).to have_field('Payee Reference (e.g. PO Number)', visible: true)
+      end
+
+      it "hides payee reference field when changing from payee back to self-paying" do
+        # Create client with payee
+        client_with_payee = FactoryBot.create(:client, paid_by: payee, payee_reference: "PO-12345")
+
+        visit edit_client_path(client_with_payee)
+
+        # Field should be visible with payee selected
+        expect(page).to have_select('client_paid_by_id', selected: payee.name)
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
+        expect(page).to have_field('client_payee_reference', with: "PO-12345")
+
+        # Change to self-paying
+        select "Self Paying", from: 'client_paid_by_id'
+
+        # Field should now be hidden
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: false)
+      end
+
+      it "saves payee and reference when updating client to use a payee" do
+        visit edit_client_path(client)
+
+        # Select a payee and add a reference
+        select payee.name, from: 'client_paid_by_id'
+
+        # Wait for field to be visible and fill it
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
+        fill_in "Payee Reference (e.g. PO Number)", with: "PO-67890"
+
+        click_button "Update Client"
+
+        expect(page).to have_content("Client was successfully updated")
+
+        client.reload
+        expect(client.paid_by).to eq(payee)
+        expect(client.payee_reference).to eq("PO-67890")
+      end
+
+      it "clears payee reference when changing to self-paying" do
+        # Create client with payee and reference
+        client_with_payee = FactoryBot.create(:client, paid_by: payee, payee_reference: "REF-ABC")
+
+        visit edit_client_path(client_with_payee)
+
+        # Change to self-paying
+        select "Self Paying", from: 'client_paid_by_id'
+
+        click_button "Update Client"
+
+        expect(page).to have_content("Client was successfully updated")
+
+        client_with_payee.reload
+        expect(client_with_payee.paid_by).to be_nil
+        expect(client_with_payee.payee_reference).to be_blank
+      end
+
+      it "allows updating payee reference for existing payee" do
+        # Create client with payee and reference
+        client_with_payee = FactoryBot.create(:client, paid_by: payee, payee_reference: "OLD-REF")
+
+        visit edit_client_path(client_with_payee)
+
+        # Field should be visible
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
+
+        # Update the reference
+        fill_in "Payee Reference (e.g. PO Number)", with: "NEW-REF"
+
+        click_button "Update Client"
+
+        expect(page).to have_content("Client was successfully updated")
+
+        client_with_payee.reload
+        expect(client_with_payee.payee_reference).to eq("NEW-REF")
+      end
+
+      it "allows switching between different payees" do
+        payee2 = FactoryBot.create(:payee, name: "Second Payee")
+        client_with_payee = FactoryBot.create(:client, paid_by: payee, payee_reference: "PAYEE1-REF")
+
+        visit edit_client_path(client_with_payee)
+
+        # Change to second payee
+        select payee2.name, from: 'client_paid_by_id'
+
+        # Field should still be visible
+        expect(page).to have_css('div[data-payee-reference-target="referenceField"]', visible: true)
+
+        # Update reference for new payee
+        fill_in "Payee Reference (e.g. PO Number)", with: "PAYEE2-REF"
+
+        click_button "Update Client"
+
+        expect(page).to have_content("Client was successfully updated")
+
+        client_with_payee.reload
+        expect(client_with_payee.paid_by).to eq(payee2)
+        expect(client_with_payee.payee_reference).to eq("PAYEE2-REF")
+      end
+    end
+
+    it "shows validation errors when email is already taken by another client" do
+      other_client = FactoryBot.create(:client, email: "taken@example.com")
+
+      visit edit_client_path(client)
+
+      fill_in "Email", with: "taken@example.com"
+      click_button "Update Client"
+
+      expect(page).to have_content("Email has already been taken")
+
+      client.reload
+      expect(client.email).to eq("original@example.com")
+    end
+
+    it "allows keeping the same email when updating other fields" do
+      visit edit_client_path(client)
+
+      original_email = client.email
+      fill_in "Name", with: "New Name But Same Email"
+      # Don't change email
+      click_button "Update Client"
+
+      expect(page).to have_content("Client was successfully updated")
+
+      client.reload
+      expect(client.email).to eq(original_email)
+      expect(client.name).to eq("New Name But Same Email")
+    end
+
+    it "validates multiple fields simultaneously and shows all errors" do
+      visit edit_client_path(client)
+
+      fill_in "Name", with: ""
+      fill_in "Email", with: "invalid-email"
+      fill_in "Postcode", with: "BAD"
+      click_button "Update Client"
+
+      expect(page).to have_content("prohibited this record from being saved")
+      expect(page).to have_content("Name can't be blank")
+      expect(page).to have_content("Email is not a valid format")
+      expect(page).to have_content("Postcode format is invalid")
     end
   end
 
