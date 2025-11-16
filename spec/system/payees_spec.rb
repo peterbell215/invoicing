@@ -70,7 +70,7 @@ RSpec.describe "Payees", type: :system do
       click_button "Create Payee"
 
       # Expect to see postcode validation error
-      expect(page).to have_content("Postcode is badly formed postcode")
+      expect(page).to have_content("Postcode format is invalid")
 
       # Fix the postcode and try again
       fill_in "Postcode", with: "CB2 1TN"
