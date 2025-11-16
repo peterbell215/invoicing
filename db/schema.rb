@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_16_074925) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_16_142140) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -49,24 +49,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_16_074925) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "billings", force: :cascade do |t|
-    t.string "amount_currency", default: "GBP", null: false
-    t.integer "amount_pence", default: 0, null: false
-    t.integer "client_id"
-    t.datetime "created_at", null: false
-    t.date "date"
-    t.integer "invoice_id"
-    t.integer "payee_id"
-    t.text "reason"
-    t.integer "status", default: 0, null: false
-    t.string "type"
-    t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_billings_on_client_id"
-    t.index ["invoice_id"], name: "index_billings_on_invoice_id"
-    t.index ["payee_id"], name: "index_billings_on_payee_id"
-    t.index ["type"], name: "index_billings_on_type"
-  end
-
   create_table "client_sessions", force: :cascade do |t|
     t.integer "client_id"
     t.datetime "created_at", null: false
@@ -98,6 +80,18 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_16_074925) do
     t.index ["paid_by_id"], name: "index_clients_on_paid_by_id"
   end
 
+  create_table "credit_notes", force: :cascade do |t|
+    t.string "amount_currency", default: "GBP", null: false
+    t.integer "amount_pence", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.integer "invoice_id", null: false
+    t.text "reason", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_credit_notes_on_invoice_id"
+  end
+
   create_table "fees", force: :cascade do |t|
     t.integer "client_id"
     t.datetime "created_at", null: false
@@ -107,6 +101,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_16_074925) do
     t.integer "unit_charge_rate_pence", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_fees_on_client_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.string "amount_currency", default: "GBP", null: false
+    t.integer "amount_pence", default: 0, null: false
+    t.integer "client_id"
+    t.datetime "created_at", null: false
+    t.date "date"
+    t.integer "payee_id"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["payee_id"], name: "index_invoices_on_payee_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -155,10 +162,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_16_074925) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "billings", "clients"
-  add_foreign_key "billings", "payees"
   add_foreign_key "client_sessions", "clients"
   add_foreign_key "clients", "payees", column: "paid_by_id"
+  add_foreign_key "credit_notes", "invoices"
+  add_foreign_key "invoices", "clients"
+  add_foreign_key "invoices", "payees"
   add_foreign_key "messages_for_clients", "clients"
   add_foreign_key "messages_for_clients", "messages"
 end

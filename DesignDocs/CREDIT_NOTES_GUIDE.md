@@ -167,8 +167,7 @@ Updated main navigation menu:
 
 ### Credit Note Lifecycle
 1. **Created** → Edit details, or Send to client, or Delete
-2. **Sent** → Mark as Applied when processed
-3. **Applied** → Final state, no further changes
+2. **Sent** → Once sent, assumed it is applied.  Therefore, final state, no further changes
 
 ## Data Integrity
 

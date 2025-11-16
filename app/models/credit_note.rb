@@ -1,22 +1,40 @@
 # Represents a credit note issued against an invoice
-class CreditNote < Billing
+class CreditNote < ApplicationRecord
   belongs_to :invoice, class_name: 'Invoice'
+  has_one_attached :pdf
+  has_rich_text :text
 
+  # Delegate client and payee to invoice
+  delegate :client, :payee, to: :invoice, allow_nil: true
+
+  monetize :amount_pence
+
+  validates :date, presence: true
   validates :invoice_id, presence: true
   validates :reason, presence: true
   validate :amount_cannot_exceed_invoice_amount
   validate :invoice_must_be_sent_or_paid
   validate :validate_editable_status, on: :update
 
-  before_validation :set_payee_from_invoice, on: :create
+  enum :status, { created: 0, sent: 1 }
+
   before_validation :ensure_negative_amount
+  after_initialize :set_default_date, if: :new_record?
   before_destroy :deletable?
 
-  # Override status enum to include 'applied' instead of 'paid'
-  enum :status, { created: 0, sent: 1 }
 
   def summary
     "Credit Note ##{self.id} for Invoice ##{self.invoice_id}"
+  end
+
+  # Returns the entity (Client or Payee) who should receive the credit note
+  def bill_to
+    payee || client
+  end
+
+  # Returns true if this credit note is billed to the client directly
+  def self_paid?
+    payee.nil?
   end
 
   private
@@ -56,7 +74,7 @@ class CreditNote < Billing
         end
       when "sent"
         # From 'applied', cannot change to any other status
-        errors.add(:status, "cannot change status once sent")
+        errors.add(:status, "cannot change status once applied")
       end
     end
   end
@@ -69,17 +87,17 @@ class CreditNote < Billing
     end
   end
 
-  # Set the payee based on the invoice's payee
-  def set_payee_from_invoice
-    self.payee ||= invoice.payee if invoice&.payee.present?
-    self.client ||= invoice.client if invoice&.client.present?
-  end
 
   # Ensure amount is negative for credit notes
   def ensure_negative_amount
     if amount.present? && amount_pence.present? && amount_pence.positive?
       self.amount_pence = -amount_pence.abs
     end
+  end
+
+  # Sets the default date for new credit note records
+  def set_default_date
+    self.date ||= Date.current
   end
 
   # Returns true if this credit note can be deleted
