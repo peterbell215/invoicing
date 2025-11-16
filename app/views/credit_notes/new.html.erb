@@ -1,0 +1,50 @@
+<% content_for :title, "New Credit Note" %>
+
+<div class="page-header">
+  <h1>Issue Credit Note</h1>
+  <p class="subtitle">For Invoice #<%= @invoice.id %></p>
+</div>
+
+<div class="invoice-details">
+  <h2>Invoice Details</h2>
+  <div class="pure-g">
+    <div class="pure-u-1 pure-u-md-1-2">
+      <p><strong>Client:</strong> <%= @invoice.client.name %></p>
+      <p><strong>Invoice #:</strong> <%= @invoice.id %></p>
+      <p><strong>Invoice Date:</strong> <%= @invoice.date.strftime('%d %b %Y') %></p>
+    </div>
+    <div class="pure-u-1 pure-u-md-1-2">
+      <p><strong>Invoice Amount:</strong> <%= @invoice.amount.format %></p>
+      <p><strong>Status:</strong> <span class="status-badge <%= @invoice.status %>"><%= @invoice.status.humanize %></span></p>
+    </div>
+  </div>
+</div>
+
+<%= render 'form', credit_note: @credit_note %>
+
+<style>
+  .invoice-details {
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+  }
+
+  .invoice-details h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .invoice-details p {
+    margin: 8px 0;
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin-top: 5px;
+  }
+</style>
+

@@ -1,0 +1,73 @@
+<%= form_with(model: credit_note, url: credit_note.persisted? ? credit_note_path(credit_note) : invoice_credit_notes_path(credit_note.invoice), class: "pure-form pure-form-stacked", data: { controller: "validation" }) do |form| %>
+  <%= render 'shared/error_explanation', model: credit_note %>
+
+  <fieldset>
+    <legend>Credit Note Information</legend>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :date, "Credit Note Date" %>
+        <%= form.date_field :date, required: true, class: "pure-input-1", data: { action: "invalid->validation#markFieldAsInvalid" } %>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-2">
+        <%= form.label :amount, "Credit Amount (£)" %>
+        <div class="pure-input-prepend">
+          <span class="input-prefix">£</span>
+          <%= form.text_field :amount,
+              value: credit_note.amount.present? ? credit_note.amount.abs.format(symbol: false) : "",
+              required: true,
+              class: "pure-input-1",
+              step: "0.01",
+              data: { action: "invalid->validation#markFieldAsInvalid" } %>
+        </div>
+        <div class="form-hint">Maximum credit: <%= credit_note.invoice.amount.format %></div>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1">
+        <%= form.label :reason, "Reason for Credit Note" %>
+        <%= form.text_area :reason,
+            required: true,
+            class: "pure-input-1",
+            rows: 4,
+            placeholder: "Please provide a detailed reason for issuing this credit note...",
+            data: { action: "invalid->validation#markFieldAsInvalid" } %>
+        <div class="form-hint">Explain why this credit note is being issued</div>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-buttons">
+    <%= form.submit credit_note.persisted? ? "Update Credit Note" : "Create Credit Note",
+        class: "pure-button pure-button-primary",
+        data: { action: "click->validation#resetValidationErrorText" } %>
+    <%= link_to "Cancel", credit_note.persisted? ? credit_note_path(credit_note) : billings_path, class: "pure-button" %>
+  </div>
+<% end %>
+
+<style>
+  .form-hint {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+  }
+
+  .pure-input-prepend {
+    position: relative;
+  }
+
+  .input-prefix {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+  }
+
+  .pure-input-prepend input {
+    padding-left: 25px;
+  }
+</style>
+

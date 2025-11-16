@@ -26,3 +26,9 @@
     <span class="material-symbols-outlined">check</span> Mark as Paid
   </button>
 <% end %>
+
+<% if invoice.can_issue_credit_note? %>
+  <%= link_to new_invoice_credit_note_path(invoice), class: "pure-button button-warning #{button_size}", data: { turbo_frame: '_top' } do %>
+    <span class="material-symbols-outlined">receipt</span> Issue Credit Note
+  <% end %>
+<% end %>

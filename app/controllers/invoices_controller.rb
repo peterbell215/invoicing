@@ -92,6 +92,16 @@ class InvoicesController < ApplicationController
     redirect_to @invoice, notice: "Invoice was successfully sent."
   end
 
+  def mark_paid
+    @invoice = Invoice.find(params[:id])
+
+    if @invoice.update(status: :paid)
+      redirect_to @invoice, notice: "Invoice was successfully marked as paid."
+    else
+      redirect_to @invoice, alert: "Could not mark invoice as paid."
+    end
+  end
+
   def destroy
     # Only allow deletion if invoice can be deleted
     if @invoice.destroy

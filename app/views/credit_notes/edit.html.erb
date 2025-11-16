@@ -1,0 +1,17 @@
+<% content_for :title, "Edit Credit Note" %>
+
+<div class="page-header">
+  <h1>Edit Credit Note</h1>
+  <p class="subtitle">Credit Note #<%= @credit_note.id %> for Invoice #<%= @credit_note.invoice_id %></p>
+</div>
+
+<%= render 'form', credit_note: @credit_note %>
+
+<style>
+  .subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin-top: 5px;
+  }
+</style>
+

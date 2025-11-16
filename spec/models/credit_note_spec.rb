@@ -1,0 +1,573 @@
+require 'rails_helper'
+
+RSpec.describe CreditNote do
+  include ActiveSupport::Testing::TimeHelpers
+
+  # Helper to create a valid invoice with amount for testing credit notes
+  def create_sent_invoice(client: nil, amount_pence: 10000)
+    client ||= create(:client)
+    invoice = create(:invoice_with_client_sessions, client: client, client_sessions_count: 1)
+    invoice.update_column(:status, 1) # Mark as sent
+    invoice
+  end
+
+  describe 'FactoryBot' do
+    let(:invoice) { create_sent_invoice }
+    subject(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    specify { expect(credit_note.invoice).to be_present }
+    specify { expect(credit_note.client).to be_present }
+    specify { expect(credit_note.amount).to be_negative }
+    specify { expect(credit_note.reason).to be_present }
+  end
+
+  describe '::create' do
+    context 'when it is a new credit note' do
+      let(:invoice) { create(:invoice, status: :sent, client: client) }
+      let(:client) { create(:client) }
+      let(:credit_note_params) do
+        {
+          invoice: invoice,
+          client: client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Customer requested refund',
+          date: Date.current
+        }
+      end
+
+      it 'creates the credit note with negative amount' do
+        credit_note = CreditNote.create(credit_note_params)
+
+        expect(credit_note).to be_persisted
+        expect(credit_note.amount).to be_negative
+        expect(credit_note.amount.abs).to eq(Money.new(5000, 'GBP'))
+      end
+
+      it 'creates the credit note associated with the invoice' do
+        credit_note = CreditNote.create(credit_note_params)
+
+        expect(credit_note.invoice).to eq(invoice)
+        expect(invoice.credit_notes).to include(credit_note)
+      end
+
+      it 'creates the credit note with the same client as the invoice' do
+        credit_note = CreditNote.create(credit_note_params)
+
+        expect(credit_note.client).to eq(client)
+        expect(credit_note.client).to eq(invoice.client)
+      end
+
+      it 'sets the payee from the invoice' do
+        payee = create(:payee)
+        invoice.update!(payee: payee)
+
+        credit_note = CreditNote.create(credit_note_params)
+
+        expect(credit_note.payee).to eq(payee)
+        expect(credit_note.payee).to eq(invoice.payee)
+      end
+    end
+  end
+
+  describe 'validations' do
+    let(:invoice) { create(:invoice, status: :sent, client: client) }
+    let(:client) { create(:client) }
+
+    describe 'invoice_id presence' do
+      it 'requires an invoice' do
+        credit_note = CreditNote.new(
+          client: client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Test reason'
+        )
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:invoice_id]).to include("can't be blank")
+      end
+    end
+
+    describe 'reason presence' do
+      it 'requires a reason' do
+        credit_note = CreditNote.new(
+          invoice: invoice,
+          client: client,
+          amount: Money.new(5000, 'GBP')
+        )
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:reason]).to include("can't be blank")
+      end
+    end
+
+    describe 'amount validation' do
+      it 'validates amount does not exceed invoice amount' do
+        invoice_amount = invoice.amount
+        excessive_amount = Money.new(invoice_amount.cents + 10000, 'GBP')
+
+        credit_note = CreditNote.new(
+          invoice: invoice,
+          client: client,
+          amount: excessive_amount,
+          reason: 'Test reason'
+        )
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:amount]).to include("cannot exceed invoice amount of #{invoice_amount.format}")
+      end
+
+      it 'allows amount equal to invoice amount' do
+        credit_note = CreditNote.new(
+          invoice: invoice,
+          client: client,
+          amount: invoice.amount,
+          reason: 'Full refund'
+        )
+
+        expect(credit_note).to be_valid
+      end
+
+      it 'allows amount less than invoice amount' do
+        credit_note = CreditNote.new(
+          invoice: invoice,
+          client: client,
+          amount: Money.new(invoice.amount.cents / 2, 'GBP'),
+          reason: 'Partial refund'
+        )
+
+        expect(credit_note).to be_valid
+      end
+    end
+
+    describe 'invoice status validation' do
+      it 'prevents creating credit note for created invoice' do
+        created_invoice = create(:invoice, status: :created, client: client)
+        credit_note = CreditNote.new(
+          invoice: created_invoice,
+          client: client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Test reason'
+        )
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:invoice]).to include("must be sent or paid before issuing a credit note")
+      end
+
+      it 'allows creating credit note for sent invoice' do
+        sent_invoice = create(:invoice, status: :sent, client: client)
+        credit_note = CreditNote.new(
+          invoice: sent_invoice,
+          client: client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Test reason'
+        )
+
+        expect(credit_note).to be_valid
+      end
+
+      it 'allows creating credit note for paid invoice' do
+        paid_invoice = create(:invoice, status: :paid, client: client)
+        credit_note = CreditNote.new(
+          invoice: paid_invoice,
+          client: client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Test reason'
+        )
+
+        expect(credit_note).to be_valid
+      end
+    end
+  end
+
+  describe 'destruction' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    context 'when credit note status is created' do
+      it 'allows destruction' do
+        expect(credit_note.destroy).not_to be_falsey
+        expect(credit_note.persisted?).to be_falsey
+      end
+    end
+
+    context 'when credit note status is sent' do
+      before { credit_note.update!(status: :sent) }
+
+      it 'prevents destruction' do
+        expect(credit_note.destroy).to be_falsey
+      end
+
+      it 'does not destroy the record' do
+        credit_note.destroy
+        expect(credit_note.persisted?).to be true
+      end
+    end
+
+    context 'when credit note status is applied' do
+      before { credit_note.update!(status: :applied) }
+
+      it 'prevents destruction' do
+        expect(credit_note.destroy).to be_falsey
+      end
+
+      it 'does not destroy the record' do
+        credit_note.destroy
+        expect(credit_note.persisted?).to be true
+      end
+    end
+  end
+
+  describe 'date initialization' do
+    let(:invoice) { create_sent_invoice }
+
+    it 'sets date to current date when creating a new credit note without specifying date' do
+      travel_to Time.zone.local(2025, 11, 16, 10, 0, 0) do
+        credit_note = CreditNote.new(
+          invoice: invoice,
+          client: invoice.client,
+          amount: Money.new(5000, 'GBP'),
+          reason: 'Test reason'
+        )
+        expect(credit_note.date).to eq(Date.current)
+      end
+    end
+
+    it 'does not override explicitly set date when creating new credit note' do
+      custom_date = Date.new(2025, 10, 15)
+      credit_note = CreditNote.new(
+        invoice: invoice,
+        client: invoice.client,
+        amount: Money.new(5000, 'GBP'),
+        reason: 'Test reason',
+        date: custom_date
+      )
+      expect(credit_note.date).to eq(custom_date)
+    end
+
+    it 'does not set date when loading existing credit note from database' do
+      credit_note = create(:credit_note, invoice_param: invoice, date: Date.new(2025, 1, 1))
+
+      travel_to Time.zone.local(2025, 11, 16, 10, 0, 0) do
+        reloaded_credit_note = CreditNote.find(credit_note.id)
+        expect(reloaded_credit_note.date).to eq(Date.new(2025, 1, 1))
+        expect(reloaded_credit_note.date).not_to eq(Date.current)
+      end
+    end
+  end
+
+  describe 'amount handling' do
+    let(:invoice) { create_sent_invoice }
+
+    it 'automatically converts positive amount to negative' do
+      credit_note = CreditNote.create(
+        invoice: invoice,
+        client: invoice.client,
+        amount: Money.new(5000, 'GBP'),
+        reason: 'Test reason'
+      )
+
+      expect(credit_note.amount).to be_negative
+      expect(credit_note.amount_pence).to be_negative
+      expect(credit_note.amount.abs.cents).to eq(5000)
+    end
+
+    it 'keeps negative amount as negative' do
+      credit_note = CreditNote.create(
+        invoice: invoice,
+        client: invoice.client,
+        amount: Money.new(-5000, 'GBP'),
+        reason: 'Test reason'
+      )
+
+      expect(credit_note.amount).to be_negative
+      expect(credit_note.amount_pence).to eq(-5000)
+    end
+
+    it 'stores amount as negative in database' do
+      credit_note = CreditNote.create(
+        invoice: invoice,
+        client: invoice.client,
+        amount: Money.new(5000, 'GBP'),
+        reason: 'Test reason'
+      )
+
+      credit_note.reload
+      expect(credit_note.amount_pence).to be < 0
+      expect(credit_note.amount).to be_negative
+    end
+  end
+
+  describe '#validate_editable_status' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice, status: :created) }
+
+    shared_examples 'non-editable credit note' do
+      it 'prevents changing non-status fields' do
+        credit_note.date = Date.current + 1.day
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:date]).to include("cannot be changed once the credit note has been sent or applied")
+      end
+
+      it 'prevents changing reason field' do
+        credit_note.reason = 'Updated reason'
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:reason]).to include("cannot be changed once the credit note has been sent or applied")
+      end
+
+      it 'prevents changing amount field' do
+        credit_note.amount = Money.new(-3000, 'GBP')
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:amount]).to include("cannot be changed once the credit note has been sent or applied")
+      end
+
+      it 'prevents changing text field' do
+        credit_note.text = 'Updated text'
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:text]).to include("cannot be changed once the credit note has been sent or applied")
+      end
+
+      it 'prevents changing status back to created' do
+        credit_note.status = :created
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:status]).to be_present
+      end
+
+      it 'prevents changing multiple non-status fields' do
+        credit_note.date = Date.current + 1.day
+        credit_note.reason = 'Updated reason'
+        credit_note.amount = Money.new(-3000, 'GBP')
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:date]).to include("cannot be changed once the credit note has been sent or applied")
+        expect(credit_note.errors[:reason]).to include("cannot be changed once the credit note has been sent or applied")
+        expect(credit_note.errors[:amount]).to include("cannot be changed once the credit note has been sent or applied")
+      end
+    end
+
+    context 'when status is created' do
+      it 'allows changing non-status fields' do
+        credit_note.date = Date.current + 1.day
+        credit_note.reason = 'Updated reason'
+        credit_note.amount = Money.new(3000, 'GBP')
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+      end
+
+      it 'allows changing status from created to sent' do
+        credit_note.status = :sent
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+        expect(credit_note.reload.status).to eq('sent')
+      end
+
+      it 'allows changing status from created to applied' do
+        credit_note.status = :applied
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+        expect(credit_note.reload.status).to eq('applied')
+      end
+
+      it 'allows changing both status and other fields simultaneously' do
+        credit_note.status = :sent
+        credit_note.date = Date.current + 1.day
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+      end
+    end
+
+    context 'when status is sent' do
+      before { credit_note.update!(status: :sent) }
+
+      it_behaves_like 'non-editable credit note'
+
+      it 'allows changing status from sent to applied' do
+        credit_note.status = :applied
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+        expect(credit_note.reload.status).to eq('applied')
+      end
+
+      it 'prevents changing status from sent to created' do
+        credit_note.status = :created
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:status]).to be_present
+      end
+    end
+
+    context 'when status is applied' do
+      before { credit_note.update!(status: :applied) }
+
+      it_behaves_like 'non-editable credit note'
+
+      it 'prevents changing status from applied to sent' do
+        credit_note.status = :sent
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:status]).to include("cannot change status once applied")
+      end
+
+      it 'prevents changing status from applied to created' do
+        credit_note.status = :created
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:status]).to include("cannot change status once applied")
+      end
+    end
+
+    context 'edge cases' do
+      it 'allows status to remain the same while changing other fields when status is created' do
+        credit_note.status = :created
+        credit_note.date = Date.current + 1.day
+
+        expect(credit_note).to be_valid
+        expect(credit_note.save).to be true
+      end
+
+      it 'handles multiple validation errors correctly' do
+        credit_note.update!(status: :sent)
+        credit_note.date = Date.current + 1.day
+        credit_note.reason = 'Updated reason'
+        credit_note.amount = Money.new(-3000, 'GBP')
+        credit_note.status = :created
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors.count).to be > 1
+        expect(credit_note.errors[:status]).to be_present
+        expect(credit_note.errors[:date]).to be_present
+        expect(credit_note.errors[:reason]).to be_present
+        expect(credit_note.errors[:amount]).to be_present
+      end
+    end
+  end
+
+  describe 'status transitions' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    it 'allows transition from created to sent' do
+      credit_note.status = :sent
+      expect(credit_note).to be_valid
+      expect(credit_note.save).to be true
+    end
+
+    it 'allows transition from created to applied' do
+      credit_note.status = :applied
+      expect(credit_note).to be_valid
+      expect(credit_note.save).to be true
+    end
+
+    it 'allows transition from sent to applied' do
+      credit_note.update!(status: :sent)
+      credit_note.status = :applied
+      expect(credit_note).to be_valid
+      expect(credit_note.save).to be true
+    end
+
+    it 'prevents transition from sent to created' do
+      credit_note.update!(status: :sent)
+      credit_note.status = :created
+      expect(credit_note).not_to be_valid
+      expect(credit_note.errors[:status]).to be_present
+    end
+
+    it 'prevents transition from applied to sent' do
+      credit_note.update!(status: :applied)
+      credit_note.status = :sent
+      expect(credit_note).not_to be_valid
+      expect(credit_note.errors[:status]).to include("cannot change status once applied")
+    end
+
+    it 'prevents transition from applied to created' do
+      credit_note.update!(status: :applied)
+      credit_note.status = :created
+      expect(credit_note).not_to be_valid
+      expect(credit_note.errors[:status]).to include("cannot change status once applied")
+    end
+  end
+
+  describe 'invoice association' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    it 'belongs to an invoice' do
+      expect(credit_note.invoice).to eq(invoice)
+    end
+
+    it 'is included in invoice credit_notes collection' do
+      expect(invoice.credit_notes).to include(credit_note)
+    end
+
+    it 'can have multiple credit notes for one invoice' do
+      credit_note2 = create(:credit_note, invoice_param: invoice, amount: Money.new(-2000, 'GBP'))
+
+      expect(invoice.credit_notes.count).to eq(2)
+      expect(invoice.credit_notes).to include(credit_note, credit_note2)
+    end
+  end
+
+  describe '#summary' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    it 'returns a summary with credit note and invoice IDs' do
+      expected_summary = "Credit Note ##{credit_note.id} for Invoice ##{credit_note.invoice_id}"
+      expect(credit_note.summary).to eq(expected_summary)
+    end
+  end
+
+  describe 'inheritance from Billing' do
+    let(:invoice) { create_sent_invoice }
+    let(:credit_note) { create(:credit_note, invoice_param: invoice) }
+
+    it 'inherits from Billing class' do
+      expect(credit_note).to be_a(Billing)
+    end
+
+    it 'uses the billings table' do
+      expect(CreditNote.table_name).to eq('billings')
+    end
+
+    it 'has type set to CreditNote' do
+      expect(credit_note.type).to eq('CreditNote')
+    end
+
+    it 'inherits bill_to method from Billing' do
+      expect(credit_note).to respond_to(:bill_to)
+      expect(credit_note.bill_to).to eq(credit_note.client)
+    end
+
+    it 'inherits self_paid? method from Billing' do
+      expect(credit_note).to respond_to(:self_paid?)
+      expect(credit_note.self_paid?).to be true
+    end
+
+    context 'with payee' do
+      let(:payee) { create(:payee) }
+      let(:client) { create(:client) }
+      let(:invoice_with_payee) { create_sent_invoice(client: client) }
+      let(:credit_note) do
+        invoice_with_payee.update_column(:payee_id, payee.id)
+        create(:credit_note, invoice_param: invoice_with_payee, payee: payee)
+      end
+
+      it 'bill_to returns payee when present' do
+        expect(credit_note.bill_to).to eq(payee)
+      end
+
+      it 'self_paid? returns false when payee is present' do
+        expect(credit_note.self_paid?).to be false
+      end
+    end
+  end
+end
+

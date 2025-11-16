@@ -1,0 +1,46 @@
+<tr class="credit-note-row" is="turbo-frame" id="<%= dom_id(credit_note) %>">
+  <td><%= link_to credit_note.id, credit_note_path(credit_note) %></td>
+  <td><span class="billing-type-badge credit-note">Credit Note</span></td>
+  <td><%= credit_note.client.name %></td>
+  <td><%= credit_note.date.strftime('%d %b %Y') if credit_note.date %></td>
+  <td><%= credit_note.amount.format if credit_note.amount %></td>
+  <td>
+    <span class="status-badge <%= credit_note.status %>">
+      <%= credit_note.status.humanize %>
+    </span>
+  </td>
+
+  <td class="action-buttons">
+    <%= link_to credit_note_path(credit_note), class: "pure-button pure-button-primary button-small", data: { turbo_frame: '_top' } do %>
+      <span class="material-symbols-outlined">subject</span> View
+    <% end %>
+
+    <% if credit_note.created? %>
+      <%= link_to edit_credit_note_path(credit_note), class: "pure-button button-small", data: { turbo_frame: '_top' } do %>
+        <span class="material-symbols-outlined">edit</span> Edit
+      <% end %>
+
+      <%= button_to send_credit_note_credit_note_path(credit_note),
+          method: :post,
+          form: { data: { turbo_method: :post, controller: "send-confirmation", action: "click->send-confirmation#showDialog", send_confirmation_message_value: "Are you sure you want to send this credit note?" } },
+          class: "pure-button button-success button-small" do %>
+        <span class="material-symbols-outlined">send</span> Send
+      <% end %>
+
+      <%= button_to credit_note_path(credit_note),
+          method: :delete,
+          form: { data: { turbo_method: :delete, controller: "delete-confirmation", action: "click->delete-confirmation#showDialog", delete_confirmation_summary_value: credit_note.summary } },
+          class: "pure-button button-error button-small" do %>
+        <span class="material-symbols-outlined">delete</span> Delete
+      <% end %>
+    <% elsif credit_note.sent? %>
+      <%= button_to mark_applied_credit_note_path(credit_note),
+          method: :patch,
+          form: { data: { turbo_method: :patch } },
+          class: "pure-button button-success button-small" do %>
+        <span class="material-symbols-outlined">check_circle</span> Mark as Applied
+      <% end %>
+    <% end %>
+  </td>
+</tr>
+

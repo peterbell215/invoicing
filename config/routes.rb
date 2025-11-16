@@ -6,9 +6,20 @@ Rails.application.routes.draw do
   resources :messages
   resources :payees
 
-  resources :invoices, only: [ :create, :index, :show, :edit, :update, :destroy ] do
+  resources :billings, only: [ :index ]
+
+  resources :invoices, only: [ :create, :show, :edit, :update, :destroy ] do
     member do
       post :send_invoice
+      patch :mark_paid
+    end
+    resources :credit_notes, only: [ :new, :create ]
+  end
+
+  resources :credit_notes, only: [ :show, :edit, :update, :destroy ] do
+    member do
+      post :send_credit_note
+      patch :mark_applied
     end
   end
 
