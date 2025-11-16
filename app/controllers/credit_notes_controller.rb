@@ -45,12 +45,31 @@ class CreditNotesController < ApplicationController
   def send_credit_note
     @credit_note = CreditNote.find(params[:id])
     
-    if @credit_note.created?
-      @credit_note.sent!
-      redirect_to @credit_note, notice: "Credit note was successfully sent."
-    else
+    unless @credit_note.created?
       redirect_to @credit_note, alert: "Credit note has already been sent."
+      return
     end
+
+    # Check if PDF is already attached
+    unless @credit_note.pdf.attached?
+      # Generate PDF using Grover
+      pdf_content = generate_credit_note_pdf
+
+      # Attach the PDF to the credit note
+      @credit_note.pdf.attach(
+        io: StringIO.new(pdf_content),
+        filename: "credit_note_#{@credit_note.id}.pdf",
+        content_type: "application/pdf"
+      )
+    end
+
+    # Send the email
+    CreditNoteMailer.credit_note_email(@credit_note).deliver_now
+
+    # Mark the credit note as sent
+    @credit_note.sent!
+
+    redirect_to @credit_note, notice: "Credit note was successfully sent."
   end
 
   private
@@ -72,6 +91,14 @@ class CreditNotesController < ApplicationController
     end
 
     permitted
+  end
+
+  def generate_credit_note_pdf
+    # Get the HTML of the credit note show page
+    html = render_to_string template: "credit_notes/show", layout: "pdf", locals: { credit_note: @credit_note }
+
+    # Convert to PDF using Ferrum_pdf
+    FerrumPdf.render_pdf(html: html)
   end
 end
 

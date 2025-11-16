@@ -1,5 +1,8 @@
-- - Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
+- Instead, provide a button to issue a credit note on the Show page  must be issued for the edited or deleted session.
 - Provide unpaid sessions in the invoice draft.
 - InvoicesController#update and #create failed save tests
 - PayeeController#destroy tests
-
+- Mailing of Credit Notes a bit flaky, needs more robust tests
+- Review system tests for Invoices and Credit Notes to ensure coverage of new flows
+- Sum of credit notes on invoice must not exceed invoice amount
+- 
