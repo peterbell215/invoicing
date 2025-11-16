@@ -19,13 +19,6 @@
         class: "pure-button button-error" do %>
       <span class="material-symbols-outlined">delete</span> Delete
     <% end %>
-  <% elsif @credit_note.sent? %>
-    <%= button_to mark_applied_credit_note_path(@credit_note),
-        method: :patch,
-        form: { data: { turbo_method: :patch } },
-        class: "pure-button button-success" do %>
-      <span class="material-symbols-outlined">check_circle</span> Mark as Applied
-    <% end %>
   <% end %>
 
   <%= link_to "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" do %>
@@ -53,9 +46,9 @@
 
       <div class="invoice-title">
         <h1>CREDIT NOTE</h1>
-        <% if @credit_note.sent? || @credit_note.applied? %>
+        <% if @credit_note.sent? %>
           <div class="invoice-status <%= @credit_note.status %>">
-            <%= @credit_note.status == "sent" ? "Copy" : @credit_note.status.capitalize %>
+            Copy
           </div>
         <% end %>
       </div>
@@ -221,11 +214,6 @@
     border: 1px solid #ffeaa7;
   }
 
-  .invoice-status.applied {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-  }
 
   .invoice-details {
     display: flex;

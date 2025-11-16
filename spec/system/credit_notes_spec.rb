@@ -69,16 +69,6 @@ RSpec.describe "Credit Notes", type: :system do
       expect(credit_note.reload.status).to eq("sent")
     end
 
-    it "allows marking a sent credit note as applied" do
-      credit_note.update(status: :sent)
-      visit credit_note_path(credit_note)
-
-      click_button "Mark as Applied"
-
-      expect(page).to have_content("Credit note was successfully marked as applied")
-      expect(credit_note.reload.status).to eq("applied")
-    end
-
     it "allows deleting a created credit note" do
       visit credit_note_path(credit_note)
 

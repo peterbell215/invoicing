@@ -17,7 +17,8 @@
 - ✅ Added delegation in CreditNote: `client` and `payee` accessed through invoice
 - ✅ Added validation to ensure credit notes can only be issued for sent/paid invoices
 - ✅ Added validation to ensure credit amount doesn't exceed invoice amount
-- ✅ Added status transitions for credit notes (created → sent → applied)
+- ✅ Added validation to ensure credit amount cannot be zero
+- ✅ Added status transitions for credit notes (created → sent)
 - ✅ Added `can_issue_credit_note?` method to Invoice model
 
 ### Controllers Created/Updated
@@ -25,7 +26,6 @@
 - ✅ Updated `InvoicesController` index to show both invoices and credit notes
 - ✅ Created `CreditNotesController` with full CRUD actions plus:
   - `send_credit_note` - to mark credit note as sent
-  - `mark_applied` - to mark credit note as applied
 - ✅ Updated `InvoicesController` to add `mark_paid` action
 - ✅ Kept existing invoice functionality intact
 
@@ -66,8 +66,7 @@
 
 3. **Credit Note Lifecycle**
    - **Created**: Can edit, send, or delete
-   - **Sent**: Can mark as applied
-   - **Applied**: Final state, no further changes allowed
+   - **Sent**: Final state, no further changes allowed
 
 4. **Visual Indicators**
    - Color-coded badges for Invoice vs Credit Note
@@ -81,7 +80,6 @@
 - [ ] Test validation: credit amount cannot exceed invoice amount
 - [ ] Test editing a created credit note
 - [ ] Test sending a credit note
-- [ ] Test marking credit note as applied
 - [ ] Test deleting a created credit note
 - [ ] Test that credit notes appear correctly in invoice index
 - [ ] Test navigation flow (Invoices → Invoice → Create Credit Note → View Credit Note)

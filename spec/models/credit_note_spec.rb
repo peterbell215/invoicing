@@ -232,9 +232,9 @@ RSpec.describe CreditNote do
         credit_note.amount = Money.new(-3000, 'GBP')
 
         expect(credit_note).not_to be_valid
-        expect(credit_note.errors[:date]).to include("cannot be changed once the credit note has been sent or applied")
-        expect(credit_note.errors[:reason]).to include("cannot be changed once the credit note has been sent or applied")
-        expect(credit_note.errors[:amount_pence]).to include("cannot be changed once the credit note has been sent or applied")
+        expect(credit_note.errors[:date]).to include("cannot be changed once the credit note has been sent")
+        expect(credit_note.errors[:reason]).to include("cannot be changed once the credit note has been sent")
+        expect(credit_note.errors[:amount_pence]).to include("cannot be changed once the credit note has been sent")
       end
     end
   end

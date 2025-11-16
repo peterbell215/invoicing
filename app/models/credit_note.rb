@@ -69,13 +69,13 @@ class CreditNote < ApplicationRecord
     if status_changed?
       case status_was
       when "created"
-        # From 'created', can go to 'sent' or 'applied'
-        unless %w[sent applied].include?(status)
+        # From 'created', can only go to 'sent'
+        unless status == "sent"
           errors.add(:status, "invalid status transition")
         end
       when "sent"
-        # From 'applied', cannot change to any other status
-        errors.add(:status, "cannot change status once applied")
+        # From 'sent', cannot change to any other status
+        errors.add(:status, "cannot change status once sent")
       end
     end
   end
@@ -84,7 +84,7 @@ class CreditNote < ApplicationRecord
     return if status_was == "created"
 
     non_status_changes.each do |attr|
-      errors.add(attr, "cannot be changed once the credit note has been sent or applied")
+      errors.add(attr, "cannot be changed once the credit note has been sent")
     end
   end
 

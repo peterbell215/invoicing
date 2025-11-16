@@ -17,7 +17,6 @@ Rails.application.routes.draw do
   resources :credit_notes, only: [ :show, :edit, :update, :destroy ] do
     member do
       post :send_credit_note
-      patch :mark_applied
     end
   end
 

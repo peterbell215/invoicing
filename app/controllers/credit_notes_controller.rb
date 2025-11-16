@@ -22,7 +22,7 @@ class CreditNotesController < ApplicationController
 
   def edit
     unless @credit_note.created?
-      redirect_to @credit_note, alert: "Cannot edit credit note that has been sent or applied."
+      redirect_to @credit_note, alert: "Cannot edit credit note that has been sent."
     end
   end
 
@@ -38,7 +38,7 @@ class CreditNotesController < ApplicationController
     if @credit_note.destroy
       redirect_to invoices_path, notice: "Credit note was successfully deleted."
     else
-      redirect_to @credit_note, alert: "Cannot delete credit note that has been sent or applied."
+      redirect_to @credit_note, alert: "Cannot delete credit note that has been sent."
     end
   end
 
@@ -50,17 +50,6 @@ class CreditNotesController < ApplicationController
       redirect_to @credit_note, notice: "Credit note was successfully sent."
     else
       redirect_to @credit_note, alert: "Credit note has already been sent."
-    end
-  end
-
-  def mark_applied
-    @credit_note = CreditNote.find(params[:id])
-    
-    if @credit_note.sent?
-      @credit_note.applied!
-      redirect_to @credit_note, notice: "Credit note was successfully marked as applied."
-    else
-      redirect_to @credit_note, alert: "Credit note must be sent before marking as applied."
     end
   end
 

@@ -33,13 +33,6 @@
           class: "pure-button button-error button-small" do %>
         <span class="material-symbols-outlined">delete</span> Delete
       <% end %>
-    <% elsif credit_note.sent? %>
-      <%= button_to mark_applied_credit_note_path(credit_note),
-          method: :patch,
-          form: { data: { turbo_method: :patch } },
-          class: "pure-button button-success button-small" do %>
-        <span class="material-symbols-outlined">check_circle</span> Mark as Applied
-      <% end %>
     <% end %>
   </td>
 </tr>
