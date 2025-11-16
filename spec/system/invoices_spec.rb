@@ -31,15 +31,15 @@ RSpec.describe "Invoices", type: :system do
     it "shows correct status badges for different invoice statuses" do
       visit invoices_path
 
-      within("tbody tr:first-child") do
+      within("#invoice_#{created_invoice.id}") do
         expect(page).to have_css(".status-badge.created", text: "Created")
       end
 
-      within("tbody tr:nth-child(2)") do
+      within("#invoice_#{sent_invoice.id}") do
         expect(page).to have_css(".status-badge.sent", text: "Sent")
       end
 
-      within("tbody tr:nth-child(3)") do
+      within("#invoice_#{paid_invoice.id}") do
         expect(page).to have_css(".status-badge.paid", text: "Paid")
       end
     end
@@ -47,17 +47,17 @@ RSpec.describe "Invoices", type: :system do
     it "shows delete button only for created invoices" do
       visit invoices_path
 
-      within("tbody tr:first-child") do
+      within("#invoice_#{created_invoice.id}") do
         expect(page).to have_button("Delete")
         expect(page).to have_link("Edit")
       end
 
-      within("tbody tr:nth-child(2)") do
+      within("#invoice_#{sent_invoice.id}") do
         expect(page).not_to have_button("Delete")
         expect(page).not_to have_link("Edit")
       end
 
-      within("tbody tr:nth-child(3)") do
+      within("#invoice_#{paid_invoice.id}") do
         expect(page).not_to have_button("Delete")
         expect(page).not_to have_link("Edit")
       end
@@ -66,15 +66,15 @@ RSpec.describe "Invoices", type: :system do
     it "shows send button for created and sent invoices but not paid invoices" do
       visit invoices_path
 
-      within("tbody tr:first-child") do
+      within("#invoice_#{created_invoice.id}") do
         expect(page).to have_button("Send")
       end
 
-      within("tbody tr:nth-child(2)") do
+      within("#invoice_#{sent_invoice.id}") do
         expect(page).to have_button("Send")
       end
 
-      within("tbody tr:nth-child(3)") do
+      within("#invoice_#{paid_invoice.id}") do
         expect(page).not_to have_button("Send")
       end
     end

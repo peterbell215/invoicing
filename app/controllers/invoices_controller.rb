@@ -57,7 +57,7 @@ class InvoicesController < ApplicationController
       if request.referrer == invoices_url
         render turbo_stream: [
           turbo_stream.replace("notice", partial: "layouts/notice", locals: { notice: notice_message, alert: nil }),
-          turbo_stream.replace(@invoice, partial: "invoices/invoices_row", locals: { invoice: @invoice, button_size: "button-small" })
+          turbo_stream.replace(@invoice, partial: "invoices/invoice_row", locals: { invoice: @invoice, button_size: "button-small" })
         ]
       else
         redirect_to invoice_path(@invoice), notice: notice_message
