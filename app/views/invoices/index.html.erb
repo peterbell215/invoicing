@@ -9,7 +9,8 @@
     <table class="pure-table pure-table-striped">
       <thead>
         <tr>
-          <th>Invoice #</th>
+          <th>Billing #</th>
+          <th>Type</th>
           <th>Client</th>
           <th>Date</th>
           <th>Amount</th>
@@ -19,7 +20,11 @@
       </thead>
       <tbody data-controller="delete-confirmation send-confirmation mark-paid-modal">
         <% @invoices.each do |invoice| %>
-          <%= render partial: "invoices_row", locals: {invoice: invoice, button_size: "button-small"} %>
+          <%= render partial: "invoice_row", locals: { invoice: invoice, button_size: "button-small" } %>
+
+          <% invoice.credit_notes.each do |credit_note| %>
+            <%= render partial: "credit_note_row", locals: { credit_note: credit_note, button_size: "button-small" } %>
+          <% end %>
         <% end %>
       </tbody>
     </table>
@@ -58,11 +63,25 @@
     font-weight: bold;
   }
 
+  .credit-note-row {
+    background-color: #f9f9f9;
+  }
+
+  .credit-note-row td:first-child {
+    padding-left: 30px;
+  }
+
   .actions {
     white-space: nowrap;
   }
 
-  .actions .pure-button {
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+
+  .action-buttons .pure-button {
     margin-right: 5px;
   }
 

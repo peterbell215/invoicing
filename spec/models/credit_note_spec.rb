@@ -66,6 +66,13 @@ RSpec.describe CreditNote do
     end
 
     describe 'amount validation' do
+      it 'validates amount cannot be zero' do
+        credit_note = CreditNote.new(invoice: invoice, amount: Money.new(0, 'GBP'), reason: 'Test reason')
+
+        expect(credit_note).not_to be_valid
+        expect(credit_note.errors[:amount_pence]).to include("cannot be zero")
+      end
+
       it 'validates amount does not exceed invoice amount' do
         invoice_amount = invoice.amount
         excessive_amount = Money.new(invoice_amount.cents + 10000, 'GBP')

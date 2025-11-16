@@ -43,7 +43,7 @@
     <%= form.submit credit_note.persisted? ? "Update Credit Note" : "Create Credit Note",
         class: "pure-button pure-button-primary",
         data: { action: "click->validation#resetValidationErrorText" } %>
-    <%= link_to "Cancel", credit_note.persisted? ? credit_note_path(credit_note) : billings_path, class: "pure-button" %>
+    <%= link_to "Cancel", credit_note.persisted? ? credit_note_path(credit_note) : invoices_path, class: "pure-button" %>
   </div>
 <% end %>
 

@@ -1,0 +1,47 @@
+<tr is="turbo-frame" id="<%= dom_id(invoice) %>">
+  <td><%= link_to invoice.id, invoice_path(invoice) %></td>
+  <td><span class="billing-type-badge invoice">Invoice</span></td>
+  <td><%= invoice.client.name %></td>
+  <td><%= invoice.date.strftime('%d %b %Y') if invoice.date %></td>
+  <td><%= invoice.amount.format if invoice.amount %></td>
+  <td>
+    <span class="status-badge <%= invoice.status %>">
+      <%= invoice.status.humanize %>
+    </span>
+  </td>
+
+  <td class="action-buttons">
+    <%= link_to invoice_path(invoice), class: "pure-button pure-button-primary button-small", data: { turbo_frame: '_top' } do %>
+      <span class="material-symbols-outlined">subject</span> View
+    <% end %>
+
+    <%= render partial: "invoices/buttons", locals: { invoice: invoice, button_size: "button-small" } %>
+
+    <% if invoice.can_issue_credit_note? %>
+      <%= link_to new_invoice_credit_note_path(invoice), class: "pure-button button-warning button-small", data: { turbo_frame: '_top' } do %>
+        <span class="material-symbols-outlined">receipt</span> Issue Credit Note
+      <% end %>
+    <% end %>
+  </td>
+</tr>
+
+<style>
+  .billing-type-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  .billing-type-badge.invoice {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .billing-type-badge.credit-note {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+</style>
+

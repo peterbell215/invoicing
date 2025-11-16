@@ -1,25 +1,28 @@
-# Billing and Credit Notes Implementation Summary
+# Invoice and Credit Notes Implementation Summary
 
 ## Completed Changes
 
 ### Database Changes
-- ✅ Added STI (Single Table Inheritance) support by adding `type` column to invoices table
-- ✅ Renamed `invoices` table to `billings` to support both Invoice and CreditNote models
-- ✅ Added `invoice_id` column for credit notes to reference their parent invoice
+- ✅ Created separate `credit_notes` table (separated from `invoices` table)
+- ✅ Added `invoice_id` column in credit_notes to reference parent invoice
 - ✅ Added `reason` column for credit notes
-- ✅ Set all existing records to type 'Invoice'
+- ✅ Added `date`, `amount_pence`, `amount_currency`, `status` columns to credit_notes
+- ✅ Removed STI approach - Invoice and CreditNote are now separate tables
+- ✅ Migrated any existing credit notes from old structure
 
 ### Models Created/Updated
-- ✅ Created `Billing` base model with shared attributes and relationships
-- ✅ Updated `Invoice` to inherit from `Billing`
-- ✅ Created `CreditNote` model inheriting from `Billing`
+- ✅ Removed `Billing` base model (no longer using STI)
+- ✅ Updated `Invoice` to inherit from `ApplicationRecord` directly
+- ✅ Created `CreditNote` model inheriting from `ApplicationRecord`
+- ✅ Added delegation in CreditNote: `client` and `payee` accessed through invoice
 - ✅ Added validation to ensure credit notes can only be issued for sent/paid invoices
 - ✅ Added validation to ensure credit amount doesn't exceed invoice amount
 - ✅ Added status transitions for credit notes (created → sent → applied)
 - ✅ Added `can_issue_credit_note?` method to Invoice model
 
 ### Controllers Created/Updated
-- ✅ Created `BillingsController` with index action
+- ✅ Removed `BillingsController` (functionality moved to InvoicesController)
+- ✅ Updated `InvoicesController` index to show both invoices and credit notes
 - ✅ Created `CreditNotesController` with full CRUD actions plus:
   - `send_credit_note` - to mark credit note as sent
   - `mark_applied` - to mark credit note as applied
@@ -27,25 +30,28 @@
 - ✅ Kept existing invoice functionality intact
 
 ### Routes Updated
-- ✅ Added `resources :billings, only: [:index]`
+- ✅ Removed `resources :billings` route
+- ✅ Updated invoices routes to include index action
 - ✅ Added nested route for creating credit notes under invoices
 - ✅ Added credit notes routes with custom member actions
 - ✅ Updated invoice routes to include mark_paid action
 
 ### Views Created/Updated
-- ✅ Created `app/views/billings/index.html.erb` - main billing list page
-- ✅ Created `app/views/billings/_billing_row.html.erb` - invoice row partial
-- ✅ Created `app/views/billings/_credit_note_row.html.erb` - credit note row partial
+- ✅ Updated `app/views/invoices/index.html.erb` - shows invoices with credit notes
+- ✅ Created `app/views/invoices/_invoice_row.html.erb` - invoice row partial
+- ✅ Created `app/views/invoices/_credit_note_row.html.erb` - credit note row partial
 - ✅ Created `app/views/credit_notes/new.html.erb` - create credit note form
 - ✅ Created `app/views/credit_notes/edit.html.erb` - edit credit note form
 - ✅ Created `app/views/credit_notes/_form.html.erb` - credit note form partial
 - ✅ Created `app/views/credit_notes/show.html.erb` - credit note details page
-- ✅ Updated `app/views/layouts/application.html.erb` - changed "Invoices" to "Billings" in navigation
+- ✅ Updated `app/views/layouts/application.html.erb` - navigation points to invoices
 - ✅ Updated `app/views/invoices/_buttons.html.erb` - added "Issue Credit Note" button
-- ✅ Updated `app/views/invoices/show.html.erb` - changed back link to billings
+- ✅ Updated `app/views/invoices/show.html.erb` - back link to invoices
+- ✅ Updated `app/views/credit_notes/show.html.erb` - back link to invoices
+- ✅ Updated `app/views/credit_notes/_form.html.erb` - cancel link to invoices
 
 ### Features Implemented
-1. **Billing Index Page**
+1. **Invoice Index Page**
    - Lists all invoices with their associated credit notes
    - Credit notes appear indented below their parent invoice
    - Separate Type column shows "Invoice" or "Credit Note"
@@ -77,8 +83,8 @@
 - [ ] Test sending a credit note
 - [ ] Test marking credit note as applied
 - [ ] Test deleting a created credit note
-- [ ] Test that credit notes appear correctly in billing index
-- [ ] Test navigation flow (Billings → Invoice → Create Credit Note → View Credit Note)
+- [ ] Test that credit notes appear correctly in invoice index
+- [ ] Test navigation flow (Invoices → Invoice → Create Credit Note → View Credit Note)
 
 ## Known Limitations
 - Credit notes do not automatically adjust invoice balance

@@ -4,7 +4,8 @@ class InvoicesController < ApplicationController
   before_action :set_available_payees, only: [ :new, :edit, :create, :update ]
 
   def index
-    @invoices = Invoice.all.order(created_at: :desc)
+    # Get all invoices with their associated credit notes
+    @invoices = Invoice.includes(:client, :payee, :credit_notes).order(date: :desc, id: :desc)
   end
 
   def show

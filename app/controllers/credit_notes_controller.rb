@@ -6,19 +6,12 @@ class CreditNotesController < ApplicationController
   end
 
   def new
-    @credit_note = CreditNote.new(
-      invoice: @invoice,
-      client: @invoice.client,
-      payee: @invoice.payee,
-      amount: @invoice.amount
-    )
+    @credit_note = CreditNote.new(invoice: @invoice, amount: @invoice.amount)
   end
 
   def create
     @credit_note = CreditNote.new(credit_note_params)
     @credit_note.invoice = @invoice
-    @credit_note.client = @invoice.client
-    @credit_note.payee = @invoice.payee
 
     if @credit_note.save
       redirect_to @credit_note, notice: "Credit note was successfully created."
@@ -43,7 +36,7 @@ class CreditNotesController < ApplicationController
 
   def destroy
     if @credit_note.destroy
-      redirect_to billings_path, notice: "Credit note was successfully deleted."
+      redirect_to invoices_path, notice: "Credit note was successfully deleted."
     else
       redirect_to @credit_note, alert: "Cannot delete credit note that has been sent or applied."
     end

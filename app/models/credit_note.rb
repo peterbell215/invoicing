@@ -12,6 +12,7 @@ class CreditNote < ApplicationRecord
   validates :date, presence: true
   validates :invoice_id, presence: true
   validates :reason, presence: true
+  validates :amount_pence, presence: true, numericality: { other_than: 0, message: "cannot be zero" }
   validate :amount_cannot_exceed_invoice_amount
   validate :invoice_must_be_sent_or_paid
   validate :validate_editable_status, on: :update
