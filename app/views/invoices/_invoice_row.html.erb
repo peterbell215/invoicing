@@ -16,12 +16,6 @@
     <% end %>
 
     <%= render partial: "invoices/buttons", locals: { invoice: invoice, button_size: "button-small" } %>
-
-    <% if invoice.can_issue_credit_note? %>
-      <%= link_to new_invoice_credit_note_path(invoice), class: "pure-button button-warning button-small", data: { turbo_frame: '_top' } do %>
-        <span class="material-symbols-outlined">receipt</span> Issue Credit Note
-      <% end %>
-    <% end %>
   </td>
 </tr>
 

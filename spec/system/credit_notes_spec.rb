@@ -6,7 +6,7 @@ RSpec.describe "Credit Notes", type: :system do
 
   describe "Creating a credit note" do
     it "allows creating a credit note for a sent invoice" do
-      visit billings_path
+      visit invoices_path
 
       within("#invoice_#{invoice.id}") do
         click_link "Issue Credit Note"
@@ -37,7 +37,7 @@ RSpec.describe "Credit Notes", type: :system do
     it "prevents creating a credit note for a created invoice" do
       created_invoice = FactoryBot.create(:invoice, client: client, status: :created)
 
-      visit billings_path
+      visit invoices_path
 
       within("#invoice_#{created_invoice.id}") do
         expect(page).not_to have_link("Issue Credit Note")
@@ -46,7 +46,7 @@ RSpec.describe "Credit Notes", type: :system do
   end
 
   describe "Credit note lifecycle" do
-    let!(:credit_note) { FactoryBot.create(:credit_note, invoice: invoice, client: client, status: :created) }
+    let!(:credit_note) { FactoryBot.create(:credit_note, invoice_param: invoice, status: :created) }
 
     it "allows editing a created credit note" do
       visit credit_note_path(credit_note)
@@ -86,13 +86,13 @@ RSpec.describe "Credit Notes", type: :system do
     end
   end
 
-  describe "Billings index" do
-    let!(:credit_note) { FactoryBot.create(:credit_note, invoice: invoice, client: client) }
+  describe "Invoices index" do
+    let!(:credit_note) { FactoryBot.create(:credit_note, invoice_param: invoice) }
 
     it "displays invoices and their credit notes" do
-      visit billings_path
+      visit invoices_path
 
-      expect(page).to have_content("Billings")
+      expect(page).to have_content("Invoices")
       expect(page).to have_selector("#invoice_#{invoice.id}")
       expect(page).to have_selector("#credit_note_#{credit_note.id}")
 
