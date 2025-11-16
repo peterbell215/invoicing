@@ -3,7 +3,7 @@ FactoryBot.define do
     transient do
       invoice_param { nil }
     end
-
+    
     # Invoice is required - let tests provide it
     invoice { invoice_param }
 

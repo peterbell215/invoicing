@@ -68,10 +68,19 @@ RSpec.describe "Credit Notes", type: :system do
       expect(credit_note.reload.status).to eq("sent")
     end
 
-    it "allows deleting a created credit note" do
+    it "allows deleting a created credit note", js: true do
       visit credit_note_path(credit_note)
 
+      # Trigger the delete confirmation dialog
       click_button "Delete"
+
+      # Wait for the delete confirmation dialog to appear
+      expect(page).to have_css("dialog[open]")
+      expect(page).to have_content("Are you sure you want to delete")
+
+      within("dialog") do
+        click_button "Delete"
+      end
 
       expect(page).to have_content("Credit note was successfully deleted")
       expect(CreditNote.exists?(credit_note.id)).to be false
@@ -103,4 +112,3 @@ RSpec.describe "Credit Notes", type: :system do
     end
   end
 end
-
