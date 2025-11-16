@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Credit Notes", type: :system do
-  let!(:client) { FactoryBot.create(:client) }
-  let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :sent) }
+  let!(:invoice) { create(:invoice_with_client_sessions).tap { |invoice| invoice.update!(status: :sent) } }
 
   describe "Creating a credit note" do
     it "allows creating a credit note for a sent invoice" do
@@ -35,7 +34,7 @@ RSpec.describe "Credit Notes", type: :system do
     end
 
     it "prevents creating a credit note for a created invoice" do
-      created_invoice = FactoryBot.create(:invoice, client: client, status: :created)
+      created_invoice = FactoryBot.create(:invoice, status: :created)
 
       visit invoices_path
 
@@ -46,7 +45,7 @@ RSpec.describe "Credit Notes", type: :system do
   end
 
   describe "Credit note lifecycle" do
-    let!(:credit_note) { FactoryBot.create(:credit_note, invoice_param: invoice, status: :created) }
+    let!(:credit_note) { FactoryBot.create(:credit_note, invoice: invoice, status: :created) }
 
     it "allows editing a created credit note" do
       visit credit_note_path(credit_note)
@@ -79,7 +78,7 @@ RSpec.describe "Credit Notes", type: :system do
     end
 
     it "prevents editing a sent credit note" do
-      credit_note.update(status: :sent)
+      credit_note.update!(status: :sent)
       visit credit_note_path(credit_note)
 
       expect(page).not_to have_link("Edit")

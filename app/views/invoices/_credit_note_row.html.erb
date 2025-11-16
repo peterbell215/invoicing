@@ -27,12 +27,7 @@
         <span class="material-symbols-outlined">send</span> Send
       <% end %>
 
-      <%= button_to credit_note_path(credit_note),
-          method: :delete,
-          form: { data: { turbo_method: :delete, controller: "delete-confirmation", action: "click->delete-confirmation#showDialog", delete_confirmation_summary_value: credit_note.summary } },
-          class: "pure-button button-error button-small" do %>
-        <span class="material-symbols-outlined">delete</span> Delete
-      <% end %>
+      <%= render partial: 'shared/delete_confirmation', locals: { entity: credit_note, button_size: "button-small" } %>
     <% end %>
   </td>
 </tr>

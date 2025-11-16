@@ -6,7 +6,7 @@ export default class extends Controller {
   connect() {
     // Listen for delete events for different entity types
     this.boundHandlers = {};
-    const entityTypes = ['payees', 'clients', 'messages', 'invoices', 'client_sessions'];
+    const entityTypes = ['payees', 'clients', 'messages', 'invoices', 'client_sessions', 'credit_notes'];
 
     entityTypes.forEach(entityType => {
       this.boundHandlers[entityType] = this.handleDeleteRequest.bind(this);
