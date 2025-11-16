@@ -59,10 +59,39 @@ RSpec.describe "Credit Notes", type: :system do
       expect(page).to have_content("Updated reason")
     end
 
-    it "allows sending a created credit note" do
+    it "allows sending a created credit note", js: true do
       visit credit_note_path(credit_note)
 
       click_button "Send Credit Note"
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+      expect(page).to have_content("Confirm Send Credit Note")
+      expect(page).to have_content("Credit Note ##{credit_note.id}")
+
+      within("dialog#send-credit-note-confirmation-dialog") do
+        click_button "Send Credit Note"
+      end
+
+      expect(page).to have_content("Credit note was successfully sent")
+      expect(credit_note.reload.status).to eq("sent")
+    end
+
+    it "allows resending a sent credit note", js: true do
+      credit_note.update!(status: :sent)
+      visit credit_note_path(credit_note)
+
+      # Should still show the send button for resending
+      expect(page).to have_button("Send Credit Note")
+
+      click_button "Send Credit Note"
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+
+      within("dialog#send-credit-note-confirmation-dialog") do
+        click_button "Send Credit Note"
+      end
 
       expect(page).to have_content("Credit note was successfully sent")
       expect(credit_note.reload.status).to eq("sent")

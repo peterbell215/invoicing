@@ -1,21 +1,7 @@
 <% content_for :title, "Credit Note #{@credit_note.id}" %>
 
 <div class="show-buttons">
-  <% if @credit_note.created? %>
-    <%= link_to edit_credit_note_path(@credit_note), class: "pure-button" do %>
-      <span class="material-symbols-outlined">edit</span> Edit
-    <% end %>
-
-    <%= button_to send_credit_note_credit_note_path(@credit_note),
-        method: :post,
-        form: { data: { turbo_method: :post } },
-        class: "pure-button button-success" do %>
-      <span class="material-symbols-outlined">send</span> Send Credit Note
-    <% end %>
-
-    <%= render partial: 'shared/delete_confirmation', locals: { entity: @credit_note, button_size: "" } %>
-  <% end %>
-
+  <%= render partial: "buttons", locals: { credit_note: @credit_note, button_size:"" } %>
   <%= link_to "#", onclick: "window.print(); return false;", class: "pure-button pure-button-primary" do %>
     <span class="material-symbols-outlined">print</span> Print
   <% end %>
@@ -320,3 +306,6 @@
   }
 </style>
 
+<% content_for :dialogues do %>
+  <%= render partial: 'shared/send_credit_note_confirmation_dialog' %>
+<% end %>

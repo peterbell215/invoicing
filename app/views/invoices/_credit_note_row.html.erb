@@ -20,15 +20,17 @@
         <span class="material-symbols-outlined">edit</span> Edit
       <% end %>
 
-      <%= button_to send_credit_note_credit_note_path(credit_note),
-          method: :post,
-          form: { data: { turbo_method: :post, controller: "send-confirmation", action: "click->send-confirmation#showDialog", send_confirmation_message_value: "Are you sure you want to send this credit note?" } },
-          class: "pure-button button-success button-small" do %>
-        <span class="material-symbols-outlined">send</span> Send
-      <% end %>
-
       <%= render partial: 'shared/delete_confirmation', locals: { entity: credit_note, button_size: "button-small" } %>
     <% end %>
+
+    <div data-controller="send-credit-note-confirmation" style="display: inline">
+      <button class="pure-button button-success send-credit-note-btn button-small"
+              data-id="<%= credit_note.id %>"
+              data-name="Credit Note #<%= credit_note.id %> for <%= credit_note.client.name %>"
+              data-action="click->send-credit-note-confirmation#open">
+        <span class="material-symbols-outlined">send</span> Send
+      </button>
+    </div>
   </td>
 </tr>
 

@@ -18,7 +18,7 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody data-controller="delete-confirmation send-confirmation mark-paid-modal">
+      <tbody data-controller="delete-confirmation send-confirmation send-credit-note-confirmation mark-paid-modal">
         <% @invoices.each do |invoice| %>
           <%= render partial: "invoice_row", locals: { invoice: invoice, button_size: "button-small" } %>
 
@@ -38,6 +38,7 @@
 
 <% content_for :dialogues do %>
   <%= render partial: 'shared/send_confirmation_dialog' %>
+  <%= render partial: 'shared/send_credit_note_confirmation_dialog' %>
   <%= render partial: 'shared/mark_paid_confirmation_dialog' %>
 <% end %>
 

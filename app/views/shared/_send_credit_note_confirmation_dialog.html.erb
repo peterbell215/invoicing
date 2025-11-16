@@ -1,0 +1,15 @@
+<!-- Dialog for send credit note confirmation -->
+<dialog id="send-credit-note-confirmation-dialog" data-controller="send-credit-note-modal" data-send-credit-note-modal-target="dialog" data-action="click->send-credit-note-modal#clickOutside">
+  <div class="dialog-content">
+    <h3>Confirm Send Credit Note</h3>
+    <p>Are you sure you want to send the credit note: <span id="credit-note-to-send" data-send-credit-note-modal-target="name"></span>?</p>
+    <p>This will send the credit note to the client and change its status to "sent".</p>
+    <div class="dialog-buttons">
+      <button id="cancel-send" class="pure-button" data-action="click->send-credit-note-modal#close">Cancel</button>
+      <%= form_tag "", method: :post, id: "send-credit-note-form", class: "dialog-form", data: { send_credit_note_modal_target: "form" } do %>
+        <button type="submit" class="pure-button pure-button-primary button-success">Send Credit Note</button>
+      <% end %>
+    </div>
+  </div>
+</dialog>
+
