@@ -1,22 +1,24 @@
-Invoice #<%= @invoice.id %> from Katy's Services
+Invoice #<%= @invoice.id %>
 
 Dear <%= @client.name %>,
 
 Please find attached your invoice #<%= @invoice.id %> for a total of <%= @invoice.amount.format %>.
 
-Payment Details:
-Bank: Example Bank
-Account Name: Katy Smith
-Account Number: 12345678
-Sort Code: 01-02-03
+Please make payment to:
+Bank: <%= Rails.application.credentials.payment_details[:bank] || "Bank plc" %>
+Account Name: <%= Rails.application.credentials.payment_details[:account_name] || "Katy's Account" %>
+Account Number: <%= Rails.application.credentials.payment_details[:account_number] || "012345678" %>
+Sort Code: <%= Rails.application.credentials.payment_details[:sort_code] || "00-00-00" %>
 Reference: INV-<%= @invoice.id %>
-
-Payment Terms: Due within 30 days of issue.
 
 Thank you for your business!
 
-Best regards,
-Katy Smith
-Katy's Services
-Phone: 020 1234 5678
-Email: katy@example.com
+Kind regards,
+
+<%= Rails.application.credentials.org_details[:name] %>
+
+<%= Rails.application.credentials.org_details[:address1] %>
+<%= Rails.application.credentials.org_details[:address2] %>
+<%= Rails.application.credentials.org_details[:town] %>
+<%= Rails.application.credentials.org_details[:postcode] %>
+<%= Rails.application.credentials.org_details[:email] %>

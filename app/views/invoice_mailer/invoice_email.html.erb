@@ -5,22 +5,25 @@
 <p>Please find attached your invoice #<%= @invoice.id %> for a total of <%= @invoice.amount.format %>.</p>
 
 <p>
-  Payment Details:<br>
-  Bank: Example Bank<br>
-  Account Name: Katy Smith<br>
-  Account Number: 12345678<br>
-  Sort Code: 01-02-03<br>
+  Please make payment to:<br>
+  Bank: <%= Rails.application.credentials.payment_details[:bank] || "Bank plc" %><br>
+  Account Name: <%= Rails.application.credentials.payment_details[:account_name] || "Katy's Account" %><br>
+  Account Number: <%= Rails.application.credentials.payment_details[:account_number] || "012345678" %><br>
+  Sort Code: <%= Rails.application.credentials.payment_details[:sort_code] || "00-00-00" %><br>
   Reference: INV-<%= @invoice.id %>
 </p>
 
-<p>Payment Terms: Due within 30 days of issue.</p>
-
 <p>Thank you for your business!</p>
 
+<p>Kind regards,</p>
+
 <p>
-Best regards,<br>
-Katy Smith<br>
-Katy's Services<br>
-Phone: 020 1234 5678<br>
-Email: katy@example.com
+  <%= Rails.application.credentials.org_details[:name] %><br>
+  <address>
+    <%= Rails.application.credentials.org_details[:address1] %><br>
+    <%= Rails.application.credentials.org_details[:address2] %><br>
+    <%= Rails.application.credentials.org_details[:town] %><br>
+    <%= Rails.application.credentials.org_details[:postcode] %><br>
+    <%= Rails.application.credentials.org_details[:email] %>
+  </address>
 </p>
