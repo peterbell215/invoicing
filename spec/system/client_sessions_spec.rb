@@ -265,17 +265,6 @@ RSpec.describe "Client Sessions", type: :system do
           expect(page).not_to have_button("Delete")
         end
       end
-
-      it "shows modal informing credit note requirement on show page when trying to delete invoiced session", js: true do
-        pending "implement credit note logic"
-
-        visit client_session_path(client_session)
-
-        click_button "Delete"
-
-        expect(page).to have_content("Cannot delete session")
-        expect(page).to have_content("credit note must be issued")
-      end
     end
   end
 
