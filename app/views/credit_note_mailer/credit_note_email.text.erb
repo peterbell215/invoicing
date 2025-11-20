@@ -2,7 +2,7 @@ Credit Note #<%= @credit_note.id %>
 
 Dear <%= @client.name %>,
 
-Please find attached your credit note #<%= @credit_note.id %> for Invoice #<%= @invoice.id %> in the amount of <%= @credit_note.amount.format %>.
+Please find attached your credit note #<%= @credit_note.id %> for Invoice #<%= @invoice.id %> in the amount of <%= @credit_note.amount.abs.format %>.
 
 Reason: <%= @credit_note.reason %></p>
 
@@ -11,7 +11,9 @@ Kind regards,
 <%= Rails.application.credentials.org_details[:name] %>
 
 <%= Rails.application.credentials.org_details[:address1] %>
-<%= Rails.application.credentials.org_details[:address2] %>
+<% unless Rails.application.credentials.org_details[:address2].blank? %>
+  <%= Rails.application.credentials.org_details[:address2] %>
+<% end %>
 <%= Rails.application.credentials.org_details[:town] %>
 <%= Rails.application.credentials.org_details[:postcode] %>
 <%= Rails.application.credentials.org_details[:email] %>

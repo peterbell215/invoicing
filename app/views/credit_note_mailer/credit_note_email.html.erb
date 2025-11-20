@@ -2,7 +2,10 @@
 
 <p>Dear <%= @client.name %>,</p>
 
-<p>Please find attached your credit note #<%= @credit_note.id %> for Invoice #<%= @invoice.id %> in the amount of <%= @credit_note.amount.format %>.</p>
+<p>
+  Please find attached your credit note #<%= @credit_note.id %> for Invoice #<%= @invoice.id %> in the amount
+  of <%= @credit_note.amount.abs.format %>.
+</p>
 
 <p><strong>Reason:</strong> <%= @credit_note.reason %></p>
 
@@ -10,13 +13,15 @@
 
 <p>
   <%= Rails.application.credentials.org_details[:name] %><br>
-<address>
-  <%= Rails.application.credentials.org_details[:address1] %><br>
-  <%= Rails.application.credentials.org_details[:address2] %><br>
-  <%= Rails.application.credentials.org_details[:town] %><br>
-  <%= Rails.application.credentials.org_details[:postcode] %><br>
-  <%= Rails.application.credentials.org_details[:email] %>
-</address>
+  <address>
+    <%= Rails.application.credentials.org_details[:address1] %><br>
+    <% unless Rails.application.credentials.org_details[:address2].blank? %>
+      <%= Rails.application.credentials.org_details[:address2] %><br>
+    <% end %>
+    <%= Rails.application.credentials.org_details[:town] %><br>
+    <%= Rails.application.credentials.org_details[:postcode] %><br>
+    <%= Rails.application.credentials.org_details[:email] %>
+  </address>
 </p>
 
 
