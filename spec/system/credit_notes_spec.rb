@@ -59,44 +59,6 @@ RSpec.describe "Credit Notes", type: :system do
       expect(page).to have_content("Updated reason")
     end
 
-    it "allows sending a created credit note", js: true do
-      visit credit_note_path(credit_note)
-
-      click_button "Send Credit Note"
-
-      # Wait for the send confirmation dialog to appear
-      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
-      expect(page).to have_content("Confirm Send Credit Note")
-      expect(page).to have_content("Credit Note ##{credit_note.id}")
-
-      within("dialog#send-credit-note-confirmation-dialog") do
-        click_button "Send Credit Note"
-      end
-
-      expect(page).to have_content("Credit note was successfully sent")
-      expect(credit_note.reload.status).to eq("sent")
-    end
-
-    it "allows resending a sent credit note", js: true do
-      credit_note.update!(status: :sent)
-      visit credit_note_path(credit_note)
-
-      # Should still show the send button for resending
-      expect(page).to have_button("Send Credit Note")
-
-      click_button "Send Credit Note"
-
-      # Wait for the send confirmation dialog to appear
-      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
-
-      within("dialog#send-credit-note-confirmation-dialog") do
-        click_button "Send Credit Note"
-      end
-
-      expect(page).to have_content("Credit note was successfully sent")
-      expect(credit_note.reload.status).to eq("sent")
-    end
-
     it "allows deleting a created credit note", js: true do
       visit credit_note_path(credit_note)
 
@@ -120,6 +82,143 @@ RSpec.describe "Credit Notes", type: :system do
       visit credit_note_path(credit_note)
 
       expect(page).not_to have_link("Edit")
+    end
+  end
+
+  describe "Sending a credit note", js: true do
+    let!(:credit_note) { FactoryBot.create(:credit_note, invoice: invoice, status: :created) }
+
+    # Clear deliveries before the test
+    before do
+      ActionMailer::Base.deliveries.clear
+    end
+
+    shared_examples "send credit note" do
+      it "allows sending a credit note with confirmation dialog" do
+        # Wait for the send confirmation dialog to appear
+        expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+        expect(page).to have_content("Confirm Send Credit Note")
+        expect(page).to have_content("Credit Note ##{credit_note.id}")
+
+        within("dialog#send-credit-note-confirmation-dialog") do
+          click_button "Send Credit Note"
+        end
+
+        expect(page).to have_content("Credit note was successfully sent")
+        expect(credit_note.reload.status).to eq("sent")
+
+        # Check that an email was sent
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+
+        # Access the sent email
+        email = ActionMailer::Base.deliveries.last
+
+        # Make assertions about the email
+        expect(email.to).to include(invoice.client.email)
+        expect(email.subject).to include("Credit Note ##{credit_note.id}")
+      end
+
+      it "allows canceling the send action" do
+        within("dialog#send-credit-note-confirmation-dialog") do
+          click_button "Cancel"
+        end
+
+        # Dialog should close and credit note should remain unchanged
+        expect(page).not_to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+        expect(credit_note.reload.status).to eq("created")
+
+        # Check that no email was sent
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
+      end
+
+      it "allows canceling by clicking outside the dialog" do
+        # Wait for the send confirmation dialog to appear
+        expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+
+        # Click outside the dialog (on the dialog backdrop)
+        page.execute_script("document.querySelector('#send-credit-note-confirmation-dialog').click()")
+
+        # Dialog should close and credit note should remain unchanged
+        expect(page).not_to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+        expect(credit_note.reload.status).to eq("created")
+
+        # Check that no email was sent
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
+      end
+    end
+
+    context "when on the index page" do
+      before do
+        visit invoices_path
+
+        within("#credit_note_#{credit_note.id}") do
+          click_button "Send"
+        end
+      end
+
+      include_examples "send credit note"
+    end
+
+    context "when on the show page" do
+      before do
+        visit credit_note_path(credit_note)
+        click_button "Send Credit Note"
+      end
+
+      include_examples "send credit note"
+    end
+  end
+
+  describe "Resending a credit note", js: true do
+    let!(:credit_note) { FactoryBot.create(:credit_note, invoice: invoice, status: :sent) }
+
+    # Clear deliveries before the test
+    before do
+      ActionMailer::Base.deliveries.clear
+    end
+
+    it "allows resending a sent credit note from show page" do
+      visit credit_note_path(credit_note)
+
+      # Should still show the send button for resending
+      expect(page).to have_button("Send Credit Note")
+
+      click_button "Send Credit Note"
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+
+      within("dialog#send-credit-note-confirmation-dialog") do
+        click_button "Send Credit Note"
+      end
+
+      expect(page).to have_content("Credit note was successfully sent")
+      expect(credit_note.reload.status).to eq("sent")
+
+      # Check that an email was sent
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
+    end
+
+    it "allows resending a sent credit note from index page" do
+      visit invoices_path
+
+      within("#credit_note_#{credit_note.id}") do
+        expect(page).to have_button("Send")
+        click_button "Send"
+      end
+
+      # Wait for the send confirmation dialog to appear
+      expect(page).to have_css("dialog#send-credit-note-confirmation-dialog[open]")
+
+      within("dialog#send-credit-note-confirmation-dialog") do
+        click_button "Send Credit Note"
+      end
+
+      expect(page).to have_content("Credit note was successfully sent")
+      expect(credit_note.reload.status).to eq("sent")
+
+      # Check that an email was sent
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
   end
 

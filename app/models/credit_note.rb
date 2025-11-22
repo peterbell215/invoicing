@@ -5,7 +5,8 @@ class CreditNote < ApplicationRecord
   has_rich_text :text
 
   # Delegate client and payee to invoice
-  delegate :client, :payee, to: :invoice, allow_nil: true
+  delegate :client, to: :invoice
+  delegate :payee, to: :invoice, allow_nil: true
 
   monetize :amount_pence
 

@@ -194,6 +194,11 @@ RSpec.describe "Invoices", type: :system do
   describe "Sending an invoice", js: true do
     let!(:invoice) { FactoryBot.create(:invoice, client: client, status: :created) }
 
+    # Clear deliveries before the test
+    before do
+      ActionMailer::Base.deliveries.clear
+    end
+
     shared_examples "send invoice" do
       it "allows sending an invoice with confirmation dialog" do
         # Wait for the send confirmation dialog to appear
@@ -207,6 +212,17 @@ RSpec.describe "Invoices", type: :system do
 
         expect(page).to have_content("Invoice was successfully sent")
         expect(invoice.reload.status).to eq("sent")
+
+        # Check that an email was sent
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+
+        # Access the sent email
+        email = ActionMailer::Base.deliveries.last
+
+        # Make assertions about the email
+        expect(email.to).to include('test.one@example.com')
+        expect(email.subject).to include("Invoice ##{invoice.id} from Katy's Services")
+        expect(email.body.encoded).to include('Dear Test One')
       end
 
       it "allows canceling the send action" do
