@@ -1,4 +1,3 @@
 - Provide unpaid sessions in the invoice draft.
-- PayeeController#destroy tests
 - Sum of credit notes on invoice must not exceed invoice amount
 - 
