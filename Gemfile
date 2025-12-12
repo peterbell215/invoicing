@@ -17,7 +17,7 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Money gem for handling money and currency conversions
-gem "money-rails", "~>1.12"
+gem "money-rails", "~>2.0"
 # HTML to PDF conversion with Ferrum [https://github.com/rails/ferrum-pdf]
 gem "ferrum_pdf"
 # Use Active Storage for file attachments
