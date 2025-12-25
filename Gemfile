@@ -69,6 +69,7 @@ end
 
 group :test do
   gem "capybara"
+  gem 'database_cleaner-active_record'
   gem "selenium-webdriver"
   gem 'numbers_and_words'
 end

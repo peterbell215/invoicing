@@ -7,7 +7,7 @@ class Client < ApplicationRecord
   before_destroy :check_deletable
 
   has_many :client_sessions, dependent: :destroy
-  has_many :fees, -> { order(to: :desc) }, dependent: :destroy
+  has_many :fees, -> { order(to: :desc) }, dependent: :destroy, autosave: true
   belongs_to :paid_by, class_name: "Payee", optional: true
   has_many :messages_for_clients, dependent: :destroy
   has_many :messages, through: :messages_for_clients

@@ -60,26 +60,26 @@ describe Client do
     context 'when a new record is created with a nil value for unit_charge' do
       before { create(:client) }
 
-      let(:read_back_client) { Client.find_by(name: 'Test One') }
+      subject(:client) { Client.find_by(name: 'Test One') }
 
       it 'creates a child record fee with a default value' do
-        expect(read_back_client.current_rate).to eq Money.new(6000)
+        expect(client.current_rate).to eq Money.new(6000)
       end
     end
   end
 
   describe '#current_rate_since' do
     context 'when a new record is built with a nil value for unit_charge' do
-      subject(:test_client) { build(:client) }
+      subject(:client) { build(:client) }
 
       it 'autofills the since date.' do
-        expect(test_client.current_rate_since).to eq Time.zone.today
+        expect(client.current_rate_since).to eq Time.zone.today
       end
     end
   end
 
   describe '#new_rate=' do
-    context 'when a new client record is built with new_rate set' do
+    context 'when a new client record is built without the new_rate set' do
       subject(:test_client) { Client.create!(attributes_for(:client)) }
 
       it 'creates a corresponding Fee child' do
@@ -87,13 +87,13 @@ describe Client do
       end
     end
 
-    context 'when a new client record is created with current_rate set' do
-      subject(:read_back_client) { Client.find_by(name: 'Test One') }
+    context 'when a new client record is created with new_rate set' do
+      subject(:client) { Client.find_by(name: 'Test One') }
 
       before { Client.create!(attributes_for(:client, new_rate: Money.new(7000), new_rate_from: Time.zone.today)) }
 
       it 'creates a corresponding Fee child' do
-        expect(read_back_client.current_rate).to eq Money.new(7000)
+        expect(client.current_rate).to eq Money.new(7000)
       end
     end
 
