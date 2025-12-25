@@ -203,9 +203,9 @@ RSpec.describe Invoice do
 
           # Check that reminder is included with both invoices
           text_content = new_invoice.text.to_plain_text
-          expect(text_content).to include("REMINDER: The following invoices remain unpaid:")
-          expect(text_content).to include("##{unpaid_invoice1.id} (15/05/2025)")
-          expect(text_content).to include("##{unpaid_invoice2.id} (01/06/2025)")
+          expect(text_content).to include("Please note that I appear not to have received payment for the following invoices:")
+          expect(text_content).to include("##{unpaid_invoice1.id} for #{unpaid_invoice1.amount.format} (#{unpaid_invoice1.date.strftime('%d %b %Y')})")
+          expect(text_content).to include("##{unpaid_invoice2.id} for #{unpaid_invoice2.amount.format} (#{unpaid_invoice2.date.strftime('%d %b %Y')})")
         end
       end
     end
