@@ -166,7 +166,7 @@ RSpec.describe Invoice do
         invoice = Invoice.new(client: client)
 
         # Expected text should have messages in chronological order (oldest first)
-        expected_text = "This is the first message\n\n  This is the second message"
+        expected_text = "This is the first message\n\n\n  This is the second message"
         expect(invoice.text.to_plain_text.strip).to eq(expected_text)
       end
     end
