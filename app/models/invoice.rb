@@ -130,7 +130,7 @@ class Invoice < ApplicationRecord
         nil
       when 1
         invoice = unpaid_invoices.first
-        "Please note that Invoice ##{invoice.id} for #{invoice.amount} dated #{invoice.date.strftime('%d/%m/%Y')} appears outstanding."
+        "Please note that Invoice ##{invoice.id} for #{invoice.amount.format} dated #{invoice.date.strftime('%d %b %Y')} appears outstanding."
       else
         invoice_list = unpaid_invoices.order(:date).map do |inv|
           "<li>##{inv.id} for #{inv.amount.format} (#{inv.date.strftime('%d %b %Y')})</li>"
