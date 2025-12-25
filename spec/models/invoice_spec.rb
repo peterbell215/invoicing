@@ -172,6 +172,115 @@ RSpec.describe Invoice do
     end
   end
 
+  describe 'unpaid invoice reminder' do
+    let(:client) { FactoryBot.create(:client) }
+
+    context 'when client has one unpaid invoice' do
+      it 'includes reminder for single unpaid invoice' do
+        travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+          # Create an unpaid invoice
+          unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+          # Create new invoice
+          new_invoice = Invoice.new(client: client)
+
+          # Check that reminder is included
+          expected_text = "REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid."
+          expect(new_invoice.text.to_plain_text).to include(expected_text)
+        end
+      end
+    end
+
+    context 'when client has multiple unpaid invoices' do
+      it 'includes reminder for all unpaid invoices' do
+        travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+          # Create multiple unpaid invoices
+          unpaid_invoice1 = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 5, 15))
+          unpaid_invoice2 = FactoryBot.create(:invoice, client: client, status: :created, date: Date.new(2025, 6, 1))
+
+          # Create new invoice
+          new_invoice = Invoice.new(client: client)
+
+          # Check that reminder is included with both invoices
+          text_content = new_invoice.text.to_plain_text
+          expect(text_content).to include("REMINDER: The following invoices remain unpaid:")
+          expect(text_content).to include("##{unpaid_invoice1.id} (15/05/2025)")
+          expect(text_content).to include("##{unpaid_invoice2.id} (01/06/2025)")
+        end
+      end
+    end
+
+    context 'when client has no unpaid invoices' do
+      it 'does not include unpaid invoice reminder' do
+        # Create a paid invoice
+        FactoryBot.create(:invoice, client: client, status: :paid, date: Date.new(2025, 6, 1))
+
+        # Create new invoice
+        new_invoice = Invoice.new(client: client)
+
+        # Check that no reminder is included
+        text_content = new_invoice.text.to_plain_text
+        expect(text_content).not_to include("REMINDER")
+        expect(text_content).not_to include("unpaid")
+      end
+    end
+
+    context 'when client has both unpaid invoices and messages' do
+      it 'includes both reminder and messages' do
+        travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+          # Create an unpaid invoice
+          unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+          # Create a message
+          message = FactoryBot.create(:message, text: "Thank you for your business", created_at: 1.hour.ago)
+          message.apply_to_client(client)
+
+          # Create new invoice
+          new_invoice = Invoice.new(client: client)
+
+          text_content = new_invoice.text.to_plain_text
+          # Check that both reminder and message are included
+          expect(text_content).to include("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+          expect(text_content).to include("Thank you for your business")
+        end
+      end
+    end
+
+    context 'when creating invoice for client with no invoices' do
+      it 'does not include reminder' do
+        # Create new invoice for client with no previous invoices
+        new_invoice = Invoice.new(client: client)
+
+        # Check that no reminder is included
+        text_content = new_invoice.text.to_plain_text.to_s
+        expect(text_content).not_to include("REMINDER")
+      end
+    end
+
+    context 'when invoice is saved and reloaded' do
+      it 'does not add reminder again on reload' do
+        travel_to Time.zone.local(2025, 7, 12, 10, 0, 0) do
+          # Create an unpaid invoice
+          unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+          # Build new invoice (triggers after_initialize and populates text)
+          new_invoice = Invoice.new(client: client, date: Date.new(2025, 7, 12))
+
+          # Check that reminder is included initially
+          initial_text = new_invoice.text.to_plain_text
+          expect(initial_text).to include("REMINDER: Invoice ##{unpaid_invoice.id}")
+
+          # Save the invoice
+          new_invoice.save!
+
+          # Reload and check that reminder is not duplicated
+          reloaded_invoice = Invoice.find(new_invoice.id)
+          expect(reloaded_invoice.text.to_plain_text).to eq(initial_text)
+        end
+      end
+    end
+  end
+
   describe '#validate_editable_status' do
     let(:invoice) { FactoryBot.create(:invoice, status: :created) }
 

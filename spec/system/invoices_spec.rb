@@ -119,6 +119,84 @@ RSpec.describe "Invoices", type: :system do
         expect(page).to have_content("Specific Message for #{client.name}")
       end
     end
+
+    it "includes reminder for single unpaid invoice when creating new invoice", js: true do
+      # Create an unpaid invoice for the client
+      unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+      visit new_client_invoice_path(client)
+
+      within("#invoice_text") do
+        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+      end
+    end
+
+    it "includes reminder for multiple unpaid invoices when creating new invoice", js: true do
+      # Create multiple unpaid invoices for the client
+      unpaid_invoice1 = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 5, 15))
+      unpaid_invoice2 = FactoryBot.create(:invoice, client: client, status: :created, date: Date.new(2025, 6, 1))
+
+      visit new_client_invoice_path(client)
+
+      within("#invoice_text") do
+        expect(page).to have_content("REMINDER: The following invoices remain unpaid:")
+        expect(page).to have_content("##{unpaid_invoice1.id} (15/05/2025)")
+        expect(page).to have_content("##{unpaid_invoice2.id} (01/06/2025)")
+      end
+    end
+
+    it "does not include reminder when all invoices are paid", js: true do
+      # Create a paid invoice for the client
+      FactoryBot.create(:invoice, client: client, status: :paid, date: Date.new(2025, 6, 1))
+
+      visit new_client_invoice_path(client)
+
+      within("#invoice_text") do
+        expect(page).not_to have_content("REMINDER")
+        expect(page).not_to have_content("unpaid")
+      end
+    end
+
+    it "includes both unpaid invoice reminder and messages when creating new invoice", js: true do
+      # Create an unpaid invoice
+      unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+      # Create a message for the client
+      message = FactoryBot.create(:message, text: "Thank you for your continued business", created_at: 1.day.ago).apply_to_client(client)
+
+      visit new_client_invoice_path(client)
+
+      within("#invoice_text") do
+        # Check that both reminder and message are present
+        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+        expect(page).to have_content("Thank you for your continued business")
+      end
+    end
+
+    it "allows user to edit or remove the unpaid invoice reminder", js: true do
+      # Create an unpaid invoice
+      unpaid_invoice = FactoryBot.create(:invoice, client: client, status: :sent, date: Date.new(2025, 6, 1))
+
+      visit new_client_invoice_path(client)
+
+      # Verify reminder is present
+      within("#invoice_text") do
+        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+      end
+
+      # Clear the text field and add custom text
+      fill_in_rich_textarea "Text", with: "Custom invoice text without reminder"
+
+      # Select sessions and create invoice
+      click_button "Create Invoice"
+
+      expect(page).to have_content("Invoice was successfully generated")
+
+      # Verify the invoice was created with the custom text (no reminder)
+      invoice = Invoice.last
+      expect(invoice.text.to_plain_text).to include("Custom invoice text without reminder")
+      expect(invoice.text.to_plain_text).not_to include("REMINDER")
+    end
   end
 
   describe "Viewing an invoice" do

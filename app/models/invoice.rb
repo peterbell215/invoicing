@@ -17,6 +17,7 @@ class Invoice < ApplicationRecord
 
   before_save :update_amount
   after_initialize :populate_text_from_messages, if: :new_record?
+  after_initialize :populate_text_with_unpaid_invoices, if: :new_record?
   after_initialize :set_default_date, if: :new_record?
   before_destroy :deletable?
 
@@ -94,6 +95,8 @@ class Invoice < ApplicationRecord
   def populate_text_from_messages
     return if client.nil? # Guard clause for cases where client isn't set yet
 
+    content_parts = []
+
     # Get current messages for this client (including global messages)
     client_messages = client.messages.current
     global_messages = Message.joins(:messages_for_clients)
@@ -102,15 +105,42 @@ class Invoice < ApplicationRecord
 
     relevant_messages = (client_messages + global_messages).uniq.sort_by(&:created_at)
 
-    return if relevant_messages.empty?
+    unless relevant_messages.empty?
+      # Build formatted text from messages
+      message_content = relevant_messages.map do |message|
+        message.text.to_s
+      end.join("\n\n")
+      content_parts << message_content
+    end
 
-    # Build formatted text from messages
-    message_content = relevant_messages.map do |message|
-      message.text.to_s
-    end.join("\n\n")
+    # Set the rich text content with all parts joined
+    self.text = content_parts.join("\n\n") unless content_parts.empty?
+  end
 
-    # Set the rich text content
-    self.text = message_content
+  # Generate reminder text for unpaid invoices
+  # Returns nil if no unpaid invoices exist
+  def populate_text_with_unpaid_invoices
+    return if client.nil? # Guard clause for cases where client isn't set yet
+
+    unpaid_invoices = client.invoices.where.not(status: :paid).where.not(id: self.id)
+
+    unpaid_reminder =
+      case unpaid_invoices.count
+      when 0
+        nil
+      when 1
+        invoice = unpaid_invoices.first
+        "Please note that Invoice ##{invoice.id} for #{invoice.amount} dated #{invoice.date.strftime('%d/%m/%Y')} appears outstanding."
+      else
+        invoice_list = unpaid_invoices.order(:date).map do |inv|
+          "##{inv.id} for #{inv.amount}(#{inv.date.strftime('%d/%m/%Y')})"
+        end.join(', ')
+        "Please note that I appear not to have received payment for the following invoices: #{invoice_list}."
+      end
+
+    return unless unpaid_reminder
+
+    self.text = "#{self.text&.to_s || ''}\n\n#{unpaid_reminder}"
   end
 
   # Sets the default date for new invoice records
