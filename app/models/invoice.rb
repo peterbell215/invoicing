@@ -108,8 +108,8 @@ class Invoice < ApplicationRecord
     unless relevant_messages.empty?
       # Build formatted text from messages
       message_content = relevant_messages.map do |message|
-        message.text.to_s
-      end.join("\n\n")
+        "#{message.text.to_s}"
+      end.join("<br>\n")
       content_parts << message_content
     end
 
@@ -133,14 +133,19 @@ class Invoice < ApplicationRecord
         "Please note that Invoice ##{invoice.id} for #{invoice.amount} dated #{invoice.date.strftime('%d/%m/%Y')} appears outstanding."
       else
         invoice_list = unpaid_invoices.order(:date).map do |inv|
-          "##{inv.id} for #{inv.amount}(#{inv.date.strftime('%d/%m/%Y')})"
-        end.join(', ')
-        "Please note that I appear not to have received payment for the following invoices: #{invoice_list}."
+          "<li>##{inv.id} for #{inv.amount.format} (#{inv.date.strftime('%d %b %Y')})</li>"
+        end.join
+        <<-EOF
+        Please note that I appear not to have received payment for the following invoices:
+        <ul>
+            #{invoice_list}.
+        </ul>
+        EOF
       end
 
     return unless unpaid_reminder
 
-    self.text = "#{self.text&.to_s || ''}\n\n#{unpaid_reminder}"
+    self.text = "#{self.text&.to_s || ''}<br>\n#{unpaid_reminder}"
   end
 
   # Sets the default date for new invoice records
