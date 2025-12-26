@@ -95,6 +95,7 @@ RSpec.describe "Client Sessions", type: :system do
 
       created_session = ClientSession.last
       expect(created_session.client).to eq(client)
+      expect(created_session.unit_session_rate).to eq(client.current_rate)
       expect(created_session.units).to eq(1.5)
       expect(created_session.description).to eq("Test session description")
       expect(created_session.session_date).to eq(Date.current)

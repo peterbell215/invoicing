@@ -12,18 +12,12 @@ export default class extends Controller {
     const rateCents = selectedOption.dataset.rate
 
     if (!rateCents) {
-      this.rateFieldTarget.value = "£0.00"
+      this.rateFieldTarget.value = "60.00"
       return
     }
 
     // Convert cents to pounds and format as currency
-    const ratePounds = parseInt(rateCents) / 100
-    const formattedRate = new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP'
-    }).format(ratePounds)
-
-    this.rateFieldTarget.value = formattedRate
+    this.rateFieldTarget.value = (parseInt(rateCents) / 100.0).toFixed(2)
   }
 }
 
