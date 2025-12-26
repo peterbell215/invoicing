@@ -127,7 +127,9 @@ RSpec.describe "Invoices", type: :system do
       visit new_client_invoice_path(client)
 
       within("#invoice_text") do
-        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
+        expect(page).to have_content(message)
+
       end
     end
 
@@ -139,9 +141,9 @@ RSpec.describe "Invoices", type: :system do
       visit new_client_invoice_path(client)
 
       within("#invoice_text") do
-        expect(page).to have_content("REMINDER: The following invoices remain unpaid:")
-        expect(page).to have_content("##{unpaid_invoice1.id} (15/05/2025)")
-        expect(page).to have_content("##{unpaid_invoice2.id} (01/06/2025)")
+        expect(page).to have_content("Please note that I appear not to have received payment for the following invoices:")
+        expect(page).to have_content("##{unpaid_invoice1.id} for #{unpaid_invoice1.amount.format} (#{unpaid_invoice1.date.strftime('%d %b %Y')})")
+        expect(page).to have_content("##{unpaid_invoice2.id} for #{unpaid_invoice2.amount.format} (#{unpaid_invoice2.date.strftime('%d %b %Y')})")
       end
     end
 
@@ -168,7 +170,8 @@ RSpec.describe "Invoices", type: :system do
 
       within("#invoice_text") do
         # Check that both reminder and message are present
-        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
+        expect(page).to have_content(message)
         expect(page).to have_content("Thank you for your continued business")
       end
     end
@@ -181,7 +184,8 @@ RSpec.describe "Invoices", type: :system do
 
       # Verify reminder is present
       within("#invoice_text") do
-        expect(page).to have_content("REMINDER: Invoice ##{unpaid_invoice.id} dated 01/06/2025 remains unpaid.")
+        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
+        expect(page).to have_content(message)
       end
 
       # Clear the text field and add custom text
