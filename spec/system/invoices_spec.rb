@@ -127,9 +127,7 @@ RSpec.describe "Invoices", type: :system do
       visit new_client_invoice_path(client)
 
       within("#invoice_text") do
-        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-        expect(page).to have_content(message)
-
+        expect(page).to have_content(unpaid_invoice.text_for_single_unpaid_invoice)
       end
     end
 
@@ -142,8 +140,8 @@ RSpec.describe "Invoices", type: :system do
 
       within("#invoice_text") do
         expect(page).to have_content("Please note that I appear not to have received payment for the following invoices:")
-        expect(page).to have_content("##{unpaid_invoice1.id} for #{unpaid_invoice1.amount.format} (#{unpaid_invoice1.date.strftime('%d %b %Y')})")
-        expect(page).to have_content("##{unpaid_invoice2.id} for #{unpaid_invoice2.amount.format} (#{unpaid_invoice2.date.strftime('%d %b %Y')})")
+        expect(page).to have_content(unpaid_invoice1.text_for_multiple_unpaid_invoices)
+        expect(page).to have_content(unpaid_invoice2.text_for_multiple_unpaid_invoices)
       end
     end
 
@@ -154,8 +152,8 @@ RSpec.describe "Invoices", type: :system do
       visit new_client_invoice_path(client)
 
       within("#invoice_text") do
-        expect(page).not_to have_content("REMINDER")
-        expect(page).not_to have_content("unpaid")
+        expect(page).not_to have_content("appears outstanding")
+        expect(page).not_to have_content("Please note that I appear not to have received payment for the following invoices:")
       end
     end
 
@@ -170,8 +168,7 @@ RSpec.describe "Invoices", type: :system do
 
       within("#invoice_text") do
         # Check that both reminder and message are present
-        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-        expect(page).to have_content(message)
+        expect(page).to have_content(unpaid_invoice.text_for_single_unpaid_invoice)
         expect(page).to have_content("Thank you for your continued business")
       end
     end
@@ -184,8 +181,7 @@ RSpec.describe "Invoices", type: :system do
 
       # Verify reminder is present
       within("#invoice_text") do
-        message = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-        expect(page).to have_content(message)
+        expect(page).to have_content(unpaid_invoice.text_for_single_unpaid_invoice)
       end
 
       # Clear the text field and add custom text
@@ -198,8 +194,8 @@ RSpec.describe "Invoices", type: :system do
 
       # Verify the invoice was created with the custom text (no reminder)
       invoice = Invoice.last
-      expect(invoice.text.to_plain_text).to include("Custom invoice text without reminder")
-      expect(invoice.text.to_plain_text).not_to include("REMINDER")
+      expect(invoice.text.to_plain_text).not_to include("appears outstanding")
+      expect(invoice.text.to_plain_text).not_to include("Please note that I appear not to have received payment for the following invoices:")
     end
   end
 

@@ -41,6 +41,14 @@ class Invoice < ApplicationRecord
     payee.nil?
   end
 
+  def text_for_single_unpaid_invoice
+    "Please note that Invoice ##{self.id} for #{self.amount.format} dated #{self.date.strftime('%d %b %Y')} appears outstanding."
+  end
+
+  def text_for_multiple_unpaid_invoices
+    "##{self.id} for #{self.amount.format} (#{self.date.strftime('%d %b %Y')})"
+  end
+
   private
 
   def update_amount
@@ -129,11 +137,10 @@ class Invoice < ApplicationRecord
       when 0
         nil
       when 1
-        invoice = unpaid_invoices.first
-        "Please note that Invoice ##{invoice.id} for #{invoice.amount.format} dated #{invoice.date.strftime('%d %b %Y')} appears outstanding."
+        unpaid_invoices.first.text_for_single_unpaid_invoice
       else
         invoice_list = unpaid_invoices.order(:date).map do |inv|
-          "<li>##{inv.id} for #{inv.amount.format} (#{inv.date.strftime('%d %b %Y')})</li>"
+          "<li>#{inv.text_for_multiple_unpaid_invoices}</li>"
         end.join
         <<-EOF
         Please note that I appear not to have received payment for the following invoices:

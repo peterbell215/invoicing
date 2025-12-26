@@ -185,8 +185,7 @@ RSpec.describe Invoice do
           new_invoice = Invoice.new(client: client)
 
           # Check that reminder is included
-          expected_text = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-          expect(new_invoice.text.to_plain_text).to include(expected_text)
+          expect(new_invoice.text.to_plain_text).to include(unpaid_invoice.text_for_single_unpaid_invoice)
         end
       end
     end
@@ -204,8 +203,8 @@ RSpec.describe Invoice do
           # Check that reminder is included with both invoices
           text_content = new_invoice.text.to_plain_text
           expect(text_content).to include("Please note that I appear not to have received payment for the following invoices:")
-          expect(text_content).to include("##{unpaid_invoice1.id} for #{unpaid_invoice1.amount.format} (#{unpaid_invoice1.date.strftime('%d %b %Y')})")
-          expect(text_content).to include("##{unpaid_invoice2.id} for #{unpaid_invoice2.amount.format} (#{unpaid_invoice2.date.strftime('%d %b %Y')})")
+          expect(text_content).to include(unpaid_invoice1.text_for_multiple_unpaid_invoices)
+          expect(text_content).to include(unpaid_invoice2.text_for_multiple_unpaid_invoices)
         end
       end
     end
@@ -220,8 +219,8 @@ RSpec.describe Invoice do
 
         # Check that no reminder is included
         text_content = new_invoice.text.to_plain_text
-        expect(text_content).not_to include("REMINDER")
-        expect(text_content).not_to include("unpaid")
+        expect(text_content).not_to include("appears outstanding")
+        expect(text_content).not_to include("Please note that I appear not to have received payment for the following invoices:")
       end
     end
 
@@ -240,8 +239,7 @@ RSpec.describe Invoice do
 
           text_content = new_invoice.text.to_plain_text
           # Check that both reminder and message are included
-          expected_invoice_text = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-          expect(text_content).to include(expected_invoice_text)
+          expect(text_content).to include(unpaid_invoice.text_for_single_unpaid_invoice)
           expect(text_content).to include("Thank you for your business")
         end
       end
@@ -269,8 +267,7 @@ RSpec.describe Invoice do
 
           # Check that reminder is included initially
           initial_text = new_invoice.text.to_plain_text
-          expected_invoice_text = "Please note that Invoice ##{unpaid_invoice.id} for #{unpaid_invoice.amount.format} dated #{unpaid_invoice.date.strftime('%d %b %Y')} appears outstanding."
-          expect(initial_text).to include(expected_invoice_text)
+          expect(initial_text).to include(unpaid_invoice.text_for_single_unpaid_invoice)
 
           # Save the invoice
           new_invoice.save!
