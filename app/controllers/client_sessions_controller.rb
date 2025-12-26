@@ -12,7 +12,7 @@ class ClientSessionsController < ApplicationController
 
   # GET /client_sessions/new
   def new
-    @client_session = ClientSession.new
+    @client_session = ClientSession.new(unit_session_rate: "60.00", units: 1)
   end
 
   # GET /client_sessions/1/edit
