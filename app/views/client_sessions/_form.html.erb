@@ -29,7 +29,7 @@
             required: true,
             class: "pure-input-1",
             data: { set_client_rate_target: "rateField" },
-            value: number_to_currency(client_session.unit_session_rate&.to_f || 0, unit: "£")
+            value: client_session.unit_session_rate&.to_f || 0.0
         %>
       </div>
 
