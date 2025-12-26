@@ -29,6 +29,27 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 
 RSpec.configure do |config|
+  # setup for factory bot
+  config.include FactoryBot::Syntax::Methods
+  config.include Rails.application.routes.url_helpers
+  config.include Rails.application.routes.mounted_helpers
+  config.include ActionView::RecordIdentifier
+
+  config.before(:each) do
+    FactoryBot.rewind_sequences
+  end
+
+  config.before(:each, type: :system) do |example|
+    if example.metadata[:js]
+      driven_by :selenium_chrome
+    else
+      driven_by :selenium_chrome_headless
+    end
+
+    user ||= FactoryBot.create(:user)
+    visit root_path(as: user)
+  end
+
   # DatabaseCleaner setup
   config.use_transactional_fixtures = false
 
@@ -71,26 +92,5 @@ RSpec.configure do |config|
 
   config.append_after(:each) do
     DatabaseCleaner.clean
-  end
-
-  # setup for factory bot
-  config.include FactoryBot::Syntax::Methods
-  config.include Rails.application.routes.url_helpers
-  config.include Rails.application.routes.mounted_helpers
-  config.include ActionView::RecordIdentifier
-
-  config.before(:each) do
-    FactoryBot.rewind_sequences
-  end
-
-  config.before(:each, type: :system) do |example|
-    if example.metadata[:js]
-      driven_by :selenium_chrome
-    else
-      driven_by :selenium_chrome_headless
-    end
-
-    user ||= FactoryBot.create(:user)
-    visit root_path(as: user)
   end
 end
