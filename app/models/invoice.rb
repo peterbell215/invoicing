@@ -31,14 +31,14 @@ class Invoice < ApplicationRecord
     sent? || paid?
   end
 
-  # Returns the entity (Client or Payee) who should receive the invoice
-  def bill_to
-    payee || client
+  # Returns true if this invoice is billed to the client directly
+  def self_paid
+    payee.nil?
   end
 
-  # Returns true if this invoice is billed to the client directly
-  def self_paid?
-    payee.nil?
+  # Sets whether this invoice is billed to the client directly
+  def self_paid=(value)
+    self.payee_id = ActiveModel::Type::Boolean.new.cast(value) ? nil : client.paid_by_id
   end
 
   def text_for_single_unpaid_invoice
@@ -95,8 +95,24 @@ class Invoice < ApplicationRecord
   end
 
   # Set the payee based on the client's payment arrangement
+  # Only sets the payee if it hasn't been explicitly set by the user
   def set_payee_from_client
+    # Check if payee_id was explicitly assigned (even to nil/blank)
+    # by checking if it was included in the assigned attributes
+    return if assigned_attributes.key?('payee_id') || assigned_attributes.key?(:payee_id)
+
     self.payee ||= client.paid_by if client&.paid_by.present?
+  end
+
+  # Track which attributes have been explicitly assigned
+  def assigned_attributes
+    @assigned_attributes ||= {}
+  end
+
+  def payee_id=(value)
+    @assigned_attributes ||= {}
+    @assigned_attributes[:payee_id] = true
+    write_attribute(:payee_id, value)
   end
 
   # Populate the text field with relevant messages when creating a new invoice

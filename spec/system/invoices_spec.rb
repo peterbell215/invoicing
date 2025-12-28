@@ -88,7 +88,8 @@ RSpec.describe "Invoices", type: :system do
 
       # Fill in invoice details
       fill_in "Date", with: Date.current.strftime("%Y-%m-%d")
-      select payee.name, from: "Payee"
+      # Client has no paid_by, so should show "Paid By Client" text
+      expect(page).to have_content("Paid By Client")
       fill_in_rich_textarea "Text", with: "Invoice for consulting services"
 
       # Select some sessions
@@ -101,10 +102,65 @@ RSpec.describe "Invoices", type: :system do
       # Verify the invoice was created correctly
       invoice = Invoice.last
       expect(invoice.client).to eq(client)
-      expect(invoice.payee).to eq(payee)
+      expect(invoice.payee).to be_nil
       expect(invoice.text.body.to_plain_text).to eq("Invoice for consulting services")
       expect(invoice.client_sessions).to include(client_sessions[0], client_sessions[1])
       expect(invoice.client_sessions).not_to include(client_sessions[2])
+    end
+
+    context "when client has a payee" do
+      let!(:client_with_payee) { FactoryBot.create(:client, :with_payee, paid_by: payee) }
+      let!(:sessions_for_client_with_payee) do
+        [
+          FactoryBot.create(:client_session, client: client_with_payee, session_date: 1.week.ago, units: 1.0),
+          FactoryBot.create(:client_session, client: client_with_payee, session_date: 2.weeks.ago, units: 1.5)
+        ]
+      end
+
+      it "shows radio buttons to select payee or client" do
+        visit new_client_invoice_path(client_with_payee)
+
+        expect(page).to have_content("Who Pays?")
+
+        within("#self_paid_label_false") do
+          expect(page).to have_checked_field("invoice_self_paid_false", type: "radio")
+          expect(page).to have_content("#{payee.name} (Payee)")
+        end
+
+        within("#self_paid_label_true") do
+          expect(page).to have_unchecked_field("invoice_self_paid_true", type: "radio")
+          expect(page).to have_content("Paid by Client")
+        end
+
+        click_button "Create Invoice"
+      end
+
+      it "allows creating an invoice billed to the client directly" do
+        visit new_client_invoice_path(client_with_payee)
+
+        # Fill in invoice details
+        fill_in "Date", with: Date.current.strftime("%Y-%m-%d")
+        choose "invoice_self_paid_true"  # Select "Paid by Client"
+        fill_in_rich_textarea "Text", with: "Invoice for services billed to client"
+
+        click_button "Create Invoice"
+
+        expect(page).to have_content("Invoice was successfully generated")
+
+        # Verify the invoice was created correctly
+        invoice = Invoice.find_by(client_id: client_with_payee.id)
+        expect(invoice.payee).to be_nil
+      end
+    end
+
+    context "when client has no payee" do
+      it "shows 'Paid By Client' text without radio buttons" do
+        visit new_client_invoice_path(client)
+
+        expect(page).to have_content("Who Pays?")
+        expect(page).to have_content("Paid By Client")
+        expect(page).not_to have_field(type: "radio")
+      end
     end
 
     it "prepopulates text field with relevant messages when creating new invoice", js: true do

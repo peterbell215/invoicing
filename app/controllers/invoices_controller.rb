@@ -1,7 +1,6 @@
 class InvoicesController < ApplicationController
   before_action :set_client, only: [ :new ]
   before_action :set_invoice_and_client, only: [ :show, :edit, :update, :send_invoice, :destroy ]
-  before_action :set_available_payees, only: [ :new, :edit, :create, :update ]
 
   def index
     # Get all invoices with their associated credit notes
@@ -125,7 +124,7 @@ class InvoicesController < ApplicationController
   end
 
   def invoice_params
-    params.require(:invoice).permit(:date, :status, :amount, :client_id, :payee_id, :text, client_session_ids: [])
+    params.require(:invoice).permit(:date, :status, :amount, :client_id, :self_paid, :text, client_session_ids: [])
   end
 
   def generate_invoice_pdf
@@ -134,9 +133,5 @@ class InvoicesController < ApplicationController
 
     # Convert to PDF using Ferrum_pdf
     FerrumPdf.render_pdf(html: html)
-  end
-
-  def set_available_payees
-    @available_payees = Payee.where(active: true).order(:name)
   end
 end

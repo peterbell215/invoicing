@@ -13,11 +13,23 @@
       </div>
 
       <div class="pure-u-1 pure-u-md-1-2">
-        <%= form.label :payee_id, "Payee" %>
-        <%= form.select :payee_id,
-            options_from_collection_for_select(@available_payees, :id, :name, invoice.payee_id),
-            { prompt: "Client Pays" },
-            { class: "pure-input-1" } %>
+        <%= form.label :who_pays, "Who Pays?" %>
+        <% if invoice.client.paid_by.present? %>
+          <div style="padding: 0.5em 0;">
+            <label id="self_paid_label_false" class="pure-radio">
+              <%= form.radio_button :self_paid, false %>
+              <%= "#{invoice.client.paid_by.name} (Payee)" %>
+            </label>
+            <label id="self_paid_label_true" class="pure-radio">
+              <%= form.radio_button :self_paid, true %>
+              Paid by Client
+            </label>
+          </div>
+        <% else %>
+          <div style="padding: 0.5em 0;">
+            <strong>Paid By Client</strong>
+          </div>
+        <% end %>
       </div>
 
       <div class="pure-u-1 pure-u-md-1-2">

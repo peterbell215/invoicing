@@ -415,4 +415,63 @@ RSpec.describe Invoice do
       end
     end
   end
+
+  describe '#self_paid' do
+    let(:client) { create(:client) }
+    let(:payee) { create(:payee) }
+
+    context 'when invoice has no payee' do
+      subject(:invoice) { create(:invoice, client: client, payee: nil) }
+
+      specify { expect(invoice.self_paid).to be_truthy }
+    end
+
+    context 'when invoice has a payee' do
+      subject(:invoice) { create(:invoice, client: client, payee: payee) }
+
+      specify { expect(invoice.self_paid).to be_falsey }
+    end
+  end
+
+  describe '#self_paid=' do
+    let(:client_without_payee) { create(:client, paid_by: nil) }
+    let(:client_with_payee) { create(:client, paid_by: payee) }
+    let(:payee) { create(:payee) }
+
+    context 'when client has a separate payee' do
+      subject(:invoice) { create(:invoice, client: client_with_payee, payee: payee) }
+
+      context 'when setting self_paid to true' do
+        it 'sets the payee to nil (client pays themselves)' do
+          invoice.self_paid = true
+          expect(invoice.payee).to be_nil
+        end
+      end
+
+      context 'when setting self_paid to false' do
+        it 'keeps the payee as the client\'s paid_by' do
+          invoice.self_paid = false
+          expect(invoice.payee_id).to eq(payee.id)
+        end
+      end
+    end
+
+    context 'when client has no separate payee' do
+      subject(:invoice) { create(:invoice, client: client_without_payee) }
+
+      context 'when setting self_paid to true' do
+        it 'keeps payee as nil (already self-paying)' do
+          invoice.self_paid = true
+          expect(invoice.payee).to be_nil
+        end
+      end
+
+      context 'when setting self_paid to false' do
+        it 'keeps payee as nil (no payee available)' do
+          invoice.self_paid = false
+          expect(invoice.payee).to be_nil
+        end
+      end
+    end
+  end
 end
