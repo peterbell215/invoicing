@@ -224,7 +224,7 @@ RSpec.describe "Client Sessions", type: :system do
 
         # Wait for the redirect to complete
         expect(page).to have_content("Client session was successfully destroyed")
-        expect(current_path).to eq(client_sessions_path)
+        expect(page).to have_current_path(client_sessions_path)
       end
     end
 
@@ -356,15 +356,15 @@ RSpec.describe "Client Sessions", type: :system do
       click_link "View"
 
       expect(page).to have_selector("h1", text: "Session Details")
-      expect(current_path).to eq(client_session_path(client_session))
+      expect(page).to have_current_path(client_session_path(client_session))
 
       click_link "Edit"
 
       expect(page).to have_selector("form[action='#{client_session_path(client_session)}']")
-      expect(current_path).to eq(edit_client_session_path(client_session))
+      expect(page).to have_current_path(edit_client_session_path(client_session))
 
       click_link "Back"
-      expect(current_path).to eq(client_sessions_path)
+      expect(page).to have_current_path(client_sessions_path)
     end
   end
 

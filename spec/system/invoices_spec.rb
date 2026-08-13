@@ -606,7 +606,7 @@ RSpec.describe "Invoices", type: :system do
       click_link "#{invoice.id}"
 
       expect(page.find("div.invoice-info > table > tbody > tr:nth-child(1) > td")).to have_content(invoice.id.to_s)
-      expect(current_path).to eq(invoice_path(invoice))
+      expect(page).to have_current_path(invoice_path(invoice))
     end
   end
 end
