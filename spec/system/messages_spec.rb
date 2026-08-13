@@ -203,7 +203,7 @@ RSpec.describe "Messages", type: :system do
       click_button "Update Message"
 
       expect(page).to have_content("prohibited this message from being saved")
-      expect(current_path).to eq(edit_message_path(message)) # Should render edit template
+      expect(page).to have_current_path(edit_message_path(message)) # Should render edit template
     end
   end
 
