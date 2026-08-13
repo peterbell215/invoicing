@@ -3,7 +3,7 @@ class Invoice < ApplicationRecord
   belongs_to :client
   belongs_to :payee, class_name: "Payee", optional: true
   has_many :client_sessions, dependent: :nullify
-  has_many :credit_notes, foreign_key: :invoice_id, class_name: 'CreditNote', dependent: :nullify
+  has_many :credit_notes, foreign_key: :invoice_id, class_name: "CreditNote", dependent: :nullify
   has_one_attached :pdf
   has_rich_text :text
 
@@ -99,7 +99,7 @@ class Invoice < ApplicationRecord
   def set_payee_from_client
     # Check if payee_id was explicitly assigned (even to nil/blank)
     # by checking if it was included in the assigned attributes
-    return if assigned_attributes.key?('payee_id') || assigned_attributes.key?(:payee_id)
+    return if assigned_attributes.key?("payee_id") || assigned_attributes.key?(:payee_id)
 
     self.payee ||= client.paid_by if client&.paid_by.present?
   end
@@ -132,7 +132,7 @@ class Invoice < ApplicationRecord
     unless relevant_messages.empty?
       # Build formatted text from messages
       message_content = relevant_messages.map do |message|
-        "#{message.text.to_s}"
+        "#{message.text}"
       end.join("<br>\n")
       content_parts << message_content
     end

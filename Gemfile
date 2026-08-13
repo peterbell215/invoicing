@@ -57,7 +57,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
-  gem 'simplecov'
+  gem "simplecov"
 end
 
 group :development do
@@ -69,7 +69,7 @@ end
 
 group :test do
   gem "capybara"
-  gem 'database_cleaner-active_record'
+  gem "database_cleaner-active_record"
   gem "selenium-webdriver"
-  gem 'numbers_and_words'
+  gem "numbers_and_words"
 end

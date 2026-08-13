@@ -38,7 +38,7 @@ RSpec.describe "Authentication on all routes", type: :system do
     path.gsub!(/:[a-z_]*id/, '1') # replace :id with a dummy id
     path.gsub!(/\(.:format\)/, '') # remove optional format for simplicity
 
-    it "should redirect #{route.verb} #{path} (#{route.ast.to_s})" do
+    it "should redirect #{route.verb} #{path} (#{route.ast})" do
       send(route.verb.downcase, path)
 
       # test it does indeed redirect

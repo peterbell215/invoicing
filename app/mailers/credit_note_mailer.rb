@@ -1,5 +1,5 @@
 class CreditNoteMailer < ApplicationMailer
-  default from: 'katy@example.com'
+  default from: "katy@example.com"
 
   def credit_note_email(credit_note)
     @credit_note = credit_note
@@ -17,4 +17,3 @@ class CreditNoteMailer < ApplicationMailer
     )
   end
 end
-

@@ -1,6 +1,6 @@
 # Represents a credit note issued against an invoice
 class CreditNote < ApplicationRecord
-  belongs_to :invoice, class_name: 'Invoice'
+  belongs_to :invoice, class_name: "Invoice"
   has_one_attached :pdf
   has_rich_text :text
 
@@ -107,4 +107,3 @@ class CreditNote < ApplicationRecord
     throw :abort unless created?
   end
 end
-

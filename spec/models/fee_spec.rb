@@ -30,12 +30,12 @@ RSpec.describe Fee, type: :model do
 
     context "when fees do not overlap" do
       it "returns false for non-overlapping fees" do
-        fees = [fee1, fee2]
+        fees = [ fee1, fee2 ]
         expect(Fee.overlap?(fees)).to be_falsey
       end
 
       it "returns false for single fee" do
-        fees = [fee1]
+        fees = [ fee1 ]
         expect(Fee.overlap?(fees)).to be_falsey
       end
 
@@ -49,14 +49,14 @@ RSpec.describe Fee, type: :model do
       let!(:overlapping_fee) { FactoryBot.create(:fee, client: client, from: Date.parse('2023-06-15'), to: Date.parse('2023-08-15')) }
 
       it "returns the first overlapping fee" do
-        fees = [fee1, overlapping_fee, fee2]
+        fees = [ fee1, overlapping_fee, fee2 ]
         expect(Fee.overlap?(fees)).to eq(fee1)
       end
 
       it "detects overlap when second fee starts before first fee ends" do
         fee_a = FactoryBot.create(:fee, client: client, from: Date.parse('2023-01-01'), to: Date.parse('2023-03-31'))
         fee_b = FactoryBot.create(:fee, client: client, from: Date.parse('2023-03-15'), to: Date.parse('2023-06-30'))
-        fees = [fee_a, fee_b]
+        fees = [ fee_a, fee_b ]
 
         expect(Fee.overlap?(fees)).to eq(fee_a)
       end
@@ -64,7 +64,7 @@ RSpec.describe Fee, type: :model do
       it "detects same start dates as overlap" do
         fee_a = FactoryBot.create(:fee, client: client, from: Date.parse('2023-01-01'), to: Date.parse('2023-03-31'))
         fee_b = FactoryBot.create(:fee, client: client, from: Date.parse('2023-01-01'), to: Date.parse('2023-06-30'))
-        fees = [fee_a, fee_b]
+        fees = [ fee_a, fee_b ]
 
         expect(Fee.overlap?(fees)).to eq(fee_a)
       end
@@ -74,7 +74,7 @@ RSpec.describe Fee, type: :model do
       it "does not consider adjacent dates as overlapping" do
         fee_a = FactoryBot.create(:fee, client: client, from: Date.parse('2023-01-01'), to: Date.parse('2023-03-31'))
         fee_b = FactoryBot.create(:fee, client: client, from: Date.parse('2023-04-01'), to: Date.parse('2023-06-30'))
-        fees = [fee_a, fee_b]
+        fees = [ fee_a, fee_b ]
 
         expect(Fee.overlap?(fees)).to be_falsey
       end
@@ -89,7 +89,7 @@ RSpec.describe Fee, type: :model do
         client.reload
 
         expect(client.fees).to include(fee1, fee2)
-        expect(Fee.overlap?([fee1, fee2])).to be_falsey
+        expect(Fee.overlap?([ fee1, fee2 ])).to be_falsey
       end
 
       it "handles open-ended date ranges" do
