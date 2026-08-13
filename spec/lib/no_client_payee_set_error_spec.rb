@@ -22,4 +22,3 @@ RSpec.describe NoClientPayeeSetError do
     end
   end
 end
-

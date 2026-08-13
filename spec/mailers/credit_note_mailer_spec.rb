@@ -12,7 +12,7 @@ RSpec.describe CreditNoteMailer, type: :mailer do
     end
 
     it 'sends to the correct recipient' do
-      expect(mail.to).to eq([credit_note.invoice.client.email])
+      expect(mail.to).to eq([ credit_note.invoice.client.email ])
     end
 
     it 'includes the credit note ID in the body' do

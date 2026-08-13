@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
@@ -20,8 +20,6 @@ gem "jbuilder"
 gem "money-rails", "~>2.0"
 # HTML to PDF conversion with Ferrum [https://github.com/rails/ferrum-pdf]
 gem "ferrum_pdf"
-# Use Active Storage for file attachments
-gem "image_processing", "~> 1.2"
 
 # Simple authentication with Clearance
 gem "clearance"
@@ -57,7 +55,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
-  gem 'simplecov'
+  gem "simplecov"
 end
 
 group :development do
@@ -69,7 +67,7 @@ end
 
 group :test do
   gem "capybara"
-  gem 'database_cleaner-active_record'
+  gem "database_cleaner-active_record"
   gem "selenium-webdriver"
-  gem 'numbers_and_words'
+  gem "numbers_and_words"
 end

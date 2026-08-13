@@ -53,3 +53,50 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Chrome and a matching chromedriver are preinstalled on the runner image.
+      # Installing google-chrome-stable here would upgrade Chrome past the
+      # bundled chromedriver and cause a version mismatch.
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips sqlite3 xvfb
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Prepare test database
+        env:
+          RAILS_ENV: test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+        run: bin/rails db:test:prepare
+
+      # Specs tagged `js: true` use the non-headless :selenium_chrome driver,
+      # so a virtual display is needed on the runner.
+      #
+      # LANGUAGE sets Chrome's UI locale to en-GB. Specs fill date_field inputs
+      # with dd/mm/yyyy strings, and an <input type="date"> takes its format
+      # from that locale, so a US-English Chrome would read 13/08/2026 as
+      # month 13 and silently store 08 December instead.
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          LANGUAGE: en_GB
+        run: xvfb-run -a bundle exec rspec
+
+      - name: Keep screenshots from failed system tests
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: screenshots
+          path: ${{ github.workspace }}/tmp/capybara
+          if-no-files-found: ignore
+

@@ -7,7 +7,7 @@ module ClientsHelper
       client.town,
       client.postcode
     ].compact.reject(&:blank?)
-    
+
     address_parts.join(", ")
   end
 end

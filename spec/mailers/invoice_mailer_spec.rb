@@ -11,7 +11,7 @@ RSpec.describe InvoiceMailer, type: :mailer do
     end
 
     it 'sends to the correct recipient' do
-      expect(mail.to).to eq([invoice.client.email])
+      expect(mail.to).to eq([ invoice.client.email ])
     end
 
     it 'includes the invoice ID in the body' do
@@ -56,4 +56,3 @@ RSpec.describe InvoiceMailer, type: :mailer do
     end
   end
 end
-

@@ -49,9 +49,9 @@ class InvoicesController < ApplicationController
       # Determine the appropriate notice message based on what was updated
       notice_message = if invoice_params[:status] == "paid"
                          "Invoice was successfully marked as paid."
-                       else
+      else
                          "Invoice was successfully updated."
-                       end
+      end
 
       if request.referrer == invoices_url
         render turbo_stream: [

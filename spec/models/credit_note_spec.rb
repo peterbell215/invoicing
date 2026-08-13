@@ -284,4 +284,3 @@ RSpec.describe CreditNote do
     end
   end
 end
-

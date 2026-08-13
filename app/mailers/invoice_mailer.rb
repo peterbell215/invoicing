@@ -1,5 +1,5 @@
 class InvoiceMailer < ApplicationMailer
-  default from: 'katy@example.com'
+  default from: "katy@example.com"
 
   def invoice_email(invoice)
     @invoice = invoice
